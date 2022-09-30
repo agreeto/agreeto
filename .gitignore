@@ -16,9 +16,6 @@ prisma/db.sqlite-journal
 .next/
 out/
 
-# expo
-.expo/
-dist/
 
 # production
 build
