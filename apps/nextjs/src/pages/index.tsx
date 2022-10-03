@@ -24,10 +24,11 @@ const PostCard: React.FC<{
 
 const AuthButton: React.FC = () => {
   const { data: session } = useSession();
+  console.log(session);
   if (session?.user) {
     return (
       <>
-        Signed in as {session.user.email} <br />
+        Signed in as {JSON.stringify(session.user.email)} <br />
         <button onClick={() => signOut()}>Sign out</button>
       </>
     );
@@ -96,6 +97,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     context.res,
     authOptions
   );
+  console.log("--gSSP--");
+  console.dir(session);
+  console.log("--gSSP--");
 
   return {
     props: {
