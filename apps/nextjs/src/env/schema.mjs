@@ -7,6 +7,11 @@ import { z } from "zod";
  */
 export const serverSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]),
+  GOOGLE_ID: z.string(),
+  GOOGLE_SECRET: z.string(),
+  AZURE_AD_CLIENT_ID: z.string(),
+  AZURE_AD_CLIENT_SECRET: z.string(),
+  AZURE_AD_TENANT_ID: z.string(),
 });
 
 /**
