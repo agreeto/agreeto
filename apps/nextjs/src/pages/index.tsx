@@ -7,9 +7,9 @@ import Head from "next/head";
 import { trpc } from "../utils/trpc";
 import type { inferProcedureOutput } from "@trpc/server";
 import type { AppRouter } from "@acme/api";
-import { signIn, signOut, useSession } from "next-auth/react";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
+import { useSession } from "next-auth/react";
 
 const PostCard: React.FC<{
   post: inferProcedureOutput<AppRouter["post"]["all"]>[number];
@@ -22,46 +22,11 @@ const PostCard: React.FC<{
   );
 };
 
-const AuthButton: React.FC = () => {
-  const { data: session } = useSession();
-  console.log(session);
-  if (session?.user) {
-    return (
-      <>
-        Signed in as {JSON.stringify(session.user.email)} <br />
-        <button onClick={() => signOut()}>Sign out</button>
-      </>
-    );
-  }
-  return (
-    <>
-      Not signed in <br />
-      <button
-        className="border border-blue-500 hover:ring hover:ring-yellow-500 bg-blue-500 text-white"
-        onClick={() => {
-          // console.log("clicked");
-          signIn("google");
-        }}
-      >
-        Sign in with Google
-      </button>
-      <button
-        className="border border-red-500 hover:ring hover:ring-yellow-500 bg-blue-500 text-white"
-        onClick={() => {
-          // console.log("clicked");
-          signIn("azure-ad");
-        }}
-      >
-        Sign in with MSFT
-      </button>
-    </>
-  );
-};
-
 const Home: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({ session }) => {
+> = ({ session: sessionSSR }) => {
   const postQuery = trpc.post.all.useQuery();
+  const session = useSession();
 
   return (
     <>
@@ -71,7 +36,16 @@ const Home: NextPage<
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="container flex flex-col items-center justify-center min-h-screen p-4 mx-auto">
-        <AuthButton />
+        {/* AUTHENTICATION STATUS */}
+        {session.data?.user ? (
+          <>
+            <h4 className="text-xl">Signed in as {session.data.user.email}</h4>
+            <p>You can log out via the extension</p>
+          </>
+        ) : (
+          <h4>You&apos;re not signed in. Please use the extension to do so!</h4>
+        )}
+        {/* /AUTHENTICATION STATUS */}
         <h1 className="text-5xl md:text-[5rem] leading-normal font-extrabold text-gray-700">
           Create <span className="text-purple-300">T3</span> App
         </h1>

@@ -9,6 +9,7 @@
     "build": "plasmo build"
   },
   "dependencies": {
+    "@plasmohq/storage": "^0.12.1",
     "@tanstack/react-query": "^4.7.2",
     "next-auth": "^4.12.2",
     "react": "18.2.0",

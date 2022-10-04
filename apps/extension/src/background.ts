@@ -1,4 +1,8 @@
+import { z } from "zod"
+
+import { storage } from "~features/storage"
 import { queryClient } from "~popup"
+import { ChromeStorage } from "~storage-schema"
 
 chrome.runtime.onMessageExternal.addListener(
   async (request, sender, sendResponse) => {
@@ -23,23 +27,27 @@ chrome.runtime.onMessageExternal.addListener(
     if (!request?.accessToken) {
       return
     }
-    const storage = await chrome.storage.sync.get("accessToken")
+
+    // get out storage value
+    const storageValue = await storage.get<unknown>("accessToken")
+    // validate it according to out schema
+    const accessToken = ChromeStorage.accessToken.parse(storageValue)
     // skip storage mutation if we already have that token
-    if (storage.accessToken === request.accessToken) {
+    if (accessToken === request.accessToken) {
       console.log("RESPONDING: ", { success: true })
       sendResponse({ success: true })
       return
     }
 
     // update chrome storage w/ token
-    await chrome.storage.sync.set({ accessToken: request.accessToken })
+    await storage.set("accessToken", request.accessToken)
 
-    const updated = await chrome.storage.sync.get("accessToken")
+    const updatedAccessToken = await storage.get<unknown>("accessToken")
     console.log("RESPONDING: ", {
-      success: updated.accessToken === request.accessToken
+      success: updatedAccessToken === request.accessToken
     })
     sendResponse({
-      success: updated.accessToken === request.accessToken
+      success: updatedAccessToken === request.accessToken
     })
     return
   }
