@@ -1,3 +1,7 @@
+import FullCalendar from "@fullcalendar/react"
+
+import dayGridPlugin from "@fullcalendar/daygrid"
+
 import { useStorage } from "@plasmohq/storage/hook"
 
 import { signOut } from "~features/auth"
@@ -18,7 +22,6 @@ export const App = () => {
   if (accessToken) {
     return (
       <>
-        Signed in w/ token: {accessToken} <br />
         <button
           onClick={() => {
             // log the user out
@@ -26,11 +29,13 @@ export const App = () => {
           }}>
           Sign out
         </button>
+        <FullCalendar plugins={[dayGridPlugin]} initialView="dayGridMonth" />
       </>
     )
   }
 
   return (
+    // max width & height of popup as per https://stackoverflow.com/a/8983678/5608461
     <>
       Not signed in <br />
       <button

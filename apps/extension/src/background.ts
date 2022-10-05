@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 import { storage } from "~features/storage"
-import { queryClient } from "~popup"
+import { queryClient } from "~react-query"
 import { ChromeStorage } from "~storage-schema"
 
 chrome.runtime.onMessageExternal.addListener(
