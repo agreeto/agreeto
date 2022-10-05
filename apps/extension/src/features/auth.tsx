@@ -128,3 +128,24 @@ export const signOut = async () => {
 // </>
 //   )
 // }
+
+export const SignIn = () => {
+  return (
+    // max width & height of popup as per https://stackoverflow.com/a/8983678/5608461
+    <>
+      Not signed in <br />
+      <button
+        className="border border-blue-500 hover:ring hover:ring-yellow-500 bg-blue-500 text-white"
+        onClick={() => {
+          window.open(
+            `http://localhost:3000/api/auth/signin?${new URLSearchParams({
+              callbackUrl: `${process.env
+                .PLASMO_PUBLIC_WEB_URL!}/auth/extension`
+            })}`
+          )
+        }}>
+        Sign in
+      </button>
+    </>
+  )
+}

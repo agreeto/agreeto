@@ -12,6 +12,9 @@ importers:
 
   apps/extension:
     specifiers:
+      '@fullcalendar/react': ^5.11.2
+      '@fullcalendar/timegrid': ^5.11.3
+      '@heroicons/react': ^2.0.11
       '@plasmohq/prettier-plugin-sort-imports': 3.5.2
       '@plasmohq/storage': ^0.12.1
       '@tailwindcss/forms': ^0.5.3
@@ -33,6 +36,9 @@ importers:
       typescript: 4.8.4
       zod: ^3.18.0
     dependencies:
+      '@fullcalendar/react': 5.11.2_biqbaboplfbrettd7655fr4n2y
+      '@fullcalendar/timegrid': 5.11.3
+      '@heroicons/react': 2.0.11_react@18.2.0
       '@plasmohq/storage': 0.12.1_react@18.2.0
       '@tanstack/react-query': 4.8.0_biqbaboplfbrettd7655fr4n2y
       next-auth: 4.12.2_biqbaboplfbrettd7655fr4n2y
@@ -397,6 +403,47 @@ packages:
     dependencies:
       cross-spawn: 7.0.3
     dev: true
+
+  /@fullcalendar/common/5.11.3:
+    resolution: {integrity: sha512-welVwyfQOXQQGfDwBMSfYEPbiO1cPfUD+C7jd3ZoweJR+dSO11ddFugxIQ7dGfABAGZ63oq/+LW9FsmAJezVNg==}
+    dependencies:
+      tslib: 2.4.0
+    dev: false
+
+  /@fullcalendar/daygrid/5.11.3:
+    resolution: {integrity: sha512-PCK0y80DRNCzWuC5lGpIWqCgKDvql1ah7rXql5lu+Gn2EeFj15ZQ8diMFjtNIQucEmFaNOXnR05Pgcry1n6Shg==}
+    dependencies:
+      '@fullcalendar/common': 5.11.3
+      tslib: 2.4.0
+    dev: false
+
+  /@fullcalendar/react/5.11.2_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-OnLvfV406VEQcK4QGN8xR4ro6Manp9dKE7/n9dhs19J1kKpqS1w1sIEYg1dT11njbk0Ob+TdF3cXLDFq73jUlA==}
+    peerDependencies:
+      react: ^16.7.0 || ^17 || ^18
+      react-dom: ^16.7.0 || ^17 || ^18
+    dependencies:
+      '@fullcalendar/common': 5.11.3
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      tslib: 2.4.0
+    dev: false
+
+  /@fullcalendar/timegrid/5.11.3:
+    resolution: {integrity: sha512-SjIj2ZQ7nTyL1RxZkCPvNbuUQ0xHT+gfYJdUL3FT4bPjPJCxWtQ2CL8hxaeNmVozYYuy0yrGTW5Oup2+9IplbA==}
+    dependencies:
+      '@fullcalendar/common': 5.11.3
+      '@fullcalendar/daygrid': 5.11.3
+      tslib: 2.4.0
+    dev: false
+
+  /@heroicons/react/2.0.11_react@18.2.0:
+    resolution: {integrity: sha512-bASjOgSSaYj8HqXWsOqaBiB6ZLalE/g90WYGgZ5lPm4KCCG7wPXntY4kzHf5NrLh6UBAcnPwvbiw1Ne9GYfJtw==}
+    peerDependencies:
+      react: '>= 16'
+    dependencies:
+      react: 18.2.0
+    dev: false
 
   /@humanwhocodes/config-array/0.10.7:
     resolution: {integrity: sha512-MDl6D6sBsaV452/QSdX+4CXIjZhIcI0PELsxUjk4U828yd58vk3bTIvk/6w5FY+4hIy9sLW0sfrV7K7Kc++j/w==}
