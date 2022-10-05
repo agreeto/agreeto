@@ -1,4 +1,3 @@
-import { router } from "@trpc/server";
 import {
   GetServerSidePropsContext,
   InferGetServerSidePropsType,
@@ -6,19 +5,25 @@ import {
 } from "next";
 import { unstable_getServerSession } from "next-auth";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/router.js";
+// Router can by used in useEffect only (else useRouter instead) - see: https://github.com/vercel/next.js/issues/18127#issuecomment-988959843
+import Router from "next/router.js";
 import { useEffect, useState } from "react";
 import { env as clientEnv } from "../../env/client.mjs";
 import { authOptions } from "../api/auth/[...nextauth]";
 
 const Extension: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({}) => {
+> = () => {
   const [successExtension, setSuccessExtension] = useState(false);
   const [isLoadingExtension, setIsLoadingExtension] = useState(false);
   const session = useSession();
-  const router = useRouter();
-  // pass on accessToken to webextension
+
+  /**
+   * This effect does 3 thigns:
+   * 1. if nextauth is authenticated, send the accessToken to our extension
+   * 2. Update loading states while doing this do display them to the user in render
+   * 3. upon completion of extension messasging, redirect to success/error
+   */
   useEffect(() => {
     if (session.status !== "authenticated") return;
     setIsLoadingExtension(true);
@@ -29,23 +34,30 @@ const Extension: NextPage<
         console.log({ response });
         setSuccessExtension(() => response);
         setIsLoadingExtension(() => false);
-        // TODO: the callback should be: /auth/success -- maybe add this?
         if (response.success) {
-          router.push("/auth/success");
+          Router.push("/auth/success");
         } else {
-          router.push("/auth/error");
+          Router.push("/auth/error");
         }
       }
     );
   }, [session.status, session.data?.accessToken]);
 
-  // loader
+  /**
+   * 1. Display UI while checking the session
+   */
+  // loading
   if (session.status === "loading") return <div>Preparing...</div>;
   // this shouldn't happen?
   if (session.status === "unauthenticated")
     return <div>Error! Something went wrong.</div>;
-  // nextauth is now authenticated 👇
-  // now, let's wait for our extension to respons successfully about our stored token
+
+  // -- nextauth is now authenticated 👇 --
+
+  /**
+   * 2. Display UI while messaging extension
+   */
+  // let's wait for our extension to respond successfully about our stored token
   if (isLoadingExtension) return <div>Updating your extension...</div>;
   // shit, the extension responded badly. :( and now?
   if (!successExtension)
@@ -53,15 +65,13 @@ const Extension: NextPage<
   // ✅ successfully logged-in!
   return <div>Successfully signed in!</div>;
 };
+
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await unstable_getServerSession(
     context.req,
     context.res,
     authOptions
   );
-  console.log("--gSSP--");
-  console.dir(session);
-  console.log("--gSSP--");
 
   return {
     props: {
