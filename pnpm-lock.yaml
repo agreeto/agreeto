@@ -12,6 +12,7 @@ importers:
 
   apps/extension:
     specifiers:
+      '@fullcalendar/interaction': ^5.11.3
       '@fullcalendar/react': ^5.11.2
       '@fullcalendar/timegrid': ^5.11.3
       '@heroicons/react': ^2.0.11
@@ -25,6 +26,8 @@ importers:
       '@types/react': 18.0.21
       '@types/react-dom': 18.0.6
       autoprefixer: ^10.4.7
+      date-fns: ^2.29.3
+      duration: link:dayjs/plugin/duration
       next-auth: ^4.12.2
       plasmo: 0.55.0
       postcss: ^8.4.14
@@ -36,11 +39,14 @@ importers:
       typescript: 4.8.4
       zod: ^3.18.0
     dependencies:
+      '@fullcalendar/interaction': 5.11.3
       '@fullcalendar/react': 5.11.2_biqbaboplfbrettd7655fr4n2y
       '@fullcalendar/timegrid': 5.11.3
       '@heroicons/react': 2.0.11_react@18.2.0
       '@plasmohq/storage': 0.12.1_react@18.2.0
       '@tanstack/react-query': 4.8.0_biqbaboplfbrettd7655fr4n2y
+      date-fns: 2.29.3
+      duration: link:dayjs/plugin/duration
       next-auth: 4.12.2_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -412,6 +418,13 @@ packages:
 
   /@fullcalendar/daygrid/5.11.3:
     resolution: {integrity: sha512-PCK0y80DRNCzWuC5lGpIWqCgKDvql1ah7rXql5lu+Gn2EeFj15ZQ8diMFjtNIQucEmFaNOXnR05Pgcry1n6Shg==}
+    dependencies:
+      '@fullcalendar/common': 5.11.3
+      tslib: 2.4.0
+    dev: false
+
+  /@fullcalendar/interaction/5.11.3:
+    resolution: {integrity: sha512-L955wkDjza62K96ndstvYs2Fd4V0kayTDpqW8W7huFG3Ox8MutpLqKAa2SCaTvcNIlWS4oexGQRiQAaJG7u47A==}
     dependencies:
       '@fullcalendar/common': 5.11.3
       tslib: 2.4.0
@@ -3167,6 +3180,11 @@ packages:
   /damerau-levenshtein/1.0.8:
     resolution: {integrity: sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==}
     dev: true
+
+  /date-fns/2.29.3:
+    resolution: {integrity: sha512-dDCnyH2WnnKusqvZZ6+jA1O51Ibt8ZMRNkDZdyAyK4YfbDwa/cEmuztzG5pk6hqlp9aSBPYcjOlktquahGwGeA==}
+    engines: {node: '>=0.11'}
+    dev: false
 
   /debug/2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}

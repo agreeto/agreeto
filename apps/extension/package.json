@@ -9,11 +9,14 @@
     "build": "plasmo build"
   },
   "dependencies": {
+    "@fullcalendar/interaction": "^5.11.3",
     "@fullcalendar/react": "^5.11.2",
     "@fullcalendar/timegrid": "^5.11.3",
     "@heroicons/react": "^2.0.11",
     "@plasmohq/storage": "^0.12.1",
     "@tanstack/react-query": "^4.7.2",
+    "date-fns": "^2.29.3",
+    "duration": "link:dayjs/plugin/duration",
     "next-auth": "^4.12.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",

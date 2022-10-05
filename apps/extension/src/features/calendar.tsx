@@ -1,25 +1,39 @@
-import type { ReactNode } from "react"
+import add from "date-fns/add"
+import { ReactNode, useState } from "react"
 
-import FullCalendar from "@fullcalendar/react"
+import FullCalendar, { EventInput } from "@fullcalendar/react"
 
+// needed for dateClick
+import interactionPlugin from "@fullcalendar/interaction"
+// needed for weekly cal-view
 import timeGridWeek from "@fullcalendar/timegrid"
 
 export const Calendar: React.FC<{ children?: ReactNode }> = ({ children }) => {
+  const [createdSlots, setCreatedSlots] = useState<EventInput[]>()
   // state for clicked events goes here
   return (
-    // TODO: add radix navbar
-    // <Navbar />
-    //this is the "main" route; adding more later (e.g. settings) with some sort of router
     <div id="app" className="flex">
       <main
         id="content-column"
         role="main"
         className="w-full h-full flex-grow p-3 overflow-auto">
         <FullCalendar
-          plugins={[timeGridWeek]}
+          plugins={[timeGridWeek, interactionPlugin]}
           initialView="timeGridWeek"
           aspectRatio={1.1}
           weekends={false}
+          events={createdSlots}
+          dateClick={(event) => {
+            console.log("date clicked", event.date)
+            setCreatedSlots([
+              ...(createdSlots !== undefined ? createdSlots : []),
+              {
+                start: event.date,
+                end: add(event.date, { minutes: 30 }),
+                date: event.date
+              }
+            ])
+          }}
         />
       </main>
       <div
