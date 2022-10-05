@@ -14,16 +14,21 @@ importers:
     specifiers:
       '@plasmohq/prettier-plugin-sort-imports': 3.5.2
       '@plasmohq/storage': ^0.12.1
+      '@tailwindcss/forms': ^0.5.3
+      '@tailwindcss/typography': ^0.5.7
       '@tanstack/react-query': ^4.7.2
       '@types/chrome': 0.0.197
       '@types/node': 18.7.23
       '@types/react': 18.0.21
       '@types/react-dom': 18.0.6
+      autoprefixer: ^10.4.7
       next-auth: ^4.12.2
       plasmo: 0.55.0
+      postcss: ^8.4.14
       prettier: 2.7.1
       react: 18.2.0
       react-dom: 18.2.0
+      tailwindcss: ^3.1.8
       ts-to-zod: ^1.13.1
       typescript: 4.8.4
       zod: ^3.18.0
@@ -36,12 +41,17 @@ importers:
       zod: 3.19.1
     devDependencies:
       '@plasmohq/prettier-plugin-sort-imports': 3.5.2_prettier@2.7.1
+      '@tailwindcss/forms': 0.5.3_tailwindcss@3.1.8
+      '@tailwindcss/typography': 0.5.7_tailwindcss@3.1.8
       '@types/chrome': 0.0.197
       '@types/node': 18.7.23
       '@types/react': 18.0.21
       '@types/react-dom': 18.0.6
-      plasmo: 0.55.0_biqbaboplfbrettd7655fr4n2y
+      autoprefixer: 10.4.12_postcss@8.4.17
+      plasmo: 0.55.0_zui37k4sxum3hmawd6ieq7atgi
+      postcss: 8.4.17
       prettier: 2.7.1
+      tailwindcss: 3.1.8
       ts-to-zod: 1.13.1
       typescript: 4.8.4
 
@@ -898,7 +908,7 @@ packages:
       - '@parcel/core'
     dev: true
 
-  /@parcel/config-default/2.7.0_@parcel+core@2.7.0:
+  /@parcel/config-default/2.7.0_p6vjiwsec23po4zynweh5dmrk4:
     resolution: {integrity: sha512-ZzsLr97AYrz8c9k6qn3DlqPzifi3vbP7q3ynUrAFxmt0L4+K0H9N508ZkORYmCgaFjLIQ8Y3eWpwCJ0AewPNIg==}
     peerDependencies:
       '@parcel/core': ^2.7.0
@@ -908,7 +918,7 @@ packages:
       '@parcel/core': 2.7.0
       '@parcel/namer-default': 2.7.0_@parcel+core@2.7.0
       '@parcel/optimizer-css': 2.7.0_@parcel+core@2.7.0
-      '@parcel/optimizer-htmlnano': 2.7.0_@parcel+core@2.7.0
+      '@parcel/optimizer-htmlnano': 2.7.0_p6vjiwsec23po4zynweh5dmrk4
       '@parcel/optimizer-image': 2.7.0_@parcel+core@2.7.0
       '@parcel/optimizer-svgo': 2.7.0_@parcel+core@2.7.0
       '@parcel/optimizer-terser': 2.7.0_@parcel+core@2.7.0
@@ -1094,12 +1104,12 @@ packages:
       - '@parcel/core'
     dev: true
 
-  /@parcel/optimizer-htmlnano/2.7.0_@parcel+core@2.7.0:
+  /@parcel/optimizer-htmlnano/2.7.0_p6vjiwsec23po4zynweh5dmrk4:
     resolution: {integrity: sha512-5QrGdWS5Hi4VXE3nQNrGqugmSXt68YIsWwKRAdarOxzyULSJS3gbCiQOXqIPRJobfZjnSIcdtkyxSiCUe1inIA==}
     engines: {node: '>= 12.0.0', parcel: ^2.7.0}
     dependencies:
       '@parcel/plugin': 2.7.0_@parcel+core@2.7.0
-      htmlnano: 2.0.2_svgo@2.8.0
+      htmlnano: 2.0.2_postcss@8.4.17+svgo@2.8.0
       nullthrows: 1.1.1
       posthtml: 0.16.6
       svgo: 2.8.0
@@ -1746,10 +1756,10 @@ packages:
       nullthrows: 1.1.1
     dev: true
 
-  /@plasmohq/parcel-config/0.10.1_biqbaboplfbrettd7655fr4n2y:
+  /@plasmohq/parcel-config/0.10.1_zui37k4sxum3hmawd6ieq7atgi:
     resolution: {integrity: sha512-0hZE5iGr1VUrUpXmV4U27zFLvlDbu3e1Cn2KoLob56ua/mxFt0BJfFl2eSPu09PtwdAkj/b+AxdmLM+73H0/Ug==}
     dependencies:
-      '@parcel/config-default': 2.7.0_@parcel+core@2.7.0
+      '@parcel/config-default': 2.7.0_p6vjiwsec23po4zynweh5dmrk4
       '@parcel/core': 2.7.0
       '@parcel/optimizer-data-url': 2.7.0_@parcel+core@2.7.0
       '@parcel/runtime-js': 2.7.0_@parcel+core@2.7.0
@@ -2064,6 +2074,27 @@ packages:
     engines: {node: '>=14.16'}
     dependencies:
       defer-to-connect: 2.0.1
+    dev: true
+
+  /@tailwindcss/forms/0.5.3_tailwindcss@3.1.8:
+    resolution: {integrity: sha512-y5mb86JUoiUgBjY/o6FJSFZSEttfb3Q5gllE4xoKjAAD+vBrnIhE4dViwUuow3va8mpH4s9jyUbUbrRGoRdc2Q==}
+    peerDependencies:
+      tailwindcss: '>=3.0.0 || >= 3.0.0-alpha.1'
+    dependencies:
+      mini-svg-data-uri: 1.4.4
+      tailwindcss: 3.1.8
+    dev: true
+
+  /@tailwindcss/typography/0.5.7_tailwindcss@3.1.8:
+    resolution: {integrity: sha512-JTTSTrgZfp6Ki4svhPA4mkd9nmQ/j9EfE7SbHJ1cLtthKkpW2OxsFXzSmxbhYbEkfNIyAyhle5p4SYyKRbz/jg==}
+    peerDependencies:
+      tailwindcss: '>=3.0.0 || insiders'
+    dependencies:
+      lodash.castarray: 4.4.0
+      lodash.isplainobject: 4.0.6
+      lodash.merge: 4.6.2
+      postcss-selector-parser: 6.0.10
+      tailwindcss: 3.1.8
     dev: true
 
   /@tanstack/query-core/4.8.0:
@@ -4036,7 +4067,7 @@ packages:
       tslib: 2.4.0
     dev: true
 
-  /htmlnano/2.0.2_svgo@2.8.0:
+  /htmlnano/2.0.2_postcss@8.4.17+svgo@2.8.0:
     resolution: {integrity: sha512-+ZrQFS4Ub+zd+/fWwfvoYCEGNEa0/zrpys6CyXxvZDwtL7Pl+pOtRkiujyvBQ7Lmfp7/iEPxtOFgxWA16Gkj3w==}
     peerDependencies:
       cssnano: ^5.0.11
@@ -4066,6 +4097,7 @@ packages:
         optional: true
     dependencies:
       cosmiconfig: 7.0.1
+      postcss: 8.4.17
       posthtml: 0.16.6
       svgo: 2.8.0
       timsort: 0.3.0
@@ -4657,6 +4689,10 @@ packages:
       p-locate: 5.0.0
     dev: true
 
+  /lodash.castarray/4.4.0:
+    resolution: {integrity: sha512-aVx8ztPv7/2ULbArGJ2Y42bG1mEQ5mGjpdvrbJcJFU3TbYybe+QlLS4pst9zV52ymy2in1KpFPiZnAOATxD4+Q==}
+    dev: true
+
   /lodash.clone/4.5.0:
     resolution: {integrity: sha512-GhrVeweiTD6uTmmn5hV/lzgCQhccwReIVRLHp7LT4SopOjqEZ5BbX8b5WWEtAKasjmy8hR7ZPwsYlxRCku5odg==}
     dev: true
@@ -4797,6 +4833,11 @@ packages:
   /mimic-response/4.0.0:
     resolution: {integrity: sha512-e5ISH9xMYU0DzrT+jl8q2ze9D6eWBto+I8CNpe+VI+K2J/F/k3PdkdTdz4wvGVH4NTpo+NRYTVIuMQEMMcsLqg==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    dev: true
+
+  /mini-svg-data-uri/1.4.4:
+    resolution: {integrity: sha512-r9deDe9p5FJUPZAk3A59wGH7Ii9YrjjWw0jmw/liSbHl2CHiyXj6FcDXDu2K3TjVAXqiJdaw3xxwlZZr9E6nHg==}
+    hasBin: true
     dev: true
 
   /minimatch/3.1.2:
@@ -5331,7 +5372,7 @@ packages:
     dev: true
     optional: true
 
-  /plasmo/0.55.0_biqbaboplfbrettd7655fr4n2y:
+  /plasmo/0.55.0_zui37k4sxum3hmawd6ieq7atgi:
     resolution: {integrity: sha512-qEwdbUN4YlioGA6fSZuiIi0UynunWZ5Q5guES7zBYa04llABZltGHOnN3BCI/0KB3v+RGCzgIJ/sINbASJKuoQ==}
     hasBin: true
     dependencies:
@@ -5341,7 +5382,7 @@ packages:
       '@parcel/package-manager': 2.7.0_@parcel+core@2.7.0
       '@parcel/watcher': 2.0.5
       '@plasmohq/init': 0.3.1
-      '@plasmohq/parcel-config': 0.10.1_biqbaboplfbrettd7655fr4n2y
+      '@plasmohq/parcel-config': 0.10.1_zui37k4sxum3hmawd6ieq7atgi
       archiver: 5.3.1
       buffer: 6.0.3
       chalk: 5.0.1
