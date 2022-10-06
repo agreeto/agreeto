@@ -5,7 +5,7 @@
   "types": "./src/index.ts",
   "license": "MIT",
   "dependencies": {
-    "@acme/db": "*",
+    "@acme/db": "workspace:*",
     "@trpc/server": "10.0.0-proxy-beta.9",
     "@trpc/client": "10.0.0-proxy-beta.9",
     "superjson": "^1.9.1",

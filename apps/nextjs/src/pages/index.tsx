@@ -1,8 +1,15 @@
-import type { NextPage } from "next";
+import type {
+  GetServerSidePropsContext,
+  NextPage,
+  InferGetServerSidePropsType,
+} from "next";
 import Head from "next/head";
 import { trpc } from "../utils/trpc";
 import type { inferProcedureOutput } from "@trpc/server";
 import type { AppRouter } from "@acme/api";
+import { unstable_getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]";
+import { useSession } from "next-auth/react";
 
 const PostCard: React.FC<{
   post: inferProcedureOutput<AppRouter["post"]["all"]>[number];
@@ -15,8 +22,11 @@ const PostCard: React.FC<{
   );
 };
 
-const Home: NextPage = () => {
+const Home: NextPage<
+  InferGetServerSidePropsType<typeof getServerSideProps>
+> = ({ session: sessionSSR }) => {
   const postQuery = trpc.post.all.useQuery();
+  const session = useSession();
 
   return (
     <>
@@ -26,6 +36,16 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="container flex flex-col items-center justify-center min-h-screen p-4 mx-auto">
+        {/* AUTHENTICATION STATUS */}
+        {session.data?.user ? (
+          <>
+            <h4 className="text-xl">Signed in as {session.data.user.email}</h4>
+            <p>You can log out via the extension</p>
+          </>
+        ) : (
+          <h4>You&apos;re not signed in. Please use the extension to do so!</h4>
+        )}
+        {/* /AUTHENTICATION STATUS */}
         <h1 className="text-5xl md:text-[5rem] leading-normal font-extrabold text-gray-700">
           Create <span className="text-purple-300">T3</span> App
         </h1>
@@ -44,5 +64,22 @@ const Home: NextPage = () => {
     </>
   );
 };
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await unstable_getServerSession(
+    context.req,
+    context.res,
+    authOptions
+  );
+  console.log("--gSSP--");
+  console.dir(session);
+  console.log("--gSSP--");
+
+  return {
+    props: {
+      session,
+    },
+  };
+}
 
 export default Home;

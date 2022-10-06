@@ -1,0 +1,57 @@
+{
+  "name": "extension",
+  "displayName": "Extension",
+  "version": "0.0.0",
+  "description": "A basic Plasmo extension.",
+  "author": "richardpoelderl",
+  "scripts": {
+    "dev": "plasmo dev",
+    "build": "plasmo build"
+  },
+  "dependencies": {
+    "@fullcalendar/interaction": "^5.11.3",
+    "@fullcalendar/react": "^5.11.2",
+    "@fullcalendar/timegrid": "^5.11.3",
+    "@headlessui/react": "^1.7.3",
+    "@heroicons/react": "^2.0.11",
+    "@plasmohq/storage": "^0.12.1",
+    "@tanstack/react-query": "^4.7.2",
+    "date-fns": "^2.29.3",
+    "duration": "link:dayjs/plugin/duration",
+    "next-auth": "^4.12.2",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "zod": "^3.18.0"
+  },
+  "devDependencies": {
+    "@plasmohq/prettier-plugin-sort-imports": "3.5.2",
+    "@tailwindcss/forms": "^0.5.3",
+    "@tailwindcss/typography": "^0.5.7",
+    "@types/chrome": "0.0.197",
+    "@types/node": "18.7.23",
+    "@types/react": "18.0.21",
+    "@types/react-dom": "18.0.6",
+    "autoprefixer": "^10.4.7",
+    "plasmo": "0.55.0",
+    "postcss": "^8.4.14",
+    "prettier": "2.7.1",
+    "tailwindcss": "^3.1.8",
+    "ts-to-zod": "^1.13.1",
+    "typescript": "4.8.4"
+  },
+  "manifest": {
+    "host_permissions": [
+      "https://*/*"
+    ],
+    "permissions": [
+      "tabs",
+      "storage"
+    ],
+    "externally_connectable": {
+      "matches": [
+        "https://*.agreeto.app/*",
+        "*://localhost/*"
+      ]
+    }
+  }
+}
