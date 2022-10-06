@@ -13,7 +13,7 @@ export const Navbar = () => {
       <div className="flex flex-shrink-0 items-center space-y-5 px-4">
         <img
           className="h-8 w-auto"
-          src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+          src="https://tailwindui.com/img/logos/mark.svg?color=blue&shade=600"
           alt="Your Company"
         />
       </div>
@@ -27,14 +27,14 @@ export const Navbar = () => {
               href={item.href}
               className={classNames(
                 item.current
-                  ? "bg-indigo-50 border-indigo-600 text-indigo-600"
+                  ? "bg-blue-50 border-blue-600 text-blue-600"
                   : "border-transparent text-gray-600 hover:bg-gray-50 hover:text-gray-900",
                 "group flex items-center px-3 py-2 text-sm font-medium border-l-4 grow-0 shrink-0"
               )}>
               <item.icon
                 className={classNames(
                   item.current
-                    ? "text-indigo-500"
+                    ? "text-blue-500"
                     : "text-gray-400 group-hover:text-gray-500",
                   "mr-3 flex-shrink-0 h-6 w-6"
                 )}

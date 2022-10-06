@@ -12,6 +12,7 @@
     "@fullcalendar/interaction": "^5.11.3",
     "@fullcalendar/react": "^5.11.2",
     "@fullcalendar/timegrid": "^5.11.3",
+    "@headlessui/react": "^1.7.3",
     "@heroicons/react": "^2.0.11",
     "@plasmohq/storage": "^0.12.1",
     "@tanstack/react-query": "^4.7.2",
