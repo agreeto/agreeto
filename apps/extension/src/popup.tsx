@@ -1,17 +1,13 @@
 import { QueryClientProvider } from "@tanstack/react-query"
 
-// import FullCalendar, { EventInput } from "@fullcalendar/react"
-// // needed for dateClick
-// import interactionPlugin from "@fullcalendar/interaction"
-// // needed for weekly cal-view
-// import timeGridWeek from "@fullcalendar/timegrid"
 import { queryClient } from "~react-query"
 
 import App from "./popup-app"
 
+// note (richard): import order is important to not run into specificity issues
+import "@fullcalendar/common/main.css"
 import "@fullcalendar/daygrid/main.css"
 import "@fullcalendar/timegrid/main.css"
-import "@fullcalendar/common/main.css"
 import "./style.css"
 
 function IndexPopup() {
