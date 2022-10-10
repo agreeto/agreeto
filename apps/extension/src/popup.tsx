@@ -1,21 +1,18 @@
 import { QueryClientProvider } from "@tanstack/react-query"
 
-import FullCalendar from "@fullcalendar/react"
-
-import dayGridPlugin from "@fullcalendar/daygrid"
-
-import { useStorage } from "@plasmohq/storage/hook"
-
+// import FullCalendar, { EventInput } from "@fullcalendar/react"
+// // needed for dateClick
+// import interactionPlugin from "@fullcalendar/interaction"
+// // needed for weekly cal-view
+// import timeGridWeek from "@fullcalendar/timegrid"
 import { queryClient } from "~react-query"
-import { ChromeStorage } from "~storage-schema"
 
 import App from "./popup-app"
 
+import "@fullcalendar/daygrid/main.css"
+import "@fullcalendar/timegrid/main.css"
+import "@fullcalendar/common/main.css"
 import "./style.css"
-
-import type { ReactNode } from "react"
-
-import { SignIn } from "~features/auth"
 
 function IndexPopup() {
   return (

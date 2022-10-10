@@ -1,15 +1,7 @@
-// document.getElementById(":mb")
-// document.querySelector("h2 > div.aYF > span")
 import * as Dialog from "@radix-ui/react-dialog"
-import cssText from "data-text:~/src/style.css"
-import type {
-  PlasmoContentScript,
-  PlasmoGetInlineAnchor,
-  PlasmoGetRootContainer,
-  PlasmoRender
-} from "plasmo"
+import tailwindCss from "data-text:~/src/style.css"
+import type { PlasmoContentScript, PlasmoGetInlineAnchor } from "plasmo"
 import { useState } from "react"
-import ReactDOM from "react-dom/client"
 
 import { Calendar } from "~features/calendar"
 
@@ -17,31 +9,52 @@ export const config: PlasmoContentScript = {
   matches: ["https://mail.google.com/*"]
 }
 
-// this inserts plasmo's shadow root w/ `Gmail` next to the specified element
-const CONTAINER_ID = "agreeto-item"
+// these references are necessary to mount react's portal later
 const PORTAL_ID = "agreeto-portal"
-
+const SHADOW_HOST_ID = "agreeto-shadow-host"
+// this mounts our component inline
 export const getInlineAnchor: PlasmoGetInlineAnchor = () => {
-  // 1.  place our portal next to the body tag (once)
-  if (!document.getElementById(PORTAL_ID)) {
-    const customDiv = document.createElement("div")
-    customDiv.id = PORTAL_ID
-    document.body.parentNode?.insertBefore(customDiv, document.body.nextSibling)
+  // we'll return this later to mount our react component next to it
+  const gmailSendButton = document.querySelector<HTMLElement>(".btC > td")
+
+  // note (richard): hi-jacking this fn to *also* inject our custom portal (via shadow host) on to the page
+  if (!document.getElementById(SHADOW_HOST_ID)) {
+    // 1. create a host for with a shadow root & inject into the body
+    const shadowHost = document.createElement("div")
+    shadowHost.id = SHADOW_HOST_ID
+    const shadowRoot = shadowHost.attachShadow({ mode: "open" })
+    document.body.insertAdjacentElement("beforebegin", shadowHost) // inject the shadowHost into the body
+
+    // 2. add tailwind to shadow dom
+    const styleTailwind = document.createElement("style")
+    styleTailwind.textContent = tailwindCss
+    shadowRoot.appendChild(styleTailwind)
+
+    // 3. place dialog portal next to the body tag (once)
+    const customPortal = document.createElement("div")
+    customPortal.id = PORTAL_ID
+
+    shadowRoot.appendChild(customPortal)
   }
-  return document.querySelector(".btC > td") // the send split-button
+  // after hi-jack, return the anchor
+  return gmailSendButton
 }
 
-// this makes tailwind available inside the shadowRoot
+// this makes plasmo inject our style w/ tw into the shadow dom
+// note (richard): necessary to be able to use tw on the below react component
 export const getStyle = () => {
   const style = document.createElement("style")
-  style.textContent = cssText
+  style.textContent = tailwindCss
   return style
 }
 
-// this component is mounted by plasmo in its shadowDOM
+// The icon button that we inject next to our anchor (send btn)
 const Gmail = () => {
-  const [open, setOpen] = useState(false)
-  const portalContainer = document.getElementById(PORTAL_ID)
+  const [open, setOpen] = useState(false) // to pass to radix
+  const portalContainer = document // our injected portal (next to body)
+    .getElementById(SHADOW_HOST_ID)
+    ?.shadowRoot?.getElementById(PORTAL_ID)
+
   return (
     <div className="pl-1">
       <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -49,63 +62,19 @@ const Gmail = () => {
           <img className="w-6" src="https://www.agreeto.app/%2Flogo.png" />
         </Dialog.Trigger>
         <Dialog.Portal container={portalContainer}>
-          <Dialog.Overlay />
-          <Dialog.Content>
+          <Dialog.Overlay asChild>
+            <div
+              id="agreeto-overlay"
+              className="fixed w-screen h-screen bg-black bg-opacity-50 pointer-events-auto z-[2147483646]"
+            />
+          </Dialog.Overlay>
+          <Dialog.Content className="fixed -translate-x-1/2 -translate-y-1/2 bg-white shadow-sm top-1/2 left-1/2 shadow-transparent l-1/2 z-[2147483646] w-[800] h-[600]">
             <Calendar />
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
     </div>
   )
-}
-
-/**
- * A helper function that awaits an HTML element to be inserted into the DOM
- *
- * Note (richard):
- * API Inspired by https://stackoverflow.com/a/61511955/5608461
- * Performance notes (inspired by https://stackoverflow.com/a/38882022/5608461):
- * - on success, disconnect the observer & attach a new one (ideally, provide a `parent` param to attach it non-recursively by setting subtree: false)
- * - if you can't use getElementById, prefer getElementsByTagName and getElementsByClassName and _avoid_ querySelector and especially the extremely slow querySelectorAll
- * - If querySelectorAll is absolutely unavoidable inside MutationObserver callback, first perform the querySelector check, on the average such combo will be much faster.
- * - avoid for loops (or array methods) inside the MutationObserver callback
- */
-type WaitForElementProps =
-  | { id: string; parent?: HTMLElement }
-  | { className: string; parent?: HTMLElement }
-const waitForElement = (props: WaitForElementProps) => {
-  const targetIsId = "id" in props
-  const target = targetIsId ? props.id : props.className
-
-  return new Promise<HTMLElement>((resolve) => {
-    // if element already present, return
-    const earlyElement = targetIsId
-      ? document.getElementById(target)
-      : (document.getElementsByClassName(target)[0] as HTMLElement)
-    if (earlyElement) {
-      return resolve(earlyElement)
-    }
-
-    // else observe dom mutations for our element
-    const observer = new MutationObserver((mutations) => {
-      // was the element added to the entire document?
-      const addedElement = targetIsId
-        ? document.getElementById(target)
-        : (document.getElementsByClassName(target)[0] as HTMLElement)
-      if (addedElement) {
-        resolve(addedElement)
-        // always disconnect observer on success
-        observer.disconnect()
-      }
-    })
-
-    // attach a new non-recursive observer on a provided element (or document.body if none provided)
-    observer.observe(props.parent || document.body, {
-      childList: true,
-      // note (richard): Whenever possible observe direct parents non-recursively (subtree: false).
-      subtree: !Boolean(props.parent)
-    })
-  })
 }
 
 export default Gmail

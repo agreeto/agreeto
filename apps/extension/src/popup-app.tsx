@@ -27,7 +27,7 @@ export const App = () => {
 
 const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
   return (
-    <div className="divide-y h-full">
+    <div className="w-full divide-y">
       {/* window manager */}
       <div className="flex">
         <button>minimize</button>
@@ -37,7 +37,7 @@ const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
         {/* - navbar */}
         <Navbar />
         {/* - content */}
-        <div className="flex-grow">{children}</div>
+        <div className="flex-grow w-full h-full">{children}</div>
       </div>
     </div>
   )
