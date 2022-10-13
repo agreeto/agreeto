@@ -1,8 +1,8 @@
 import { z } from "zod"
 
 import { storage } from "~features/storage"
-import { queryClient } from "~react-query"
 import { ChromeStorage } from "~storage-schema"
+import { queryClient } from "~trpc"
 
 chrome.runtime.onMessageExternal.addListener(
   async (request, sender, sendResponse) => {

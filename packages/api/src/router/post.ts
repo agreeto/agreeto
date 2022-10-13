@@ -9,7 +9,13 @@ export const postRouter = t.router({
     return ctx.prisma.post.findFirst({ where: { id: input } });
   }),
   create: t.procedure
-    .input(z.object({ title: z.string(), content: z.string() }))
+    .input(
+      z.object({
+        title: z.string(),
+        content: z.string(),
+        userId: z.string().cuid(),
+      })
+    )
     .mutation(({ ctx, input }) => {
       return ctx.prisma.post.create({ data: input });
     }),

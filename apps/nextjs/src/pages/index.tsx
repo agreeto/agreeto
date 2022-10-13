@@ -25,7 +25,7 @@ const PostCard: React.FC<{
 const Home: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ session: sessionSSR }) => {
-  const postQuery = trpc.post.all.useQuery();
+  // const postQuery = trpc.post.all.useQuery();
   const session = useSession();
 
   return (
@@ -50,7 +50,7 @@ const Home: NextPage<
           Create <span className="text-purple-300">T3</span> App
         </h1>
         <div className="flex items-center justify-center w-full pt-6 text-2xl text-blue-500">
-          {postQuery.data ? (
+          {/* {postQuery.data ? (
             <div className="flex flex-col gap-4">
               {postQuery.data?.map((p) => {
                 return <PostCard key={p.id} post={p} />;
@@ -58,7 +58,7 @@ const Home: NextPage<
             </div>
           ) : (
             <p>Loading..</p>
-          )}
+          )} */}
         </div>
       </main>
     </>

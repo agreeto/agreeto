@@ -15,7 +15,12 @@ import interactionPlugin from "@fullcalendar/interaction"
 // needed for weekly cal-view
 import timeGridWeek from "@fullcalendar/timegrid"
 
+import { trpc } from "~trpc"
+
 export const Calendar: React.FC<{ children?: ReactNode }> = ({ children }) => {
+  const postQuery = trpc.post.all.useQuery()
+  console.log({ ...postQuery.data })
+
   const [createdSlots, setCreatedSlots] = useState<EventInput[]>()
   // state for clicked events goes here
   return (

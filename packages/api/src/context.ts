@@ -1,5 +1,6 @@
 // src/server/router/context.ts
 import * as trpc from "@trpc/server";
+// import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import * as trpcNext from "@trpc/server/adapters/next";
 import { prisma } from "@acme/db";
 
@@ -22,8 +23,17 @@ export const createContextInner = async (opts: CreateContextOptions) => {
  * This is the actual context you'll use in your router
  * @link https://trpc.io/docs/context
  **/
-export const createContext = async (opts: trpcNext.CreateNextContextOptions) => {
+export const createContext = async (
+  opts: trpcNext.CreateNextContextOptions
+) => {
   return await createContextInner({});
 };
+// /**
+//  * This is the actual context you'll use in your router
+//  * @link https://trpc.io/docs/context
+//  **/
+// export const createContextFetch = async (opts: FetchCreateContextFnOptions) => {
+//   return await createContextInner({});
+// };
 
 export type Context = trpc.inferAsyncReturnType<typeof createContext>;
