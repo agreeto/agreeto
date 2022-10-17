@@ -41,7 +41,9 @@ importers:
       prettier: 2.7.1
       react: 18.2.0
       react-dom: 18.2.0
+      react-icons: ^4.6.0
       tailwindcss: ^3.1.8
+      tozod: ^3.0.0
       ts-to-zod: ^1.13.1
       typescript: 4.8.4
       zod: ^3.18.0
@@ -64,6 +66,8 @@ importers:
       next-auth: 4.12.2_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
+      react-icons: 4.6.0_react@18.2.0
+      tozod: 3.0.0_zod@3.19.1
       zod: 3.19.1
     devDependencies:
       '@plasmohq/prettier-plugin-sort-imports': 3.5.2_prettier@2.7.1
@@ -6052,6 +6056,14 @@ packages:
     resolution: {integrity: sha512-nQTTcUu+ATDbrSD1BZHr5kgSD4oF8OFjxun8uAaL8RwPBacGBNPf/yAuVVdx17N8XNzRDMrZ9XcKZHCjPW+9ew==}
     dev: true
 
+  /react-icons/4.6.0_react@18.2.0:
+    resolution: {integrity: sha512-rR/L9m9340yO8yv1QT1QurxWQvWpbNHqVX0fzMln2HEb9TEIrQRGsqiNFQfiv9/JEUbyHmHPlNTB2LWm2Ttz0g==}
+    peerDependencies:
+      react: '*'
+    dependencies:
+      react: 18.2.0
+    dev: false
+
   /react-is/16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
     dev: true
@@ -6734,6 +6746,14 @@ packages:
     dependencies:
       is-number: 7.0.0
     dev: true
+
+  /tozod/3.0.0_zod@3.19.1:
+    resolution: {integrity: sha512-R03/moNPEGgWKoTdCsEJuyEoP6NtXyhWg9L9lJhF2XyCR2Ce9XE+yXaswaVmqyBpHsRPC2Pk38mK8Ex7iHaXcg==}
+    peerDependencies:
+      zod: ^3.0.0-alpha.2
+    dependencies:
+      zod: 3.19.1
+    dev: false
 
   /ts-algebra/1.1.1:
     resolution: {integrity: sha512-W43a3/BN0Tp4SgRNERQF/QPVuY1rnHkgCr/fISLY0Ycu05P0NWPYRuViU8JFn+pFZuY6/zp9TgET1fxMzppR/Q==}

@@ -46,19 +46,12 @@ function IndexPopup() {
       links: [
         httpBatchLink({
           url: `${process.env.PLASMO_PUBLIC_WEB_URL}/api/trpc`,
-          // headers() {
-          //   return isAuthenticated
-          //     ? {
-          //         authorization: `Bearer ${accessToken}`
-          //       }
-          //     : {}
-          // },
-          fetch(url, options) {
-            console.log("URL : ", url)
-            return fetch(url, {
-              ...options,
-              credentials: "include"
-            })
+          headers() {
+            return isAuthenticated
+              ? {
+                  authorization: `Bearer ${accessToken}`
+                }
+              : {}
           }
         })
       ]

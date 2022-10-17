@@ -1,5 +1,6 @@
 // TODO: replace w/ Tab from radixui
 import { Tab } from "@headlessui/react"
+import { Switch } from "@headlessui/react"
 import {
   AtSymbolIcon,
   CodeBracketIcon,
@@ -7,8 +8,10 @@ import {
 } from "@heroicons/react/20/solid"
 import add from "date-fns/add"
 import { ReactNode, useState } from "react"
+import { CgCalendarNext } from "react-icons/cg"
+import { z } from "zod"
 
-import FullCalendar, { EventInput } from "@fullcalendar/react"
+import FullCalendar, { DateInput, EventInput } from "@fullcalendar/react"
 
 // needed for dateClick
 import interactionPlugin from "@fullcalendar/interaction"
@@ -19,7 +22,7 @@ import { trpc } from "~trpc"
 
 export const Calendar: React.FC<{ children?: ReactNode }> = ({ children }) => {
   const postQuery = trpc.post.all.useQuery()
-  console.log({ ...postQuery.data })
+  console.log(">>> POST_QUERY", postQuery.data)
 
   const [createdSlots, setCreatedSlots] = useState<EventInput[]>()
   // state for clicked events goes here
@@ -150,14 +153,15 @@ const Sidebar = ({ slots }: { slots: EventInput[] | undefined }) => {
 ${slots
   ?.map((slot) => {
     if (!slot?.start || !slot?.end) return
-    const startDate = new Date(slot.start.toLocaleString())
-    const endDate = new Date(slot.end.toLocaleString())
+    const start = z.date().parse(slot.start)
+    const end = z.date().parse(slot.end)
+
     const startTime = new Intl.DateTimeFormat("de-DE", {
       timeStyle: "short"
-    }).format(startDate)
+    }).format(start)
     const endTime = new Intl.DateTimeFormat("de-DE", {
       timeStyle: "short"
-    }).format(endDate)
+    }).format(end)
 
     return `${startTime} - ${endTime}`
   })
@@ -179,6 +183,10 @@ ${slots
         )}
       </Tab.Group>
       <div className="mt-2">
+        <Toggle slots={slots} />
+      </div>
+
+      <div className="mt-2">
         <button
           type="submit"
           className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
@@ -187,4 +195,64 @@ ${slots
       </div>
     </form>
   )
+}
+
+const Toggle = ({ slots }: { slots: EventInput[] | undefined }) => {
+  const [enabled, setEnabled] = useState(false)
+  return (
+    <Switch.Group as="div" className="flex items-center justify-between">
+      <span className="flex flex-col flex-grow">
+        <Switch.Label
+          as="span"
+          className="text-sm font-medium text-gray-900"
+          passive>
+          Create booking link
+        </Switch.Label>
+        <Switch.Description as="span" className="text-sm text-gray-500">
+          Reduces back-and-forth.
+        </Switch.Description>
+      </span>
+      <Switch
+        checked={enabled}
+        onChange={() => {
+          console.log("ENABLED????", enabled)
+          console.log(window)
+          if (!enabled) {
+            window.open(
+              `https://calendar.google.com/calendar/u/0/r/appointment?${new URLSearchParams(
+                [["ref", "agreeto"], ...getSlotsAsParams(slots)]
+              )}`,
+              "_blank"
+            )
+          }
+          setEnabled((prev) => !prev)
+        }}
+        className={classNames(
+          enabled ? "bg-indigo-600" : "bg-gray-200",
+          "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        )}>
+        <span
+          aria-hidden="true"
+          className={classNames(
+            enabled ? "translate-x-5" : "translate-x-0",
+            "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+          )}
+        />
+      </Switch>
+    </Switch.Group>
+  )
+}
+
+const getSlotsAsParams = (slots: Array<EventInput> | undefined) => {
+  // parse
+  const slotsParsed = z
+    .array(z.object({ start: z.date(), end: z.date() }))
+    .parse(slots)
+  // flatten
+  return slotsParsed.flatMap((slot, ix) => {
+    return [
+      [`slot-${ix}-start`, slot.start.toLocaleString()],
+      [`slot-${ix}-end`, slot.end.toLocaleString()]
+    ]
+  })
 }
