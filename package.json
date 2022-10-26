@@ -20,7 +20,20 @@
     "ts-to-zod": "pnpm --filter extension exec ts-to-zod"
   },
   "devDependencies": {
+    "lint-staged": "^13.0.3",
     "prettier": "latest",
     "turbo": "latest"
+  },
+  "lint-staged": {
+    "(apps|packages)/**/*.{js,ts,jsx,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.json": [
+      "prettier --write"
+    ],
+    "packages/prisma/schema.prisma": [
+      "prisma format"
+    ]
   }
 }
