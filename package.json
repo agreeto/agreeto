@@ -5,6 +5,7 @@
     "packages/*"
   ],
   "scripts": {
+    "prepare": "husky install",
     "preinstall": "npx only-allow pnpm",
     "postinstall": "turbo run postinstall",
     "pre-commit": "lint-staged",
@@ -21,9 +22,9 @@
     "ts-to-zod": "pnpm --filter extension exec ts-to-zod"
   },
   "devDependencies": {
-    "husky": "^8.0.1",
+    "husky": "^4.3.8",
     "lint-staged": "^13.0.3",
-    "prettier": "latest",
+    "prettier": "^2.7.1",
     "turbo": "latest"
   },
   "lint-staged": {
