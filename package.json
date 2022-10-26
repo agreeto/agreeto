@@ -21,6 +21,7 @@
     "ts-to-zod": "pnpm --filter extension exec ts-to-zod"
   },
   "devDependencies": {
+    "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "prettier": "latest",
     "turbo": "latest"
