@@ -30,11 +30,6 @@
     "turbo": "latest"
   },
   "lint-staged": {
-    "apps/**/*.{ts,tsx}": [
-      "tsc-files --noEmit --pretty",
-      "eslint --fix --debug",
-      "prettier --write"
-    ],
     "(apps/packages)/**/*.{ts,tsx}": [
       "tsc-files --noEmit --pretty",
       "eslint --fix --debug",

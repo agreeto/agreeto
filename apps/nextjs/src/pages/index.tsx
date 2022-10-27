@@ -23,6 +23,7 @@ const PostCard: React.FC<{
 };
 let hi;
 //   ^ why isn't this an error with the eslint/recommended setting? (no-unused-vars)
+// vscode now correctly errors, but the lint-staged command not?
 const Home: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ session: sessionSSR }) => {
