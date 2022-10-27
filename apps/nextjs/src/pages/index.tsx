@@ -22,6 +22,7 @@ const PostCard: React.FC<{
   );
 };
 let hi;
+//   ^ why isn't this an error with the eslint/recommended setting? (no-unused-vars)
 const Home: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ session: sessionSSR }) => {
