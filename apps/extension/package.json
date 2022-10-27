@@ -9,18 +9,26 @@
     "build": "plasmo build"
   },
   "dependencies": {
+    "@acme/api": "workspace:*",
+    "@fullcalendar/common": "^5.11.3",
     "@fullcalendar/interaction": "^5.11.3",
     "@fullcalendar/react": "^5.11.2",
     "@fullcalendar/timegrid": "^5.11.3",
     "@headlessui/react": "^1.7.3",
     "@heroicons/react": "^2.0.11",
     "@plasmohq/storage": "^0.12.1",
+    "@radix-ui/react-dialog": "^1.0.0",
     "@tanstack/react-query": "^4.7.2",
+    "@trpc/client": "10.0.0-proxy-beta.17",
+    "@trpc/react": "10.0.0-proxy-beta.17",
+    "@trpc/server": "10.0.0-proxy-beta.17",
     "date-fns": "^2.29.3",
     "duration": "link:dayjs/plugin/duration",
     "next-auth": "^4.12.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-icons": "^4.6.0",
+    "tozod": "^3.0.0",
     "zod": "^3.18.0"
   },
   "devDependencies": {
@@ -41,7 +49,7 @@
   },
   "manifest": {
     "host_permissions": [
-      "https://*/*"
+      "$PLASMO_PUBLIC_WEB_URL/api/trpc/*"
     ],
     "permissions": [
       "tabs",
