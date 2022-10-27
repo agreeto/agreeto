@@ -21,11 +21,11 @@ const PostCard: React.FC<{
     </div>
   );
 };
-
+let hi;
 const Home: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ session: sessionSSR }) => {
-  console.log({ sessionSSR });
+  // console.log({ sessionSSR });
   // const postQuery = trpc.post.all.useQuery();
   const session = useSession();
 

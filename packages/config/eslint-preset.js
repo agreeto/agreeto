@@ -21,6 +21,10 @@ module.exports = {
       { props: "never", children: "never" },
     ],
     "react/self-closing-comp": ["error", { component: true, html: true }],
+    "no-unused-vars": [
+      "error",
+      { vars: "all", args: "after-used", ignoreRestSiblings: false },
+    ],
   },
   overrides: [
     {
