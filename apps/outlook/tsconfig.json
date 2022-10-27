@@ -1,0 +1,10 @@
+{
+  "extends": "tsconfig/vite-react.json",
+  "compilerOptions": {
+    "types": ["office-js"],
+    "outDir": "dist",
+    "typeRoots": ["node_modules/@types"]
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+}
