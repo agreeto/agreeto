@@ -4,30 +4,14 @@ import type {
   InferGetServerSidePropsType,
 } from "next";
 import Head from "next/head";
-import { trpc } from "../utils/trpc";
-import type { inferProcedureOutput } from "@trpc/server";
-import type { AppRouter } from "@acme/api";
 import { unstable_getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]";
 import { useSession } from "next-auth/react";
 
-const PostCard: React.FC<{
-  post: inferProcedureOutput<AppRouter["post"]["all"]>[number];
-}> = ({ post }) => {
-  return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold text-gray-800">{post.title}</h2>
-      <p className="text-gray-600">{post.content}</p>
-    </div>
-  );
-};
-let hi;
-//   ^ why isn't this an error with the eslint/recommended setting? (no-unused-vars)
-// vscode now correctly errors, but the lint-staged command not?
 const Home: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ session: sessionSSR }) => {
-  // console.log({ sessionSSR });
+  console.log({ sessionSSR });
   // const postQuery = trpc.post.all.useQuery();
   const session = useSession();
 
