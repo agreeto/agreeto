@@ -26,7 +26,7 @@ importers:
 
   apps/extension:
     specifiers:
-      '@acme/api': workspace:*
+      '@agreeto/api': workspace:*
       '@agreeto/tailwind-config': workspace:*
       '@agreeto/tsconfig': workspace:*
       '@fullcalendar/common': ^5.11.3
@@ -65,7 +65,7 @@ importers:
       typescript: 4.8.4
       zod: ^3.18.0
     dependencies:
-      '@acme/api': link:../../packages/api
+      '@agreeto/api': link:../../packages/api
       '@fullcalendar/common': 5.11.3
       '@fullcalendar/interaction': 5.11.3
       '@fullcalendar/react': 5.11.2_biqbaboplfbrettd7655fr4n2y
@@ -107,8 +107,8 @@ importers:
 
   apps/nextjs:
     specifiers:
-      '@acme/api': workspace:*
-      '@acme/db': workspace:*
+      '@agreeto/api': workspace:*
+      '@agreeto/db': workspace:*
       '@agreeto/tailwind-config': workspace:*
       '@agreeto/tsconfig': workspace:*
       '@next-auth/prisma-adapter': ^1.0.4
@@ -139,8 +139,8 @@ importers:
       typescript: ^4.8.4
       zod: ^3.18.0
     dependencies:
-      '@acme/api': link:../../packages/api
-      '@acme/db': link:../../packages/db
+      '@agreeto/api': link:../../packages/api
+      '@agreeto/db': link:../../packages/db
       '@next-auth/prisma-adapter': 1.0.4_next-auth@4.12.2
       '@tanstack/react-query': 4.8.0_ef5jwxihqo6n7gxfmzogljlgcm
       '@trpc/client': 10.0.0-proxy-beta.17_cpdrhv2jbc2hqu4rmlrkpw2faa
@@ -215,7 +215,7 @@ importers:
 
   packages/api:
     specifiers:
-      '@acme/db': workspace:*
+      '@agreeto/db': workspace:*
       '@agreeto/tsconfig': workspace:*
       '@trpc/client': 10.0.0-proxy-beta.17
       '@trpc/server': 10.0.0-proxy-beta.17
@@ -223,7 +223,7 @@ importers:
       typescript: ^4.8.4
       zod: ^3.18.0
     dependencies:
-      '@acme/db': link:../db
+      '@agreeto/db': link:../db
       '@trpc/client': 10.0.0-proxy-beta.17_cpdrhv2jbc2hqu4rmlrkpw2faa
       '@trpc/server': 10.0.0-proxy-beta.17
       superjson: 1.10.0

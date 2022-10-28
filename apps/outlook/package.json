@@ -1,5 +1,5 @@
 {
-  "name": "outlook",
+  "name": "@agreeto/outlook",
   "private": true,
   "version": "0.0.1",
   "scripts": {

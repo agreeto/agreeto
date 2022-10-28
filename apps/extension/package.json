@@ -1,5 +1,5 @@
 {
-  "name": "extension",
+  "name": "@agreeto/extension",
   "displayName": "Extension",
   "version": "0.0.0",
   "description": "A basic Plasmo extension.",
@@ -9,7 +9,7 @@
     "build": "plasmo build"
   },
   "dependencies": {
-    "@acme/api": "workspace:*",
+    "@agreeto/api": "workspace:*",
     "@fullcalendar/common": "^5.11.3",
     "@fullcalendar/interaction": "^5.11.3",
     "@fullcalendar/react": "^5.11.2",
