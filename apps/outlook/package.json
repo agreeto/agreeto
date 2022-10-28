@@ -1,0 +1,38 @@
+{
+  "name": "outlook",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "vite",
+    "preview": "vite",
+    "serve": "live-server ./dist --port=8082 --no-browser --https=./live-server.config.js",
+    "build:dev": "cp src/manifest.dev.xml public/manifest.xml && tsc && vite build --watch --mode development",
+    "build": "vite build",
+    "build:manifest": "sed \"s/localhost:8082/outlook-one.vercel.app/g\" src/manifest.dev.xml > public/manifest.xml",
+    "validate": "pnpm exec office-addin-manifest validate ./public/manifest.xml",
+    "debug": "pnpm exec office-addin-debugging start ./dist/manifest.xml"
+  },
+  "proxy": "http://localhost:3000",
+  "dependencies": {
+    "@microsoft/office-js": "^1.1.78",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.4.0"
+  },
+  "devDependencies": {
+    "@types/office-js": "^1.0.266",
+    "@types/react": "^18.0.15",
+    "@types/react-dom": "^18.0.6",
+    "@vitejs/plugin-react": "^2.0.0",
+    "eslint": "8.18.0",
+    "eslint-config-agreeto": "workspace:*",
+    "live-server": "^1.2.2",
+    "office-addin-debugging": "^4.4.0",
+    "office-addin-manifest": "^1.9.0",
+    "tailwind-config": "workspace:*",
+    "tsconfig": "workspace:*",
+    "typescript": "^4.6.4",
+    "vite": "^3.0.0",
+    "vite-plugin-mkcert": "^1.6.0"
+  }
+}
