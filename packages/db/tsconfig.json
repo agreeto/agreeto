@@ -1,5 +1,5 @@
 {
-  "extends": "tsconfig/node16.json",
+  "extends": "@agreeto/tsconfig/node16.json",
   "include": ["**/*.ts"],
   "exclude": ["node_modules"]
 }

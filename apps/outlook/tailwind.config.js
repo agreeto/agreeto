@@ -1,3 +1,3 @@
-const config = require("tailwind-config/tailwind.config.js");
+const config = require("@agreeto/tailwind-config");
 
 module.exports = config;
