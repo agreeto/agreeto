@@ -31,7 +31,7 @@
     "@types/react-dom": "^18.0.6",
     "@vitejs/plugin-react": "^2.0.0",
     "eslint": "8.18.0",
-    "eslint-config": "workspace:*",
+    "eslint-config-agreeto": "workspace:*",
     "live-server": "^1.2.2",
     "office-addin-debugging": "^4.4.0",
     "office-addin-manifest": "^1.9.0",
