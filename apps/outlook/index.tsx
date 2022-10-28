@@ -3,22 +3,13 @@
 import "tailwind-config";
 import React from "react";
 import ReactDOM from "react-dom/client";
-import Router from "./src/components/router";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "services";
-import { AxiosHelper } from "services/config/axios";
-import { API_URL } from "./src/utils/constants";
-
-// Initialize axios instance with the base api URL
-new AxiosHelper(API_URL, { type: "addin" });
+import Taskpane from "./src/pages/taskpane";
 
 if (Office !== undefined) {
   Office.onReady(() => {
     ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <React.StrictMode>
-        <QueryClientProvider client={queryClient} contextSharing={true}>
-          <Router />
-        </QueryClientProvider>
+        <Taskpane />
       </React.StrictMode>
     );
   });
