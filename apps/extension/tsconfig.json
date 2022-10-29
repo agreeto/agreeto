@@ -1,7 +1,12 @@
 {
   "extends": "plasmo/templates/tsconfig.base",
   "exclude": ["node_modules"],
-  "include": [".plasmo/**/*", "./**/*.ts", "./**/*.tsx", "next-auth.d.ts"],
+  "include": [
+    ".plasmo/**/*",
+    "./**/*.ts",
+    "./**/*.tsx",
+    "node_modules/@agreeto/auth/next-auth.d.ts"
+  ],
   "compilerOptions": {
     "paths": {
       "~*": ["./src/*"]

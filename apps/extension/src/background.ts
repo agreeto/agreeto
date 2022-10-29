@@ -1,10 +1,8 @@
 import { storage } from "~features/storage"
 import { ChromeStorage } from "~storage-schema"
-// @ts-expect-error: FIXME queryClient isn't export from trpc file
-import { queryClient } from "~trpc"
 
-// FIXME: eslint complains about no-undef -- requires global declaration at top of file maybe? (richard)
-// eslint-disable-next-line
+// import { trpc } from "~trpc"
+
 chrome.runtime.onMessageExternal.addListener(
   async (request, sender, sendResponse) => {
     console.log("INCOMING MESSAGE...", { sender }, { request })
@@ -15,17 +13,11 @@ chrome.runtime.onMessageExternal.addListener(
     // check that the sender's origin is our web app
     // TODO: make this typesafe with some such as
     console.assert(
-      // FIXME: include env var dep in turbo.json
-      // eslint-disable-next-line
       sender.url.includes(process.env.PLASMO_PUBLIC_WEB_URL!),
       `sender url not whitelisted | provided: ${
         sender.url
-        // FIXME: include env var dep in turbo.json
-        // eslint-disable-next-line
       } | checked against: ${process.env.PLASMO_PUBLIC_WEB_URL!}`
     )
-    // FIXME: include env var dep in turbo.json
-    // eslint-disable-next-line
     if (!sender.url.includes(process.env.PLASMO_PUBLIC_WEB_URL!)) return // don't allow this web page access
 
     // check if the request contains our expected property
@@ -67,14 +59,13 @@ chrome.runtime.onMessageExternal.addListener(
     return
   }
 )
-// FIXME: eslint complains about no-undef -- requires global declaration at top of file maybe? (richard)
-// eslint-disable-next-line
+
 chrome.storage.onChanged.addListener((changes) => {
   if (changes.accessToken) {
     // FIXME: Why am I using queryClient -- isn't useContext the correct way to invalidate?
-    queryClient.invalidateQueries([changes.accessToken])
+    // const utils = trpc.useContext()
+    // utils.changes.accesstoken.invalidate()
+    // queryClient.invalidateQueries([changes.accessToken])
     // TODO: Do I need to rerender the popup.tsx?
   }
 })
-
-export {}

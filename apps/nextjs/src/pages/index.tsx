@@ -1,9 +1,9 @@
 import type { NextPage } from "next";
-import Head from "next/head";
 import { useSession } from "next-auth/react";
+import Head from "next/head";
 
 const Home: NextPage = () => {
-  // FIXME: This isn't updated when I initiate the sign in from the extension?
+  // FIXME: This isn't updated when I initiate t/Applications/Visual Studio Code.app/Contents/Resources/app/out/vs/code/electron-sandbox/workbench/workbench.htmlhe sign in from the extension?
   // Maybe because the component renders for session.data?.user and the user addition has been buggy
   const session = useSession();
 

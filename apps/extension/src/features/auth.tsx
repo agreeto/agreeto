@@ -52,10 +52,7 @@ export const SignIn = () => {
         onClick={() => {
           window.open(
             `http://localhost:3000/api/auth/signin?${new URLSearchParams({
-              // FIXME: include env var dep in turbo.json
-              // eslint-disable-next-line
-              callbackUrl: `${process.env
-                .PLASMO_PUBLIC_WEB_URL!}/auth/extension`
+              callbackUrl: `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/extension`
             })}`
           )
         }}>
@@ -73,10 +70,7 @@ export const SignOut = () => {
         onClick={() => {
           window.open(
             `http://localhost:3000/api/auth/signin?${new URLSearchParams({
-              // FIXME: include env var dep in turbo.json
-              // eslint-disable-next-line
-              callbackUrl: `${process.env
-                .PLASMO_PUBLIC_WEB_URL!}/auth/extension`
+              callbackUrl: `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/extension`
             })}`
           )
         }}>

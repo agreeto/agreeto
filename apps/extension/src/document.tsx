@@ -34,6 +34,7 @@ const Document = () => {
   return (
     <Router
       location={location}
+      // @ts-expect-error - TODO: fix this?
       routes={getRoutes({ utils, accessToken: authentication.data })}
     />
   )

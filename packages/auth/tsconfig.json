@@ -1,4 +1,4 @@
 {
-  "extends": "@agreeto/tsconfig/node16",
-  "include": ["src", "index.ts", "transformer.ts", "next-auth.d.ts"]
+  "extends": "@agreeto/tsconfig/test",
+  "include": ["src", "index.ts", "next-auth.d.ts"]
 }

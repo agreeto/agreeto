@@ -1,7 +1,6 @@
 import { MinusCircleIcon } from "@heroicons/react/20/solid"
 import * as SeparatorPrimitive from "@radix-ui/react-separator"
 import type { FC, ReactNode } from "react"
-import type React from "react"
 
 import { Navbar } from "~features/navbar"
 
@@ -28,8 +27,6 @@ const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
           onClick={() => {
             window.open(
               `http://localhost:3000/api/auth/signin?${new URLSearchParams({
-                // FIXME: include env var dep in turbo.json
-                // eslint-disable-next-line
                 callbackUrl: `${process.env
                   .PLASMO_PUBLIC_WEB_URL!}/auth/extension`
               })}`
@@ -47,8 +44,6 @@ const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
           type="button"
           className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
           onClick={() => {
-            // FIXME: include env var dep in turbo.json
-            // eslint-disable-next-line
             window.open(`${process.env.PLASMO_PUBLIC_WEB_URL!}/auth/signout`)
           }}>
           Sign Out

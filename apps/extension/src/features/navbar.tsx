@@ -1,3 +1,5 @@
+// FIXME: Why is Next lint rules slipping in here?
+/* eslint-disable @next/next/no-img-element */
 export const Navbar = () => {
   return (
     <div className="flex flex-col flex-shrink pt-5 pb-4 overflow-y-auto bg-white border-r border-gray-200 divide-y">

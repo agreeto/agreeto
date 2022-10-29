@@ -1,13 +1,13 @@
-import { type inferAsyncReturnType } from "@trpc/server";
-import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { prisma } from "@agreeto/db";
 // import { getServerSession } from "@acme/auth";
 import { getToken, type JWTToken } from "@agreeto/auth";
+import { prisma, type User } from "@agreeto/db";
+import { type inferAsyncReturnType } from "@trpc/server";
+import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
 export type CreateContextOptions = {
   token: JWTToken | null;
   // session: Awaited<ReturnType<typeof getServerSession>>;
-  // user: Awaited<ReturnType<typeof prisma.user.findUnique>>;
+  user: User;
 };
 
 /** Use this helper for:
@@ -15,12 +15,12 @@ export type CreateContextOptions = {
  * - trpc's `createSSGHelpers` where we don't have req/res
  * @see https://beta.create.t3.gg/en/usage/trpc#-servertrpccontextts
  **/
-export const createContextInner = async ({ token }: CreateContextOptions) => {
+export const createContextInner = async (opts: CreateContextOptions) => {
   return {
     prisma,
-    token,
+    token: opts.token,
     // session,
-    // user,
+    user: opts.user,
   };
 };
 
@@ -34,7 +34,17 @@ export const createContext = async ({ req }: CreateNextContextOptions) => {
   console.log("|||||||||||||||||");
   console.dir({ token }, { depth: 2 });
   console.log("|||||||||||||||||");
-  return await createContextInner({ token });
+
+  // FIXME: grab a real user
+  const user = {
+    id: "1",
+    email: "a.b@c.com",
+    name: "A B",
+    emailVerified: new Date(),
+    image: "https://placekitten.com/200/300",
+  };
+
+  return await createContextInner({ token, user });
 };
 
 /**

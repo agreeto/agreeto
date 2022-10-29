@@ -15,7 +15,7 @@ export const serverSchema = z.object({
   NEXTAUTH_SECRET: z.string(),
   // provided by vercel (therefore shouldn't throw during schema parsing)
   VERCEL_URL: z.string().optional(),
-  PORT: z.number().optional(),
+  PORT: z.string().transform((str) => parseInt(str, 10)),
 });
 
 /**

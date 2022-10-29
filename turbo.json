@@ -1,24 +1,32 @@
 {
   "pipeline": {
+    "db-generate": {
+      "cache": true
+    },
+    "db-push": {
+      "cache": false
+    },
+    "dev": {
+      "dependsOn": ["^db-generate"],
+      "cache": false
+    },
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "^db-generate"],
       "outputs": [".next/**", ".expo/**", ".plasmo/**"]
     },
     "lint": {
       "outputs": [],
       "cache": false
-    },
-    "dev": {
-      "cache": false
-    },
-    "postinstall": {
-      "cache": false
     }
   },
   "globalEnv": [
     "NODE_ENV",
+    "PORT",
+    "VERCEL_URL",
     "PLASMO_PUBLIC_WEB_URL",
+    "NEXT_PUBLIC_EXTENSION_ID",
     "SKIP_ENV_VALIDATION",
-    "NEXTAUTH_SECRET"
+    "NEXTAUTH_SECRET",
+    "DATABASE_URL"
   ]
 }

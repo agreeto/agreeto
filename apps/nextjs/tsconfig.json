@@ -1,12 +1,11 @@
 {
   "extends": "@agreeto/tsconfig/nextjs.json",
   "include": [
-    "next-auth.d.ts",
     "next-env.d.ts",
+    "node_modules/@agreeto/auth/next-auth.d.ts",
     "**/*.ts",
     "**/*.tsx",
     "**/*.cjs",
     "**/*.mjs"
-  ],
-  "exclude": ["node_modules"]
+  ]
 }
