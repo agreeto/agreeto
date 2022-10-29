@@ -52,7 +52,6 @@ importers:
       autoprefixer: ^10.4.7
       date-fns: ^2.29.3
       duration: link:dayjs/plugin/duration
-      next-auth: ^4.14.0
       plasmo: 0.55.0
       postcss: ^8.4.14
       prettier: 2.7.1
@@ -84,7 +83,6 @@ importers:
       '@trpc/server': 10.0.0-rc.1
       date-fns: 2.29.3
       duration: link:dayjs/plugin/duration
-      next-auth: 4.15.0_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-icons: 4.6.0_react@18.2.0
@@ -8975,31 +8973,6 @@ packages:
       cookie: 0.5.0
       jose: 4.10.0
       next: 12.3.1_biqbaboplfbrettd7655fr4n2y
-      oauth: 0.9.15
-      openid-client: 5.1.10
-      preact: 10.11.0
-      preact-render-to-string: 5.2.4_preact@10.11.0
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
-      uuid: 8.3.2
-    dev: false
-
-  /next-auth/4.15.0_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-IasNzGLM2VlmyioDdZaRwBBBm8b5xo+zbbqVWHFh0bY6iQUZ3vuudrsdHNdxkXV3LSHdKNaoWEpYr4BydB7mCw==}
-    engines: {node: ^12.19.0 || ^14.15.0 || ^16.13.0}
-    peerDependencies:
-      next: ^12.2.5
-      nodemailer: ^6.6.5
-      react: ^17.0.2 || ^18
-      react-dom: ^17.0.2 || ^18
-    peerDependenciesMeta:
-      nodemailer:
-        optional: true
-    dependencies:
-      '@babel/runtime': 7.19.0
-      '@panva/hkdf': 1.0.2
-      cookie: 0.5.0
-      jose: 4.10.0
       oauth: 0.9.15
       openid-client: 5.1.10
       preact: 10.11.0
