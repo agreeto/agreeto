@@ -1,4 +1,4 @@
-import type { AppRouter } from "@acme/api"
+import type { AppRouter } from "@agreeto/api"
 import {
   CreateTRPCClientOptions,
   createTRPCReact,

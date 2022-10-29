@@ -2,7 +2,7 @@
 
 import type { NextApiRequest, NextApiResponse } from "next";
 import { createNextApiHandler } from "@trpc/server/adapters/next";
-import { appRouter, createContext } from "@acme/api";
+import { appRouter, createContext } from "@agreeto/api";
 import NextCors from "nextjs-cors";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {

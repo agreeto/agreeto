@@ -5,7 +5,7 @@ const _clientEnv = clientSchema.safeParse(clientEnv);
 
 export const formatErrors = (
   /** @type {import('zod').ZodFormattedError<Map<string,string>,string>} */
-  errors,
+  errors
 ) =>
   Object.entries(errors)
     .map(([name, value]) => {
@@ -14,10 +14,10 @@ export const formatErrors = (
     })
     .filter(Boolean);
 
-if (!_clientEnv.success) {
+if (_clientEnv.success === false) {
   console.error(
     "❌ Invalid environment variables:\n",
-    ...formatErrors(_clientEnv.error.format()),
+    ...formatErrors(_clientEnv.error.format())
   );
   throw new Error("Invalid environment variables");
 }

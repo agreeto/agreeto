@@ -2,7 +2,7 @@
 import * as trpc from "@trpc/server";
 // import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import * as trpcNext from "@trpc/server/adapters/next";
-import { prisma } from "@acme/db";
+import { prisma } from "@agreeto/db";
 // import { getServerSession } from "@acme/auth";
 import { getToken } from "next-auth/jwt";
 

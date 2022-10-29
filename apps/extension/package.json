@@ -1,5 +1,5 @@
 {
-  "name": "extension",
+  "name": "@agreeto/extension",
   "displayName": "Extension",
   "version": "0.0.0",
   "description": "A basic Plasmo extension.",
@@ -9,8 +9,8 @@
     "build": "plasmo build"
   },
   "dependencies": {
-    "@acme/api": "workspace:*",
-    "@acme/auth": "workspace:*",
+    "@agreeto/api": "workspace:*",
+    "@agreeto/auth": "workspace:*",
     "@fullcalendar/common": "^5.11.3",
     "@fullcalendar/interaction": "^5.11.3",
     "@fullcalendar/react": "^5.11.2",
@@ -47,9 +47,11 @@
     "plasmo": "0.55.0",
     "postcss": "^8.4.14",
     "prettier": "2.7.1",
+    "@agreeto/tailwind-config": "workspace:*",
     "tailwindcss": "^3.1.8",
     "ts-to-zod": "^1.13.1",
-    "typescript": "4.8.4"
+    "@agreeto/tsconfig": "workspace:*",
+    "typescript": "^4.8.4"
   },
   "manifest": {
     "host_permissions": [

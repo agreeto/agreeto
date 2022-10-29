@@ -1,4 +1,9 @@
 {
-  "extends": "../../tsconfig.json",
-  "include": ["src", "index.ts", "transformer.ts"]
+  "extends": "@agreeto/tsconfig/node16.json",
+  "compilerOptions": {
+    "declaration": false,
+    "declarationMap": false
+  },
+  "include": ["src", "**/*.ts", "transformer.ts"],
+  "exclude": ["node_modules"]
 }
