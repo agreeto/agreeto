@@ -14,5 +14,6 @@
     "postinstall": {
       "cache": false
     }
-  }
+  },
+  "globalEnv": ["NODE_ENV", "PLASMO_PUBLIC_WEB_URL"]
 }
