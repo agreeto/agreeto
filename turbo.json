@@ -26,6 +26,7 @@
   "globalEnv": [
     "NODE_ENV",
     "PORT",
+    "VERCEL",
     "VERCEL_URL",
     "PLASMO_PUBLIC_WEB_URL",
     "NEXT_PUBLIC_EXTENSION_ID",

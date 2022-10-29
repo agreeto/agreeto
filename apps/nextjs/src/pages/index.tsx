@@ -1,11 +1,9 @@
 import type { NextPage } from "next";
-import { useSession } from "next-auth/react";
 import Head from "next/head";
+import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
-  // FIXME: This isn't updated when I initiate t/Applications/Visual Studio Code.app/Contents/Resources/app/out/vs/code/electron-sandbox/workbench/workbench.htmlhe sign in from the extension?
-  // Maybe because the component renders for session.data?.user and the user addition has been buggy
-  const session = useSession();
+  const currentUser = trpc.user.current.useQuery();
 
   return (
     <>
@@ -16,9 +14,9 @@ const Home: NextPage = () => {
       </Head>
       <main className="container flex flex-col items-center justify-center min-h-screen p-4 mx-auto">
         {/* AUTHENTICATION STATUS */}
-        {session.data?.user ? (
+        {currentUser.data ? (
           <>
-            <h4 className="text-xl">Signed in as {session.data.user.email}</h4>
+            <h4 className="text-xl">Signed in as {currentUser.data.email}</h4>
             <p>You can log out via the extension</p>
           </>
         ) : (

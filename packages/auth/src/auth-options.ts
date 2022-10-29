@@ -3,15 +3,17 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import AzureAdProvider from "next-auth/providers/azure-ad";
+import { refreshAccessToken } from "./refresh-access-token";
 
-type GetAuthOptions = (opts: {
+export type GetAuthOptionsParams = {
   secret: string;
   googleClientId: string;
   googleClientSecret: string;
   azureAdClientId: string;
   azureAdClientSecret: string;
   azureAdTenantId: string;
-}) => NextAuthOptions;
+};
+type GetAuthOptions = (params: GetAuthOptionsParams) => NextAuthOptions;
 
 export const getAuthOptions: GetAuthOptions = (opts) => ({
   adapter: PrismaAdapter(prisma),
@@ -29,12 +31,42 @@ export const getAuthOptions: GetAuthOptions = (opts) => ({
   secret: opts.secret,
   session: { strategy: "jwt" },
   callbacks: {
-    session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
+    // JWT is called first, whatever we return is passed to the session callback
+    async jwt({ token, user, account }) {
+      // Initial sign in
+      if (account && user) {
+        return {
+          accessToken: account.access_token,
+          // TODO: Look into if Azure has `expires_in`,
+          // if so we can augment the type to always be defined
+          accessTokenExpires: Date.now() + (account.expires_at ?? 0) * 1_000,
+          refreshToken: account.refresh_token,
+          user,
+        };
       }
 
-      return session; // The return type will match the one returned in `useSession()`
+      // Check if token is still active
+      if (
+        token &&
+        token.accessTokenExpires &&
+        token.accessTokenExpires >= Date.now()
+      ) {
+        return token;
+      }
+
+      // Refresh token
+      return refreshAccessToken(token, opts);
+    },
+    // session callback is called after the JWT callback, and it's return value is passed to the client
+    session({ token, session, user }) {
+      return {
+        ...session,
+        user: {
+          ...user,
+          //id: user.id,
+        },
+        accessToken: token.accessToken,
+      };
     },
   },
 });

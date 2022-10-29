@@ -17,7 +17,7 @@ export const getServerSession = async (
 ) => {
   const authOptions = getAuthOptions({
     // FIXME: How do we get the env's here? Do we even need them, or are empty strings ok?
-    secret: "",
+    secret: process.env.NEXTAUTH_SECRET ?? "supersecret",
     googleClientId: "",
     googleClientSecret: "",
     azureAdClientId: "",

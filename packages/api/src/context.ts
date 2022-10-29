@@ -1,13 +1,18 @@
 import type { inferAsyncReturnType } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
-// import { getServerSession } from "@acme/auth";
-import { getToken, type JWTToken } from "@agreeto/auth";
-import { prisma, type User } from "@agreeto/db";
+import {
+  getToken,
+  getServerSession,
+  type JWTToken,
+  type Session,
+  type User,
+} from "@agreeto/auth";
+import { prisma } from "@agreeto/db";
 
 export type CreateContextOptions = {
   token: JWTToken | null;
-  // session: Awaited<ReturnType<typeof getServerSession>>;
-  user: User;
+  session: Session | null;
+  user: User | undefined;
 };
 
 /** Use this helper for:
@@ -28,23 +33,18 @@ export const createContextInner = async (opts: CreateContextOptions) => {
  * This is the actual context you'll use in your router
  * @link https://trpc.io/docs/context
  **/
-export const createContext = async ({ req }: CreateNextContextOptions) => {
-  console.log("secret: ", process.env.NEXTAUTH_SECRET);
+export const createContext = async ({ req, res }: CreateNextContextOptions) => {
+  console.log("secret: ", process.env.NEXTAUTH_SECRET, "\n");
+
   const token = await getToken({ req });
-  console.log("|||||||||||||||||");
   console.dir({ token }, { depth: 2 });
-  console.log("|||||||||||||||||");
+  console.log("\n");
 
-  // FIXME: grab a real user
-  const user = {
-    id: "1",
-    email: "a.b@c.com",
-    name: "A B",
-    emailVerified: new Date(),
-    image: "https://placekitten.com/200/300",
-  };
+  const session = await getServerSession({ req, res });
+  console.dir({ session }, { depth: 2 });
+  console.log("\n");
 
-  return await createContextInner({ token, user });
+  return await createContextInner({ token, session, user: token?.user });
 };
 
 /**

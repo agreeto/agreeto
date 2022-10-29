@@ -13,6 +13,10 @@ export const serverSchema = z.object({
   AZURE_AD_CLIENT_SECRET: z.string(),
   AZURE_AD_TENANT_ID: z.string(),
   NEXTAUTH_SECRET: z.string(),
+  NEXTAUTH_URL: z.preprocess(
+    (str) => process.env.VERCEL_URL ?? str,
+    process.env.VERCEL ? z.string() : z.string().url()
+  ),
   // provided by vercel (therefore shouldn't throw during schema parsing)
   VERCEL_URL: z.string().optional(),
   PORT: z.string().transform((str) => parseInt(str, 10)),
