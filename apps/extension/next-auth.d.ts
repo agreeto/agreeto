@@ -1,12 +1,10 @@
-import { DefaultSession } from "next-auth"
+import type { Session as AuthSession } from "@acme/auth"
 
 declare module "next-auth" {
   /**
    * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
    */
-  interface Session {
-    user?: {
-      id?: string
-    } & DefaultSession["user"]
-  }
+  // FIXME: no-unused-var linter complains about session not being used? Interestingly, it doesn't error in VSCode for nextjs
+  // eslint-disable-next-line
+  type Session = AuthSession
 }

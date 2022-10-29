@@ -1,27 +1,18 @@
-import { CalendarIcon, Cog6ToothIcon } from "@heroicons/react/24/outline"
-
-const navigation = [
-  { name: "Calendar", icon: CalendarIcon, href: "#", current: true },
-  { name: "Settings", icon: Cog6ToothIcon, href: "#", current: false }
-]
-const classNames = (...classes: string[]) => {
-  return classes.filter(Boolean).join(" ")
-}
 export const Navbar = () => {
   return (
-    <div className="flex flex-shrink flex-col overflow-y-auto border-r border-gray-200 bg-white pt-5 pb-4  divide-y">
-      <div className="flex flex-shrink-0 items-center space-y-5 px-4">
+    <div className="flex flex-col flex-shrink pt-5 pb-4 overflow-y-auto bg-white border-r border-gray-200 divide-y">
+      <div className="flex items-center flex-shrink-0 px-4 space-y-5">
         <img
-          className="h-8 w-auto"
+          className="w-auto h-8"
           src="https://tailwindui.com/img/logos/mark.svg?color=blue&shade=600"
           alt="Your Company"
         />
       </div>
-      <div className="mt-5 flex flex-grow flex-col">
+      <div className="flex flex-col flex-grow mt-5">
         <nav
-          className="flex-1 space-y-1 bg-white flex flex-col justify-evenly"
+          className="flex flex-col flex-1 space-y-1 bg-white justify-evenly"
           aria-label="Sidebar">
-          {navigation.map((item) => (
+          {/* {navigation.map((item) => (
             <a
               key={item.name}
               href={item.href}
@@ -41,7 +32,7 @@ export const Navbar = () => {
                 aria-hidden="true"
               />
             </a>
-          ))}
+          ))} */}
         </nav>
       </div>
     </div>

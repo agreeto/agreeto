@@ -1,5 +1,4 @@
 {
-  "extends": "tsconfig/node16.json",
-  "include": ["**/*.ts"],
-  "exclude": ["node_modules"]
+  "extends": "../../tsconfig.json",
+  "include": ["index.ts"]
 }

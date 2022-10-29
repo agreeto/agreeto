@@ -7,23 +7,18 @@ import {
   LinkIcon
 } from "@heroicons/react/20/solid"
 import add from "date-fns/add"
-import { ReactNode, useState } from "react"
-import { CgCalendarNext } from "react-icons/cg"
+import { FC, useState } from "react"
+// import { CgCalendarNext } from "react-icons/cg"
 import { z } from "zod"
 
-import FullCalendar, { DateInput, EventInput } from "@fullcalendar/react"
+import FullCalendar, { EventInput } from "@fullcalendar/react"
 
 // needed for dateClick
 import interactionPlugin from "@fullcalendar/interaction"
 // needed for weekly cal-view
 import timeGridWeek from "@fullcalendar/timegrid"
 
-import { trpc } from "~trpc"
-
-export const Calendar: React.FC<{ children?: ReactNode }> = ({ children }) => {
-  const postQuery = trpc.post.all.useQuery()
-  console.log(">>> POST_QUERY", postQuery.data)
-
+export const Calendar: FC = () => {
   const [createdSlots, setCreatedSlots] = useState<EventInput[]>()
   // state for clicked events goes here
   return (
@@ -39,7 +34,6 @@ export const Calendar: React.FC<{ children?: ReactNode }> = ({ children }) => {
           weekends={false}
           events={createdSlots}
           dateClick={(event) => {
-            console.log("date clicked", event.date)
             setCreatedSlots([
               ...(createdSlots !== undefined ? createdSlots : []),
               {
@@ -215,8 +209,6 @@ const Toggle = ({ slots }: { slots: EventInput[] | undefined }) => {
       <Switch
         checked={enabled}
         onChange={() => {
-          console.log("ENABLED????", enabled)
-          console.log(window)
           if (!enabled) {
             window.open(
               `https://calendar.google.com/calendar/u/0/r/appointment?${new URLSearchParams(

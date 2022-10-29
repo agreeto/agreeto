@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@acme/api": "workspace:*",
+    "@acme/auth": "workspace:*",
     "@fullcalendar/common": "^5.11.3",
     "@fullcalendar/interaction": "^5.11.3",
     "@fullcalendar/react": "^5.11.2",
@@ -18,18 +19,20 @@
     "@heroicons/react": "^2.0.11",
     "@plasmohq/storage": "^0.12.1",
     "@radix-ui/react-dialog": "^1.0.0",
+    "@radix-ui/react-separator": "^1.0.1",
+    "@tanstack/react-location": "^3.7.4",
     "@tanstack/react-query": "^4.7.2",
     "@trpc/client": "10.0.0-proxy-beta.17",
     "@trpc/react": "10.0.0-proxy-beta.17",
     "@trpc/server": "10.0.0-proxy-beta.17",
     "date-fns": "^2.29.3",
     "duration": "link:dayjs/plugin/duration",
-    "next-auth": "^4.12.2",
+    "next-auth": "^4.14.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.6.0",
-    "superjson": "^1.9.1",
     "tozod": "^3.0.0",
+    "trpc-chrome": "^0.1.0",
     "zod": "^3.18.0"
   },
   "devDependencies": {
@@ -44,10 +47,8 @@
     "plasmo": "0.55.0",
     "postcss": "^8.4.14",
     "prettier": "2.7.1",
-    "tailwind-config": "workspace:*",
     "tailwindcss": "^3.1.8",
     "ts-to-zod": "^1.13.1",
-    "tsconfig": "workspace:*",
     "typescript": "4.8.4"
   },
   "manifest": {
