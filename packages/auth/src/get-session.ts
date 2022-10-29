@@ -5,15 +5,7 @@ import type {
 } from "next";
 import { unstable_getServerSession } from "next-auth";
 
-import { authOptions } from "./auth-options";
-import type { DefaultSession, TokenSet } from "next-auth";
-
-export interface AuthSession {
-  user: {
-    id: string;
-  } & DefaultSession["user"];
-  accessToken: TokenSet["access_token"];
-}
+import { getAuthOptions } from "./auth-options";
 
 export const getServerSession = async (
   ctx:
@@ -23,5 +15,14 @@ export const getServerSession = async (
       }
     | { req: NextApiRequest; res: NextApiResponse }
 ) => {
+  const authOptions = getAuthOptions({
+    // FIXME: How do we get the env's here? Do we even need them, or are empty strings ok?
+    secret: "",
+    googleClientId: "",
+    googleClientSecret: "",
+    azureAdClientId: "",
+    azureAdClientSecret: "",
+    azureAdTenantId: "",
+  });
   return await unstable_getServerSession(ctx.req, ctx.res, authOptions);
 };

@@ -65,7 +65,7 @@ importers:
       tozod: ^3.0.0
       trpc-chrome: ^0.1.0
       ts-to-zod: ^1.13.1
-      typescript: 4.8.4
+      typescript: ^4.8.4
       zod: ^3.18.0
     dependencies:
       '@agreeto/api': link:../../packages/api
@@ -224,7 +224,6 @@ importers:
       '@agreeto/tsconfig': workspace:*
       '@trpc/client': 10.0.0-proxy-beta.17
       '@trpc/server': 10.0.0-proxy-beta.17
-      next-auth: ^4.12.2
       superjson: ^1.9.1
       typescript: ^4.8.4
       zod: ^3.18.0
@@ -233,7 +232,6 @@ importers:
       '@agreeto/db': link:../db
       '@trpc/client': 10.0.0-proxy-beta.17_cpdrhv2jbc2hqu4rmlrkpw2faa
       '@trpc/server': 10.0.0-proxy-beta.17
-      next-auth: 4.12.2
       superjson: 1.10.0
       zod: 3.19.1
     devDependencies:
@@ -243,12 +241,13 @@ importers:
   packages/auth:
     specifiers:
       '@agreeto/db': '*'
+      '@agreeto/tsconfig': workspace:*
       '@next-auth/prisma-adapter': ^1.0.5
       next: ^12.3.1
-      next-auth: ^4.14.0
+      next-auth: ^4.15.0
       react: 18.1.0
       react-dom: 18.1.0
-      typescript: ^4.8.3
+      typescript: ^4.8.4
     dependencies:
       '@agreeto/db': link:../db
       '@next-auth/prisma-adapter': 1.0.5_next-auth@4.15.0
@@ -257,6 +256,7 @@ importers:
       react: 18.1.0
       react-dom: 18.1.0_react@18.1.0
     devDependencies:
+      '@agreeto/tsconfig': link:../config/tsconfig
       typescript: 4.8.4
 
   packages/config/eslint:
@@ -9071,29 +9071,6 @@ packages:
   /neverthrow/3.2.0:
     resolution: {integrity: sha512-AINA32QbYO83L+3CBI6I5lH4LpBSlLwWteJ+uI25s4AQy6g/xz3RZuedmuNo91lLw2rY+AbPEPQdxd7mg1rXoQ==}
     dev: true
-
-  /next-auth/4.12.2:
-    resolution: {integrity: sha512-B25iFUIKYa2pRMWRFPIQWv84WJydqIsv6EbriNuzqNSZnxnlmpsrmJrTeMMLf+9a3qf9FG8enxDmDntmwnBkDQ==}
-    engines: {node: ^12.19.0 || ^14.15.0 || ^16.13.0}
-    peerDependencies:
-      next: ^12.2.5
-      nodemailer: ^6.6.5
-      react: ^17.0.2 || ^18
-      react-dom: ^17.0.2 || ^18
-    peerDependenciesMeta:
-      nodemailer:
-        optional: true
-    dependencies:
-      '@babel/runtime': 7.19.0
-      '@panva/hkdf': 1.0.2
-      cookie: 0.5.0
-      jose: 4.10.0
-      oauth: 0.9.15
-      openid-client: 5.1.10
-      preact: 10.11.0
-      preact-render-to-string: 5.2.4_preact@10.11.0
-      uuid: 8.3.2
-    dev: false
 
   /next-auth/4.15.0_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-IasNzGLM2VlmyioDdZaRwBBBm8b5xo+zbbqVWHFh0bY6iQUZ3vuudrsdHNdxkXV3LSHdKNaoWEpYr4BydB7mCw==}

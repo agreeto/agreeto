@@ -1,29 +1,21 @@
-// src/server/router/context.ts
-import * as trpc from "@trpc/server";
-// import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
-import * as trpcNext from "@trpc/server/adapters/next";
+import { type inferAsyncReturnType } from "@trpc/server";
+import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { prisma } from "@agreeto/db";
 // import { getServerSession } from "@acme/auth";
-import { getToken } from "next-auth/jwt";
+import { getToken, type JWTToken } from "@agreeto/auth";
 
-/**
- * Replace this with an object if you want to pass things to createContextInner
- */
-export type CreateContextOptions = Record<string, never>;
-
-/** Use this helper for:
- *  - testing, where we dont have to Mock Next.js' req/res
- *  - trpc's `createSSGHelpers` where we don't have req/res
- */
-export const createContextInner = async ({
-  token,
-}: // session,
-// user,
-{
+export type CreateContextOptions = {
+  token: JWTToken | null;
   // session: Awaited<ReturnType<typeof getServerSession>>;
   // user: Awaited<ReturnType<typeof prisma.user.findUnique>>;
-  token: Awaited<ReturnType<typeof getToken>>;
-}) => {
+};
+
+/** Use this helper for:
+ * - testing, so we dont have to mock Next.js' req/res
+ * - trpc's `createSSGHelpers` where we don't have req/res
+ * @see https://beta.create.t3.gg/en/usage/trpc#-servertrpccontextts
+ **/
+export const createContextInner = async ({ token }: CreateContextOptions) => {
   return {
     prisma,
     token,
@@ -36,21 +28,12 @@ export const createContextInner = async ({
  * This is the actual context you'll use in your router
  * @link https://trpc.io/docs/context
  **/
-
-export const createContext = async ({
-  req,
-}: trpcNext.CreateNextContextOptions) => {
-  // FIXME: include env var dep in turbo.json
-  // eslint-disable-next-line
+export const createContext = async ({ req }: CreateNextContextOptions) => {
   console.log("secret: ", process.env.NEXTAUTH_SECRET);
-  // FIXME: getToken currently returns `null`, currently unsure why (richard)
-  // FIXME: include env var dep in turbo.json
-  // eslint-disable-next-line
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const token = await getToken({ req });
   console.log("|||||||||||||||||");
   console.dir({ token }, { depth: 2 });
   console.log("|||||||||||||||||");
-
   return await createContextInner({ token });
 };
 
@@ -83,4 +66,4 @@ export const createContext = async ({
 //   return user;
 // }
 
-export type Context = trpc.inferAsyncReturnType<typeof createContext>;
+export type Context = inferAsyncReturnType<typeof createContext>;

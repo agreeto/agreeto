@@ -9,7 +9,6 @@
     "@agreeto/db": "workspace:*",
     "@trpc/client": "10.0.0-proxy-beta.17",
     "@trpc/server": "10.0.0-proxy-beta.17",
-    "next-auth": "^4.12.2",
     "superjson": "^1.9.1",
     "zod": "^3.18.0"
   },

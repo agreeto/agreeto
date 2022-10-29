@@ -15,5 +15,10 @@
       "cache": false
     }
   },
-  "globalEnv": ["NODE_ENV", "PLASMO_PUBLIC_WEB_URL", "SKIP_ENV_VALIDATION"]
+  "globalEnv": [
+    "NODE_ENV",
+    "PLASMO_PUBLIC_WEB_URL",
+    "SKIP_ENV_VALIDATION",
+    "NEXTAUTH_SECRET"
+  ]
 }

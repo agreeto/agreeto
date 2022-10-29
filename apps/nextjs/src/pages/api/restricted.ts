@@ -2,7 +2,7 @@
 
 import { NextApiRequest, NextApiResponse } from "next";
 
-import { getServerSession } from "@acme/auth";
+import { getServerSession } from "@agreeto/auth";
 
 const restricted = async (req: NextApiRequest, res: NextApiResponse) => {
   const session = await getServerSession({ req, res });

@@ -1,10 +1,3 @@
-import type { Session as AuthSession } from "@acme/auth"
-
-declare module "next-auth" {
-  /**
-   * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
-   */
-  // FIXME: no-unused-var linter complains about session not being used? Interestingly, it doesn't error in VSCode for nextjs
-  // eslint-disable-next-line
-  type Session = AuthSession
-}
+// FIXME: This import should probably be exposed publically
+// from the auth package, so we don't import it from node_modules
+/// <reference types="node_modules/@agreeto/auth/next-auth.d.ts" />

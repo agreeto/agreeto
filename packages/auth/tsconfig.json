@@ -1,4 +1,4 @@
 {
-  "extends": "../../tsconfig.json",
-  "include": ["src", "index.ts", "transformer.ts"]
+  "extends": "@agreeto/tsconfig/node16",
+  "include": ["src", "index.ts", "transformer.ts", "next-auth.d.ts"]
 }
