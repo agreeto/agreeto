@@ -5,11 +5,14 @@
       "outputs": [".next/**", ".expo/**", ".plasmo/**"]
     },
     "lint": {
-      "outputs": []
+      "outputs": [],
+      "cache": false
     },
     "dev": {
       "cache": false
     },
-    "postinstall": {}
+    "postinstall": {
+      "cache": false
+    }
   }
 }
