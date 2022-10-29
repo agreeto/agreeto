@@ -1,7 +1,5 @@
-import { Outlet } from "@tanstack/react-location"
+import { useEffect } from "react"
 import { z } from "zod"
-
-import { useStorage } from "@plasmohq/storage/hook"
 
 import { storage } from "./storage"
 
@@ -33,48 +31,114 @@ export const signOut = async () => {
   window.open(`http://localhost:3000/auth/signout`)
 }
 
-export const SignIn = () => {
-  // Provide authentication to router
-  const [accessTokenValue] = useStorage({
-    key: "accessToken",
-    isSecret: true
-  })
-  const authentication = AccessToken.safeParse(accessTokenValue)
+// PROVIDER
+// const SessionProviderExtension = ({children}) => {
+//   // TODO: implement useBroadcast hook that returns the instance of new BroadcastChannel()
+//   const authChannel = useBroadcastChannel("authChannel")
+//   // this useEffect makes sure to log out the extension element even if it was initiated from another tab
+//   useEffect(() => {
+//     authChannel.onmessage = (e) => {
+//       if (e.data.action === "logout") {
+//         signOut()
+//       }
+//     }
+//   }, [])
+// return children
+// }
 
-  if (authentication.success) {
-    return <Outlet />
-  }
+// HOOKS
+// TODO: write useSession hook w/:
+// const useSession = () => {
+//   const [sessionValue, setSession] = useStorage("session")
+//   const session = ChromeStorage.session.parse(sessionValue)
+//   return { ...session }
+// }
+
+// export const useAccessTokenExtension = (
+//   options?: QueryOptions<z.infer<typeof AccessTokenSchema>>
+// ) => {
+//   return useQuery(
+//     // TODO: remove magic string
+//     ["accessToken"],
+//     async () => {
+//       // TODO: remove magic string
+//       const storageUnsafe = await chrome.storage.sync.get("accessToken")
+//       return AccessTokenSchema.parse(storageUnsafe)
+//     },
+//     options
+//   )
+// }
+
+// COMPONENTS
+// const authChannel = new BroadcastChannel("auth")
+// const sessionStatus = atom<Omit<SessionContextValue["status"], "loading">>(0)
+
+// export const AuthButton: React.FC<{session: Session}> = () => {
+//   const [_,setSession] = useStorage<Session | undefined>("session")
+
+//   const onLogout = (): void => {
+//     setSession(
+//       (session) => undefined
+//     )
+//   }
+
+//   // this useEffect makes sure to log out the extension element even if it was initiated from another tab
+//   // useEffect(() => {
+//   //   authChannel.onmessage = (e) => {
+//   //     if (e.data.action === "logout") {
+//   //      onLogout()
+//   //     }
+//   //   }
+//   // }, [])
+
+//   if (accessToken?.data) {
+//     return (
+//       <>
+//         Signed in as {JSON.stringify(accessToken.data)} <br />
+//         <button
+//           onClick={() => {
+//             // log the user out
+//             onLogout()
+//             // broadcast the logout to all other open tabs
+//             // authChannel.postMessage({
+//             //   action: "logout",
+//             //   accessToken: accessToken.data
+//             // })
+//           }}>
+//           Sign out
+//         </button>
+//       </>
+//     )
+//   }
+//   return (
+// <>
+//   Not signed in <br />
+//   <button
+//     className="border border-blue-500 hover:ring hover:ring-yellow-500 bg-blue-500 text-white"
+//     onClick={() => {
+//       window.open(
+//         `http://localhost:3000/api/auth/signin?${new URLSearchParams({
+//           callbackUrl: `${process.env
+//             .PLASMO_PUBLIC_WEB_URL!}/auth/extension`
+//         })}`
+//       )
+//     }}>
+//     Sign in
+//   </button>
+// </>
+//   )
+// }
+
+export const SignIn = () => {
   return (
+    // max width & height of popup as per https://stackoverflow.com/a/8983678/5608461
     <>
       Not signed in <br />
       <button
-        className="text-white bg-blue-500 border border-blue-500 hover:ring hover:ring-yellow-500"
+        className="border border-blue-500 hover:ring hover:ring-yellow-500 bg-blue-500 text-white"
         onClick={() => {
           window.open(
             `http://localhost:3000/api/auth/signin?${new URLSearchParams({
-              // FIXME: include env var dep in turbo.json
-              // eslint-disable-next-line
-              callbackUrl: `${process.env
-                .PLASMO_PUBLIC_WEB_URL!}/auth/extension`
-            })}`
-          )
-        }}>
-        Sign in
-      </button>
-    </>
-  )
-}
-export const SignOut = () => {
-  return (
-    <>
-      Not signed in <br />
-      <button
-        className="text-white bg-blue-500 border border-blue-500 hover:ring hover:ring-yellow-500"
-        onClick={() => {
-          window.open(
-            `http://localhost:3000/api/auth/signin?${new URLSearchParams({
-              // FIXME: include env var dep in turbo.json
-              // eslint-disable-next-line
               callbackUrl: `${process.env
                 .PLASMO_PUBLIC_WEB_URL!}/auth/extension`
             })}`

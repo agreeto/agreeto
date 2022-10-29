@@ -3,19 +3,20 @@ import {
   InferGetServerSidePropsType,
   NextPage,
 } from "next";
-import { getToken } from "next-auth/jwt";
-
+import { unstable_getServerSession } from "next-auth";
+import { useSession } from "next-auth/react";
 // Router can by used in useEffect only (else useRouter instead) - see: https://github.com/vercel/next.js/issues/18127#issuecomment-988959843
 import Router from "next/router.js";
 import { useEffect, useState } from "react";
 import { env as clientEnv } from "../../env/client.mjs";
+import { authOptions } from "../api/auth/[...nextauth]";
 
 const Extension: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({ accessToken }) => {
+> = () => {
   const [successExtension, setSuccessExtension] = useState(false);
   const [isLoadingExtension, setIsLoadingExtension] = useState(false);
-  // const session = useSession();
+  const session = useSession();
 
   /**
    * This effect does 3 thigns:
@@ -24,15 +25,13 @@ const Extension: NextPage<
    * 3. upon completion of extension messasging, redirect to success/error
    */
   useEffect(() => {
-    // if (session.status !== "authenticated") return;
-    if (!accessToken) return;
+    if (session.status !== "authenticated") return;
     setIsLoadingExtension(true);
-    // FIXME: eslint complains about no-undef -- requires global declaration at top of file maybe? (richard)
-    // eslint-disable-next-line
     chrome.runtime.sendMessage(
       clientEnv.NEXT_PUBLIC_EXTENSION_ID,
-      { accessToken: accessToken },
+      { accessToken: session.data.accessToken },
       (response) => {
+        console.log({ response });
         setSuccessExtension(() => response);
         setIsLoadingExtension(() => false);
         if (response.success) {
@@ -42,13 +41,16 @@ const Extension: NextPage<
         }
       }
     );
-  }, [accessToken]);
+  }, [session.status, session.data?.accessToken]);
 
   /**
    * 1. Display UI while checking the session
    */
+  // loading
+  if (session.status === "loading") return <div>Preparing...</div>;
   // this shouldn't happen?
-  if (!accessToken) return <div>Error! Something went wrong.</div>;
+  if (session.status === "unauthenticated")
+    return <div>Error! Something went wrong.</div>;
 
   // -- nextauth is now authenticated 👇 --
 
@@ -64,12 +66,16 @@ const Extension: NextPage<
   return <div>Successfully signed in!</div>;
 };
 
-export async function getServerSideProps({ req }: GetServerSidePropsContext) {
-  const jwt = await getToken({ req, raw: true });
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await unstable_getServerSession(
+    context.req,
+    context.res,
+    authOptions
+  );
 
   return {
     props: {
-      accessToken: jwt,
+      session,
     },
   };
 }

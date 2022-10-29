@@ -3,7 +3,7 @@ import { z } from "zod"
 import { AccessToken, Session } from "./features/auth"
 
 const ChromeStorageSchema = z.object({
-  accessToken: AccessToken,
+  accessToken: AccessToken.optional(),
   session: Session.optional()
 })
 

@@ -13,7 +13,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     origin: "*",
     optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
   });
-  console.dir({ authorization: req.headers.authorization }, { depth: 3 });
 
   // after cors, now we can mount the tRPC handler
   return createNextApiHandler({

@@ -5,9 +5,9 @@
     "packages/*"
   ],
   "scripts": {
-    "prepare": "husky install",
     "preinstall": "npx only-allow pnpm",
     "postinstall": "turbo run postinstall",
+    "pre-commit": "lint-staged",
     "build": "turbo run build",
     "dev": "turbo run dev --parallel",
     "clean": "find . -name node_modules -o -name .next -o -name .turbo -type d -prune | xargs rm -rf",
@@ -17,9 +17,18 @@
     "db": "pnpm --filter db",
     "api": "pnpm --filter api",
     "ext": "pnpm --filter extension",
-    "auth": "pnpm --filter auth",
     "prisma": "pnpm --filter db exec prisma",
     "ts-to-zod": "pnpm --filter extension exec ts-to-zod"
+  },
+  "devDependencies": {
+    "eslint-config-agreeto": "workspace:*",
+    "eslint": "^8.26.0",
+    "husky": "^4.3.8",
+    "lint-staged": "^13.0.3",
+    "prettier": "^2.7.1",
+    "tsc-files": "^1.1.3",
+    "turbo": "latest",
+    "tsconfig": "workspace:*"
   },
   "lint-staged": {
     "apps/**/*.{ts,tsx}": [
@@ -42,15 +51,5 @@
     "packages/db/prisma/schema.prisma": [
       "prisma format"
     ]
-  },
-  "devDependencies": {
-    "eslint-config-agreeto": "workspace:*",
-    "eslint": "^8.26.0",
-    "husky": "^4.3.8",
-    "lint-staged": "^13.0.3",
-    "prettier": "^2.7.1",
-    "tsc-files": "^1.1.3",
-    "turbo": "latest",
-    "tsconfig": "workspace:*"
   }
 }
