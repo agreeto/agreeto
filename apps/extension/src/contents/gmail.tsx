@@ -59,8 +59,6 @@ export const getStyle = () => {
   style.textContent = tailwindCss
   return style
 }
-// FIXME: eslint complains about no-undef -- requires global declaration at top of file maybe? (richard)
-// eslint-disable-next-line
 const port = chrome.runtime.connect(chrome.runtime.id)
 
 export const chromeClient = createTRPCProxyClient<StorageRouter>({
@@ -76,8 +74,7 @@ const Gmail = () => {
 
   // note (richard): no idea why this is necessary, but encountering this error:
   // https://github.com/theKashey/react-remove-scroll-bar/blob/3dd80e28c92b8aac025e41f4258ff926cdc88af9/src/utils.ts#L22
-  // FIXME: include env var dep in turbo.json
-  // eslint-disable-next-line
+
   if (process.env.NODE_ENV !== "production")
     document.body.style.cssText = "overflow-y: auto!important;"
 
@@ -87,8 +84,6 @@ const Gmail = () => {
     trpc.createClient({
       links: [
         httpBatchLink({
-          // FIXME: include env var dep in turbo.json
-          // eslint-disable-next-line
           url: `${process.env.PLASMO_PUBLIC_WEB_URL}/api/trpc`,
           async headers() {
             const accessTokenValue = await storage.get("accessToken")
