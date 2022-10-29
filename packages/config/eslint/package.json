@@ -1,0 +1,25 @@
+{
+  "name": "eslint-config-agreeto",
+  "version": "0.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.39.0",
+    "@typescript-eslint/parser": "^5.39.0",
+    "eslint-config-next": "12.3.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-react": "7.28.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-config-turbo": "^0.0.4",
+    "typescript": "^4.8.4"
+  },
+  "peerDependencies": {
+    "eslint": "^8.26.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.26.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

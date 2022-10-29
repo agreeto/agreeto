@@ -1,3 +1,5 @@
+import React from "react";
+
 export const CalendarIcon = (color = "#0165FF") => {
   return (
     <svg

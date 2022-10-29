@@ -1,5 +1,5 @@
 {
-  "extends": "tsconfig/vite.json",
+  "extends": "@agreeto/tsconfig/vite.json",
   "compilerOptions": {
     "outDir": "dist",
     "typeRoots": ["node_modules/@types"],

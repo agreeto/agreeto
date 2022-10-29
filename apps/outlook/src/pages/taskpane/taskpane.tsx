@@ -1,4 +1,4 @@
-import { FC } from "react";
+import React, { type FC } from "react";
 
 const Taskpane: FC = () => {
   return <div>Hello Outlook!</div>;
