@@ -11,10 +11,7 @@ apps
  |- next.js
      |- React 18
      |- TailwindCSS
-|- outlook
-     |- ViteJS
-     |- React 18
-     |- TailwindCSS
+     |- E2E Typesafe API Server & Client
 packages
  |- api
      |- tRPC v10 router definition

@@ -1,18 +1,10 @@
-import type {
-  GetServerSidePropsContext,
-  NextPage,
-  InferGetServerSidePropsType,
-} from "next";
+import type { NextPage } from "next";
 import Head from "next/head";
-import { unstable_getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]";
 import { useSession } from "next-auth/react";
 
-const Home: NextPage<
-  InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({ session: sessionSSR }) => {
-  console.log({ sessionSSR });
-  // const postQuery = trpc.post.all.useQuery();
+const Home: NextPage = () => {
+  // FIXME: This isn't updated when I initiate the sign in from the extension?
+  // Maybe because the component renders for session.data?.user and the user addition has been buggy
   const session = useSession();
 
   return (
@@ -36,37 +28,10 @@ const Home: NextPage<
         <h1 className="text-5xl md:text-[5rem] leading-normal font-extrabold text-gray-700">
           Create <span className="text-purple-300">T3</span> App
         </h1>
-        <div className="flex items-center justify-center w-full pt-6 text-2xl text-blue-500">
-          {/* {postQuery.data ? (
-            <div className="flex flex-col gap-4">
-              {postQuery.data?.map((p) => {
-                return <PostCard key={p.id} post={p} />;
-              })}
-            </div>
-          ) : (
-            <p>Loading..</p>
-          )} */}
-        </div>
+        <div className="flex items-center justify-center w-full pt-6 text-2xl text-blue-500"></div>
       </main>
     </>
   );
 };
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  );
-  console.log("--gSSP--");
-  console.dir(session);
-  console.log("--gSSP--");
-
-  return {
-    props: {
-      session,
-    },
-  };
-}
 
 export default Home;
