@@ -10,8 +10,6 @@ const Success: NextPage = () => {
       <button
         onClick={() => {
           // first, log out the extension (resets chrome.storage)
-          // FIXME: eslint complains about no-undef -- requires global declaration at top of file maybe? (richard)
-          // eslint-disable-next-line
           chrome.runtime.sendMessage(
             clientEnv.NEXT_PUBLIC_EXTENSION_ID as string,
             "signout",

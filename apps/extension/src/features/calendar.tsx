@@ -7,11 +7,11 @@ import {
   LinkIcon
 } from "@heroicons/react/20/solid"
 import add from "date-fns/add"
-import { FC, useState } from "react"
+import { type FC, useState } from "react"
 // import { CgCalendarNext } from "react-icons/cg"
 import { z } from "zod"
 
-import FullCalendar, { EventInput } from "@fullcalendar/react"
+import FullCalendar, { type EventInput } from "@fullcalendar/react"
 
 // needed for dateClick
 import interactionPlugin from "@fullcalendar/interaction"

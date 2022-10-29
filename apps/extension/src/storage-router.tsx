@@ -1,5 +1,3 @@
-/* global chrome */
-// avoid eslint/no-undef with a global declaration -- see https://github.com/OfficeDev/office-js-docs-pr/issues/691
 import { transformer } from "@agreeto/api/transformer"
 import { initTRPC } from "@trpc/server"
 

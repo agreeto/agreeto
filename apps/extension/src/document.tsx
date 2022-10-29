@@ -23,6 +23,8 @@ const Document = () => {
   // tRPC context
   const utils = trpc.useContext()
 
+  console.log("Errors?")
+
   if (!authentication.success)
     return (
       <Layout>

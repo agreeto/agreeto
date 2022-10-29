@@ -1,3 +1,6 @@
+// FIXME: Why is Next lint rules slipping in here?
+
+/* eslint-disable @next/next/no-img-element */
 import * as Dialog from "@radix-ui/react-dialog"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { createTRPCProxyClient, httpBatchLink } from "@trpc/client"
@@ -109,7 +112,11 @@ const Gmail = () => {
         <div className="pl-1">
           <Dialog.Root open={open} onOpenChange={setOpen}>
             <Dialog.Trigger className="bg-white rounded px-1.5 py-1.5  hover:bg-gray-50 focus:outline-none ">
-              <img className="w-6" src="https://www.agreeto.app/%2Flogo.png" />
+              <img
+                className="w-6"
+                src="https://www.agreeto.app/%2Flogo.png"
+                alt="AgreeTo Logo"
+              />
             </Dialog.Trigger>
             <Dialog.Portal container={portalContainer}>
               <Dialog.Overlay className="fixed w-screen h-screen bg-black bg-opacity-50 pointer-events-auto z-[2147483646]">

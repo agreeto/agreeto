@@ -5,7 +5,7 @@ module.exports = {
   extends: ["agreeto"],
   settings: {
     next: {
-      rootDir: ["apps/*/"],
+      rootDir: ["apps/nextjs/"],
     },
   },
 };

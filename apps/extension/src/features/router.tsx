@@ -1,11 +1,11 @@
 import {
-  ReactLocationOptions,
-  Route,
+  type ReactLocationOptions,
+  type Route,
   createMemoryHistory
 } from "@tanstack/react-location"
 
 import { Calendar } from "~features/calendar"
-import type { trpc } from "~trpc"
+import { trpc } from "~trpc"
 
 import { SignIn } from "./auth"
 import Settings from "./settings"
@@ -17,16 +17,8 @@ export const reactLocationOptions: ReactLocationOptions = {
   })
 }
 
-interface Params {
-  utils: ReturnType<typeof trpc.useContext>
-  // authentication: ReturnType<typeof ChromeStorage.accessToken.safeParse>
-}
-// FIXME: no-unused var on params in type declaration
-// eslint-disable-next-line
-export const getRoutes: (params: Params) => Route[] = ({
-  utils
-  // authentication
-}) => {
+export const getRoutes: () => Route[] = () => {
+  const utils = trpc.useContext()
   return [
     {
       path: "authenticated/",

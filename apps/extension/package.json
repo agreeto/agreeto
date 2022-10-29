@@ -2,11 +2,12 @@
   "name": "@agreeto/extension",
   "displayName": "Extension",
   "version": "0.0.0",
-  "description": "A basic Plasmo extension.",
+  "description": "AgreeTo Chrome Extension.",
   "author": "richardpoelderl",
   "scripts": {
     "dev": "plasmo dev",
     "build": "plasmo build",
+    "lint": "eslint src",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

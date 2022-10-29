@@ -29,15 +29,15 @@ import { ChromeStorage } from "~storage-schema"
  *
  * @returns `<SignIn />` Page OR `<App/>` wrapped in JSX Providers
  */
-const isDev = process.env.NODE_ENV === "development"
+const _isDev = process.env.NODE_ENV === "development"
 function IndexPopup() {
   // Authentication
   const [accessTokenValue] = useStorage({
     key: "accessToken",
     isSecret: true
   })
-  const accessToken = ChromeStorage.accessToken.parse(accessTokenValue)
-  const isAuthenticated = Boolean(accessToken)
+  const accessToken = ChromeStorage.accessToken.safeParse(accessTokenValue)
+  const isAuthenticated = Boolean(accessToken.success)
 
   // Configure tRPC
   const [queryClient] = useState(() => new QueryClient())
