@@ -1,5 +1,5 @@
 {
   "extends": "@agreeto/tsconfig/base.json",
-  "include": ["**/*.ts", ".eslintrc.js"],
+  "include": ["**/*.ts"],
   "exclude": ["node_modules"]
 }

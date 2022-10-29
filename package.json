@@ -24,7 +24,7 @@
   "devDependencies": {
     "eslint-config-agreeto": "workspace:*",
     "eslint": "^8.26.0",
-    "husky": "^4.3.8",
+    "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "prettier": "^2.7.1",
     "tsc-files": "^1.1.3",
