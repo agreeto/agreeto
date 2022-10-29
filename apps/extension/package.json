@@ -6,7 +6,8 @@
   "author": "richardpoelderl",
   "scripts": {
     "dev": "plasmo dev",
-    "build": "plasmo build"
+    "build": "plasmo build",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@agreeto/api": "workspace:*",

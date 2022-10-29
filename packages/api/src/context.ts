@@ -1,8 +1,8 @@
+import type { inferAsyncReturnType } from "@trpc/server";
+import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 // import { getServerSession } from "@acme/auth";
 import { getToken, type JWTToken } from "@agreeto/auth";
 import { prisma, type User } from "@agreeto/db";
-import { type inferAsyncReturnType } from "@trpc/server";
-import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
 export type CreateContextOptions = {
   token: JWTToken | null;

@@ -1,4 +1,9 @@
 {
   "extends": "@agreeto/tsconfig/test.json",
-  "include": ["src", "index.ts", "transformer.ts"]
+  "include": [
+    "node_modules/@agreeto/auth/next-auth.d.ts",
+    "src",
+    "index.ts",
+    "transformer.ts"
+  ]
 }

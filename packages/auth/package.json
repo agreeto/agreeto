@@ -5,7 +5,8 @@
   "types": "./index.ts",
   "license": "MIT",
   "scripts": {
-    "clean": "rm -rf .turbo node_modules"
+    "clean": "rm -rf .turbo node_modules",
+    "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
     "@prisma/client": "^4.4.0"

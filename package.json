@@ -14,6 +14,7 @@
     "db-generate": "turbo db-generate",
     "db-push": "turbo db-push",
     "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "ts-to-zod": "pnpm --filter extension exec ts-to-zod"
   },

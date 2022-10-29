@@ -17,6 +17,10 @@
     "lint": {
       "outputs": [],
       "cache": false
+    },
+    "typecheck": {
+      "outputs": [],
+      "cache": false
     }
   },
   "globalEnv": [

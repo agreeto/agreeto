@@ -1,7 +1,7 @@
 import {
-  GetServerSidePropsContext,
-  InferGetServerSidePropsType,
-  NextPage,
+  type GetServerSidePropsContext,
+  type InferGetServerSidePropsType,
+  type NextPage,
 } from "next";
 import { getToken } from "next-auth/jwt";
 
