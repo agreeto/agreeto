@@ -36,7 +36,7 @@ export const getInlineAnchor: PlasmoGetInlineAnchor = () => {
     const shadowRoot = shadowHost.attachShadow({ mode: "open" })
     document.body.insertAdjacentElement("beforebegin", shadowHost) // inject the shadowHost into the body
 
-    // 2. add tailwind to shadow domc
+    // 2. add tailwind to shadow dom
     const styleTailwind = document.createElement("style")
     styleTailwind.textContent = tailwindCss
     shadowRoot.appendChild(styleTailwind)
