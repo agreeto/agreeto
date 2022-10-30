@@ -21,7 +21,7 @@ export const config: PlasmoContentScript = {
 }
 
 // these references are necessary to mount react's portal later
-const PORTAL_ID = "agreeto-dummy-change"
+const PORTAL_ID = "agreeto-portal"
 const SHADOW_HOST_ID = "agreeto-shadow-host"
 // this mounts our component inline
 export const getInlineAnchor: PlasmoGetInlineAnchor = () => {
