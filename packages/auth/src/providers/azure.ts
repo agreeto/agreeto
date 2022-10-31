@@ -11,4 +11,21 @@ export const getAzureAdProvider = (opts: Options) =>
     clientId: opts.clientId,
     clientSecret: opts.clientSecret,
     tenantId: opts.tenantId,
+    authorization: {
+      params: {
+        // TODO: Validate this is the correct scope and that it's working
+        // scope: [
+        //   "user.read",
+        //   "openid",
+        //   "profile",
+        //   "email",
+        //   "offline_access",
+        //   "Calendars.Read",
+        //   "Calendars.ReadWrite",
+        //   "Calendars.Read",
+        //   "OnlineMeetings.Read",
+        //   "OnlineMeetings.ReadWrite",
+        // ].join(" "),
+      },
+    },
   });
