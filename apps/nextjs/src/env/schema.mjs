@@ -7,22 +7,24 @@ import { z } from "zod";
  */
 export const serverSchema = z.lazy(() =>
   z.object({
+    // Node environment, don't have to be set in .env
     NODE_ENV: z.enum(["development", "test", "production"]),
+
+    // Rest should be explicitely defined in your .env
     GOOGLE_ID: z.string(),
     GOOGLE_SECRET: z.string(),
     AZURE_AD_CLIENT_ID: z.string(),
     AZURE_AD_CLIENT_SECRET: z.string(),
     AZURE_AD_TENANT_ID: z.string(),
     NEXTAUTH_SECRET: z.string(),
-    PORT: z.string().transform((str) => parseInt(str, 10)),
-    HOST: z.string(),
     NEXTAUTH_URL: z.preprocess(
-      (str) =>
-        process.env.VERCEL_URL
-          ? `https://${process.env.VERCEL_URL}/api/auth`
-          : str,
-      process.env.VERCEL_URL ? z.string().url() : z.string() // zod's url throws on env var interpolation ($)
+      // Let VERCEL_URL take precedence if it's set
+      // @see https://next-auth.js.org/configuration/options#nextauth_url
+      (str) => process.env.VERCEL_URL ?? str,
+      // VERCEL_URL doesn't include the `https://` prefix and is thus not a valid z.url()
+      process.env.VERCEL_URL ? z.string() : z.string().url()
     ),
+    // REVIEW: What usecase is this for?
     // provided by vercel (therefore shouldn't throw during schema parsing)
     VERCEL_URL: z.string().url().optional(),
   })
@@ -35,6 +37,7 @@ export const serverSchema = z.lazy(() =>
  */
 export const clientSchema = z.object({
   NEXT_PUBLIC_EXTENSION_ID: z.string(),
+  NEXT_PUBLIC_PORT: z.string(),
 });
 
 /**
@@ -45,4 +48,5 @@ export const clientSchema = z.object({
  */
 export const clientEnv = {
   NEXT_PUBLIC_EXTENSION_ID: process.env.NEXT_PUBLIC_EXTENSION_ID,
+  NEXT_PUBLIC_PORT: process.env.NEXT_PUBLIC_PORT,
 };
