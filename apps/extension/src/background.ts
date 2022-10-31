@@ -1,7 +1,6 @@
-import { storage } from "~features/storage"
-import { ChromeStorage } from "~storage-schema"
+import { ChromeStorage, storage } from "~features/trpc/chrome/storage"
 
-// import { trpc } from "~trpc"
+// TODO: Implement trpc-chrome
 
 chrome.runtime.onMessageExternal.addListener(
   async (request, sender, sendResponse) => {

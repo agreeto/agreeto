@@ -4,11 +4,11 @@ import {
   createMemoryHistory
 } from "@tanstack/react-location"
 
+import { SignIn } from "~features/auth"
 import { Calendar } from "~features/calendar"
-import { trpc } from "~trpc"
+import { trpcApi } from "~features/trpc/api"
 
-import { SignIn } from "./auth"
-import Settings from "./settings"
+import { Settings } from "./routes/settings"
 
 // Create a memory history
 export const reactLocationOptions: ReactLocationOptions = {
@@ -18,7 +18,7 @@ export const reactLocationOptions: ReactLocationOptions = {
 }
 
 export const getRoutes: () => Route[] = () => {
-  const utils = trpc.useContext()
+  const utils = trpcApi.useContext()
   return [
     {
       path: "authenticated/",

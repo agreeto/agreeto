@@ -1,21 +1,8 @@
 import { Outlet } from "@tanstack/react-location"
-import { z } from "zod"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
-import { storage } from "./storage"
-
-// SCHEMAS
-export const Session = z.object({
-  expires: z.string(),
-  user: z.object({
-    id: z.string().optional().nullable(),
-    name: z.string().optional().nullable(),
-    email: z.string().email().optional().nullable(),
-    image: z.string().url().optional().nullable()
-  })
-})
-export const AccessToken = z.string()
+import { AccessTokenValidator, storage } from "~features/trpc/chrome/storage"
 
 // UTILS
 export const signOut = async () => {
@@ -39,7 +26,7 @@ export const SignIn = () => {
     key: "accessToken",
     isSecret: true
   })
-  const authentication = AccessToken.safeParse(accessTokenValue)
+  const authentication = AccessTokenValidator.safeParse(accessTokenValue)
 
   if (authentication.success) {
     return <Outlet />

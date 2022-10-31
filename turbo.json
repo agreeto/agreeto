@@ -12,7 +12,7 @@
     },
     "build": {
       "dependsOn": ["^build", "^db-generate"],
-      "outputs": [".next/**", ".expo/**", ".plasmo/**"]
+      "outputs": [".next/**", ".expo/**", ".plasmo/**", "build/**"]
     },
     "lint": {
       "outputs": [],

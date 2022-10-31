@@ -4,16 +4,24 @@ import type { FC, ReactNode } from "react"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
-import { Navbar } from "~features/navbar"
+import { Navbar } from "~features/layout/navbar"
+import { AccessTokenValidator } from "~features/trpc/chrome/storage"
 
-import { AccessToken } from "./auth"
-
-const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
+export const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
   const [accessTokenValue] = useStorage({
     key: "accessToken",
     isSecret: true
   })
-  const authentication = AccessToken.safeParse(accessTokenValue)
+  const authentication = AccessTokenValidator.safeParse(accessTokenValue)
+
+  if (!process.env.PLASMO_PUBLIC_WEB_URL) {
+    // FIXME: Intermediary solution to make sure the public web URL is set
+    return (
+      <h1 className="text-red-500 font-bold">
+        PLASMO_PUBLIC_WEB_URL is not defined
+      </h1>
+    )
+  }
 
   return (
     <div className="w-full divide-y">
@@ -39,8 +47,7 @@ const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
               onClick={() => {
                 window.open(
                   `http://localhost:3000/api/auth/signin?${new URLSearchParams({
-                    callbackUrl: `${process.env
-                      .PLASMO_PUBLIC_WEB_URL!}/auth/extension`
+                    callbackUrl: `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/extension`
                   })}`
                 )
               }}>
@@ -56,9 +63,7 @@ const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
               type="button"
               className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               onClick={() => {
-                window.open(
-                  `${process.env.PLASMO_PUBLIC_WEB_URL!}/auth/signout`
-                )
+                window.open(`${process.env.PLASMO_PUBLIC_WEB_URL}/auth/signout`)
               }}>
               Sign Out
             </button>
@@ -74,5 +79,3 @@ const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
     </div>
   )
 }
-
-export default Layout
