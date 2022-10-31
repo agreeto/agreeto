@@ -13,6 +13,8 @@ export const getAzureAdProvider = (opts: Options) =>
     tenantId: opts.tenantId,
     authorization: {
       params: {
+        access_type: "offline",
+        prompt: "select_account",
         // TODO: Validate this is the correct scope and that it's working
         // scope: [
         //   "user.read",
