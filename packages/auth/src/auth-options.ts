@@ -1,9 +1,9 @@
 import { prisma } from "@agreeto/db";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import type { NextAuthOptions } from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
-import AzureAdProvider from "next-auth/providers/azure-ad";
 import { refreshAccessToken } from "./refresh-access-token";
+import { getGoogleProvider } from "./providers/google";
+import { getAzureAdProvider } from "./providers/azure";
 
 export type GetAuthOptionsParams = {
   secret: string;
@@ -16,33 +16,31 @@ export type GetAuthOptionsParams = {
 type GetAuthOptions = (params: GetAuthOptionsParams) => NextAuthOptions;
 
 export const getAuthOptions: GetAuthOptions = (opts) => ({
+  /** Use Prisma adapter to persist user information */
+  /** @see https://next-auth.js.org/adapters/prisma */
   adapter: PrismaAdapter(prisma),
   providers: [
-    GoogleProvider({
+    getGoogleProvider({
       clientId: opts.googleClientId,
       clientSecret: opts.googleClientSecret,
-      authorization: {
-        params: {
-          access_type: "offline",
-          prompt: "consent",
-          scope: [
-            "https://www.googleapis.com/auth/calendar.readonly",
-            "https://www.googleapis.com/auth/userinfo.email",
-            "https://www.googleapis.com/auth/userinfo.profile",
-            "https://www.googleapis.com/auth/calendar.events",
-            "https://www.googleapis.com/auth/admin.directory.user.readonly",
-          ].join(" "),
-        },
-      },
     }),
-    AzureAdProvider({
+    getAzureAdProvider({
       clientId: opts.azureAdClientId,
       clientSecret: opts.azureAdClientSecret,
       tenantId: opts.azureAdTenantId,
     }),
   ],
+
+  /** Secret used to encrypt and hash tokens */
+  /** @see https://next-auth.js.org/configuration/options#secret */
   secret: opts.secret,
+
+  /**  Session options */
+  /** @see https://next-auth.js.org/configuration/options#session */
   session: { strategy: "jwt" },
+
+  /** Callbacks used to control actions */
+  /** @see https://next-auth.js.org/configuration/callbacks */
   callbacks: {
     // JWT is called first, whatever we return is passed to the session callback
     async jwt({ token, user, account }) {
