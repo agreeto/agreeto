@@ -5,22 +5,28 @@ import { z } from "zod";
  * Specify your server-side environment variables schema here.
  * This way you can ensure the app isn't built with invalid env vars.
  */
-export const serverSchema = z.object({
-  NODE_ENV: z.enum(["development", "test", "production"]),
-  GOOGLE_ID: z.string(),
-  GOOGLE_SECRET: z.string(),
-  AZURE_AD_CLIENT_ID: z.string(),
-  AZURE_AD_CLIENT_SECRET: z.string(),
-  AZURE_AD_TENANT_ID: z.string(),
-  NEXTAUTH_SECRET: z.string(),
-  NEXTAUTH_URL: z.preprocess(
-    (str) => process.env.VERCEL_URL ?? str,
-    process.env.VERCEL ? z.string() : z.string().url()
-  ),
-  // provided by vercel (therefore shouldn't throw during schema parsing)
-  VERCEL_URL: z.string().optional(),
-  PORT: z.string().transform((str) => parseInt(str, 10)),
-});
+export const serverSchema = z.lazy(() =>
+  z.object({
+    NODE_ENV: z.enum(["development", "test", "production"]),
+    GOOGLE_ID: z.string(),
+    GOOGLE_SECRET: z.string(),
+    AZURE_AD_CLIENT_ID: z.string(),
+    AZURE_AD_CLIENT_SECRET: z.string(),
+    AZURE_AD_TENANT_ID: z.string(),
+    NEXTAUTH_SECRET: z.string(),
+    PORT: z.string().transform((str) => parseInt(str, 10)),
+    HOST: z.string(),
+    NEXTAUTH_URL: z.preprocess(
+      (str) =>
+        process.env.VERCEL_URL
+          ? `https://${process.env.VERCEL_URL}/api/auth`
+          : str,
+      z.string().url()
+    ),
+    // provided by vercel (therefore shouldn't throw during schema parsing)
+    VERCEL_URL: z.string().url().optional(),
+  })
+);
 
 /**
  * Specify your client-side environment variables schema here.
