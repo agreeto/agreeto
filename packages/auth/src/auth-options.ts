@@ -21,6 +21,19 @@ export const getAuthOptions: GetAuthOptions = (opts) => ({
     GoogleProvider({
       clientId: opts.googleClientId,
       clientSecret: opts.googleClientSecret,
+      authorization: {
+        params: {
+          access_type: "offline",
+          prompt: "consent",
+          scope: [
+            "https://www.googleapis.com/auth/calendar.readonly",
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/userinfo.profile",
+            "https://www.googleapis.com/auth/calendar.events",
+            "https://www.googleapis.com/auth/admin.directory.user.readonly",
+          ].join(" "),
+        },
+      },
     }),
     AzureAdProvider({
       clientId: opts.azureAdClientId,
