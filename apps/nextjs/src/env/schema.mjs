@@ -21,7 +21,7 @@ export const serverSchema = z.lazy(() =>
         process.env.VERCEL_URL
           ? `https://${process.env.VERCEL_URL}/api/auth`
           : str,
-      z.string().url()
+      process.env.VERCEL_URL ? z.string().url() : z.string() // zod's url throws on env var interpolation ($)
     ),
     // provided by vercel (therefore shouldn't throw during schema parsing)
     VERCEL_URL: z.string().url().optional(),
