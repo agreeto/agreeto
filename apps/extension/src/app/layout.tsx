@@ -67,6 +67,7 @@ export const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
               }}>
               Sign Out
             </button>
+            <h2>Signed in as {authentication.data}</h2>
           </>
         )}
       </div>

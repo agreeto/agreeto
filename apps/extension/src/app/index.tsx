@@ -1,7 +1,7 @@
 import { ReactLocation, Router } from "@tanstack/react-location"
 import { useState } from "react"
 
-import { getRoutes, reactLocationOptions } from "~features/router"
+import { getRoutes, reactLocationOptions } from "~features/router/config"
 
 export const App = () => {
   // Configure router

@@ -10,8 +10,7 @@
   "dependencies": {
     "@agreeto/auth": "workspace:*",
     "@agreeto/db": "workspace:*",
-    "@trpc/client": "10.0.0-rc.1",
-    "@trpc/server": "10.0.0-rc.1",
+    "@trpc/server": "10.0.0-rc.2",
     "superjson": "1.9.1",
     "zod": "^3.18.0"
   },

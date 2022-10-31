@@ -9,6 +9,8 @@ const authOptions = getAuthOptions({
   azureAdClientId: env.AZURE_AD_CLIENT_ID,
   azureAdClientSecret: env.AZURE_AD_CLIENT_SECRET,
   azureAdTenantId: env.AZURE_AD_TENANT_ID,
+  discordClientId: env.DISCORD_CLIENT_ID,
+  discordClientSecret: env.DISCORD_CLIENT_SECRET,
 });
 
 export default NextAuth(authOptions);

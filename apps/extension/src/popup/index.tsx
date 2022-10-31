@@ -3,11 +3,14 @@ import "@fullcalendar/common/main.css"
 import "@fullcalendar/timegrid/main.css"
 import "../style.css"
 
+import { Outlet, ReactLocation, Router } from "@tanstack/react-location"
+import React from "react"
+
 import { useStorage } from "@plasmohq/storage/hook"
 
 import { Layout } from "~app/layout"
 import { SignIn } from "~features/auth"
-import { Calendar } from "~features/calendar"
+import { getRoutes, reactLocationOptions } from "~features/router/config"
 import { TRPCProvider } from "~features/trpc//api/provider"
 import { ChromeStorage } from "~features/trpc/chrome/storage"
 
@@ -31,24 +34,27 @@ function IndexPopup() {
   })
   const accessToken = ChromeStorage.accessToken.safeParse(accessTokenValue)
   const isAuthenticated = !!accessToken.success
+
+  const [location] = React.useState(
+    () => new ReactLocation(reactLocationOptions)
+  )
+
   return (
     <TRPCProvider>
-      {/* maximum size of popup */}
-      <div className="w-[800] h-[600]">
-        {isAuthenticated ? (
-          /**
-           * THE ACTUAL APP
-           */
+      <Router routes={getRoutes()} location={location}>
+        {/* maximum size of popup */}
+        <div className="w-[800] h-[600]">
           <Layout>
-            <Calendar />
+            {isAuthenticated ? (
+              /** THE ACTUAL APP */
+              <Outlet />
+            ) : (
+              /** OR: SIGN IN */
+              <SignIn />
+            )}
           </Layout>
-        ) : (
-          /**
-           * OR: SIGN IN
-           */
-          <SignIn />
-        )}
-      </div>
+        </div>
+      </Router>
     </TRPCProvider>
   )
 }

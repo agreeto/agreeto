@@ -1,5 +1,9 @@
 // FIXME: Why is Next lint rules slipping in here?
+
 /* eslint-disable @next/next/no-img-element */
+import { CalendarDaysIcon, Cog8ToothIcon } from "@heroicons/react/20/solid"
+import { Link } from "@tanstack/react-location"
+
 export const Navbar = () => {
   return (
     <div className="flex flex-col flex-shrink pt-5 pb-4 overflow-y-auto bg-white border-r border-gray-200 divide-y">
@@ -12,8 +16,14 @@ export const Navbar = () => {
       </div>
       <div className="flex flex-col flex-grow mt-5">
         <nav
-          className="flex flex-col flex-1 space-y-1 bg-white justify-evenly"
+          className="flex flex-col flex-1 gap-2 bg-white items-center"
           aria-label="Sidebar">
+          <Link to="calendar">
+            <CalendarDaysIcon className="h-10 w-10 p-1 text-indigo-600 hover:text-indigo-700" />
+          </Link>
+          <Link to="settings">
+            <Cog8ToothIcon className="h-10 w-10 p-1 text-indigo-600 hover:text-indigo-700" />
+          </Link>
           {/* {navigation.map((item) => (
             <a
               key={item.name}

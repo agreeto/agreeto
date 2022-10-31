@@ -23,6 +23,8 @@ export const getServerSession = async (
     azureAdClientId: "",
     azureAdClientSecret: "",
     azureAdTenantId: "",
+    discordClientId: "",
+    discordClientSecret: "",
   });
   return await unstable_getServerSession(ctx.req, ctx.res, authOptions);
 };

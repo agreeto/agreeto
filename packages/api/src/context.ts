@@ -1,16 +1,16 @@
 import type { inferAsyncReturnType } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import {
-  getToken,
+  // getToken,
   getServerSession,
-  type JWTToken,
+  // type JWTToken,
   type Session,
   type User,
 } from "@agreeto/auth";
 import { prisma } from "@agreeto/db";
 
 export type CreateContextOptions = {
-  token: JWTToken | null;
+  // token: JWTToken | null;
   session: Session | null;
   user: User | undefined;
 };
@@ -23,8 +23,8 @@ export type CreateContextOptions = {
 export const createContextInner = async (opts: CreateContextOptions) => {
   return {
     prisma,
-    token: opts.token,
-    // session,
+    // token: opts.token,
+    session: opts.session,
     user: opts.user,
   };
 };
@@ -34,46 +34,16 @@ export const createContextInner = async (opts: CreateContextOptions) => {
  * @link https://trpc.io/docs/context
  **/
 export const createContext = async ({ req, res }: CreateNextContextOptions) => {
-  console.log("secret: ", process.env.NEXTAUTH_SECRET, "\n");
-
-  const token = await getToken({ req });
-  console.dir({ token }, { depth: 2 });
-  console.log("\n");
+  // const token = await getToken({ req });
+  // console.log("token from trpc context");
+  // console.dir({ token }, { depth: 2 });
+  // console.log("\n");
 
   const session = await getServerSession({ req, res });
+  console.log("session from trpc context");
   console.dir({ session }, { depth: 2 });
-  console.log("\n");
 
-  return await createContextInner({ token, session, user: token?.user });
+  return await createContextInner({ session, user: session?.user });
 };
-
-/**
- * This functions fetched the user from the database using NextAuth's session email.
- *
- * @param options a bag containting the session and the req/res from CreeateNextContextOptions
- * @returns
- */
-// async function getUserFromSession({
-//   session,
-//   req,
-//   res,
-// }: {
-//   session: Awaited<ReturnType<typeof getServerSession>>;
-// } & trpcNext.CreateNextContextOptions) {
-//   const token = getToken();
-//   if (!req.headers.authorization) {
-//     return null;
-//   }
-//   if (!session?.user?.email) {
-//     return null;
-//   }
-//   const user = await prisma.user.findUnique({
-//     where: { email: session.user.email },
-//   });
-//   if (!user) {
-//     return null;
-//   }
-//   return user;
-// }
 
 export type Context = inferAsyncReturnType<typeof createContext>;
