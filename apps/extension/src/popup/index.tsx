@@ -5,9 +5,9 @@ import "../style.css"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
+import { Layout } from "~app/layout"
 import { SignIn } from "~features/auth"
 import { Calendar } from "~features/calendar"
-import { Layout } from "~features/layout"
 import { TRPCProvider } from "~features/trpc//api/provider"
 import { ChromeStorage } from "~features/trpc/chrome/storage"
 

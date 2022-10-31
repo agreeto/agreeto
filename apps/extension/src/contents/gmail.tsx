@@ -6,8 +6,8 @@ import tailwindCss from "data-text:~/src/style.css"
 import type { PlasmoContentScript, PlasmoGetInlineAnchor } from "plasmo"
 import { useState } from "react"
 
-import App from "~app"
-import { Layout } from "~features/layout"
+import { App } from "~app"
+import { Layout } from "~app/layout"
 import { TRPCProvider } from "~features/trpc/api/provider"
 
 export const config: PlasmoContentScript = {

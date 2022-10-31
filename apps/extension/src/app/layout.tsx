@@ -4,7 +4,7 @@ import type { FC, ReactNode } from "react"
 
 import { useStorage } from "@plasmohq/storage/hook"
 
-import { Navbar } from "~features/layout/navbar"
+import { Navbar } from "~app/navbar"
 import { AccessTokenValidator } from "~features/trpc/chrome/storage"
 
 export const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
