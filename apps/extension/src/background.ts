@@ -22,7 +22,6 @@ chrome.runtime.onMessageExternal.addListener(
 
     // check if the request contains our expected property
     // REVIEW: Should this be some random encrypted key for added security?
-    console.assert(Boolean(request.accessToken))
     if (request?.accessToken) {
       // get out storage value
       const storageValue = await storage.get<unknown>("accessToken")
