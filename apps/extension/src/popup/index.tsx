@@ -36,6 +36,7 @@ const useIsAuthed = () => {
       console.log(token)
       validateToken.mutate({ token })
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return isAuthed

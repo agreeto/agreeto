@@ -23,7 +23,7 @@ export const TRPCProvider: React.FC<{ children: React.ReactNode }> = ({
         httpBatchLink({
           url: `${process.env.PLASMO_PUBLIC_WEB_URL}/api/trpc`,
           async headers() {
-            const { token, status } = getStorageToken()
+            const { token, status } = await getStorageToken()
 
             return status === "success"
               ? {
