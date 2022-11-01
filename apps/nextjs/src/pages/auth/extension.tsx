@@ -1,22 +1,21 @@
 import {
-  GetServerSidePropsContext,
-  InferGetServerSidePropsType,
-  NextPage,
+  type GetServerSidePropsContext,
+  type InferGetServerSidePropsType,
+  type NextPage,
 } from "next";
-import { unstable_getServerSession } from "next-auth";
-import { useSession } from "next-auth/react";
+import { getToken } from "next-auth/jwt";
+
 // Router can by used in useEffect only (else useRouter instead) - see: https://github.com/vercel/next.js/issues/18127#issuecomment-988959843
 import Router from "next/router.js";
 import { useEffect, useState } from "react";
 import { env as clientEnv } from "../../env/client.mjs";
-import { authOptions } from "../api/auth/[...nextauth]";
 
 const Extension: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
-> = () => {
+> = ({ accessToken }) => {
   const [successExtension, setSuccessExtension] = useState(false);
   const [isLoadingExtension, setIsLoadingExtension] = useState(false);
-  const session = useSession();
+  // const session = useSession();
 
   /**
    * This effect does 3 thigns:
@@ -25,13 +24,13 @@ const Extension: NextPage<
    * 3. upon completion of extension messasging, redirect to success/error
    */
   useEffect(() => {
-    if (session.status !== "authenticated") return;
+    // if (session.status !== "authenticated") return;
+    if (!accessToken) return;
     setIsLoadingExtension(true);
     chrome.runtime.sendMessage(
       clientEnv.NEXT_PUBLIC_EXTENSION_ID,
-      { accessToken: session.data.accessToken },
+      { accessToken: accessToken },
       (response) => {
-        console.log({ response });
         setSuccessExtension(() => response);
         setIsLoadingExtension(() => false);
         if (response.success) {
@@ -41,16 +40,13 @@ const Extension: NextPage<
         }
       }
     );
-  }, [session.status, session.data?.accessToken]);
+  }, [accessToken]);
 
   /**
    * 1. Display UI while checking the session
    */
-  // loading
-  if (session.status === "loading") return <div>Preparing...</div>;
   // this shouldn't happen?
-  if (session.status === "unauthenticated")
-    return <div>Error! Something went wrong.</div>;
+  if (!accessToken) return <div>Error! Something went wrong.</div>;
 
   // -- nextauth is now authenticated 👇 --
 
@@ -66,16 +62,15 @@ const Extension: NextPage<
   return <div>Successfully signed in!</div>;
 };
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const session = await unstable_getServerSession(
-    context.req,
-    context.res,
-    authOptions
-  );
+export async function getServerSideProps({ req }: GetServerSidePropsContext) {
+  /** A bit weird that we're calling a JWT function when using session strategy,
+   * but seems to work. Otherwise we'd need a db call to check if the session exists?
+   */
+  const sessionToken = await getToken({ req, raw: true });
 
   return {
     props: {
-      session,
+      accessToken: sessionToken,
     },
   };
 }

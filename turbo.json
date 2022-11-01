@@ -1,19 +1,43 @@
 {
   "pipeline": {
+    "db-generate": {
+      "cache": true
+    },
+    "db-push": {
+      "cache": false
+    },
+    "dev": {
+      "dependsOn": ["^db-generate"],
+      "cache": false
+    },
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", ".expo/**", ".plasmo/**"]
+      "dependsOn": ["^build", "^db-generate"],
+      "outputs": [".next/**", ".expo/**", ".plasmo/**", "build/**"]
     },
     "lint": {
       "outputs": [],
       "cache": false
     },
-    "dev": {
-      "cache": false
-    },
-    "postinstall": {
+    "typecheck": {
+      "outputs": [],
       "cache": false
     }
   },
-  "globalEnv": ["NODE_ENV", "PLASMO_PUBLIC_WEB_URL", "SKIP_ENV_VALIDATION"]
+  "globalEnv": [
+    "NODE_ENV",
+    "PORT",
+    "VERCEL",
+    "VERCEL_URL",
+    "PLASMO_PUBLIC_WEB_URL",
+    "NEXT_PUBLIC_EXTENSION_ID",
+    "NEXT_PUBLIC_PORT",
+    "SKIP_ENV_VALIDATION",
+    "NEXTAUTH_SECRET",
+    "DATABASE_URL",
+    "GOOGLE_ID",
+    "GOOGLE_SECRET",
+    "AZURE_AD_CLIENT_ID",
+    "AZURE_AD_CLIENT_SECRET",
+    "AZURE_AD_TENANT_ID"
+  ]
 }

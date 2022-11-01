@@ -1,3 +1,3 @@
 export const Sidebar = ({ className }: { className: string }) => (
-  <div>sidebar</div>
+  <div className={className}>sidebar</div>
 )
