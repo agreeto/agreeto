@@ -26,7 +26,7 @@
     <AppDomain>https://agreeto-backend-dev.herokuapp.com/api/auth/microsoft</AppDomain>
     <AppDomain>https://agreeto-backend-dev.herokuapp.com/api/auth/microsoft/redirect</AppDomain>
     <AppDomain>https://localhost:8082</AppDomain>
-    <AppDomain>http://localhost:3000</AppDomain>
+    <AppDomain>https://localhost:3000</AppDomain>
   </AppDomains>
 
   <Hosts>

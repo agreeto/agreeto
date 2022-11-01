@@ -1654,7 +1654,7 @@ packages:
       '@prisma/client': '>=2.26.0 || >=3'
       next-auth: ^4
     dependencies:
-      next-auth: 4.15.0_y3vnqhrq6kacn7e7j5j4tjxiry
+      next-auth: 4.15.0_azq6kxkn3od7qdylwkyksrwopy
     dev: false
 
   /@next/env/12.3.1:

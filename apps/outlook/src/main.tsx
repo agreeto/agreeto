@@ -28,6 +28,7 @@ if (Office !== undefined) {
             <div className="space-x-2 underline">
               <Link to="/">Home</Link>
               <Link to="taskpane">Taskpane</Link>
+              <Link to="settings">Settings</Link>
             </div>
             <Outlet />
           </Router>

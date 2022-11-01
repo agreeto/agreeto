@@ -23,6 +23,7 @@
     <AppDomain>https://login.windows.net</AppDomain>
     <AppDomain>https://login.microsoftonline.com</AppDomain>
     <AppDomain>https://localhost:8082</AppDomain>
+    <AppDomain>https://localhost:3000</AppDomain>
   </AppDomains>
 
   <Hosts>
