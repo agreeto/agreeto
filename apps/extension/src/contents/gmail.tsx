@@ -2,11 +2,16 @@
 
 /* eslint-disable @next/next/no-img-element */
 import * as Dialog from "@radix-ui/react-dialog"
+import { Outlet, ReactLocation, Router } from "@tanstack/react-location"
 import tailwindCss from "data-text:~/src/style.css"
 import type { PlasmoContentScript, PlasmoGetInlineAnchor } from "plasmo"
-import { useState } from "react"
+import React, { useState } from "react"
 
-import { App } from "~app"
+import { Layout } from "~app/layout"
+import { SignIn } from "~features/auth"
+import { useIsAuthed } from "~features/auth/is-authed"
+import { getRoutes, reactLocationOptions } from "~features/router/config"
+import { TRPCProvider } from "~features/trpc/api/provider"
 
 export const config: PlasmoContentScript = {
   matches: ["https://mail.google.com/*"]
@@ -52,42 +57,74 @@ export const getStyle = () => {
   return style
 }
 
-// The icon button that we inject next to our anchor (send btn)
-const Gmail = () => {
+const Modal: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [open, setOpen] = useState(false) // to pass to radix
   const portalContainer = document // our injected portal (next to body)
     .getElementById(SHADOW_HOST_ID)
     ?.shadowRoot?.getElementById(PORTAL_ID)
 
+  return (
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Trigger className="bg-white rounded px-1.5 py-1.5  hover:bg-gray-50 focus:outline-none ">
+        <img
+          className="w-6"
+          src="https://www.agreeto.app/%2Flogo.png"
+          alt="AgreeTo Logo"
+        />
+      </Dialog.Trigger>
+      <Dialog.Portal container={portalContainer}>
+        <Dialog.Overlay className="fixed w-screen h-screen bg-black bg-opacity-50 pointer-events-auto z-[2147483646]">
+          <Dialog.Content
+            id="agreeto-app"
+            className="fixed -translate-x-1/2 -translate-y-1/2 bg-white shadow-sm top-1/2 left-1/2 shadow-transparent l-1/2 z-[2147483646] w-[800] h-[600]">
+            {children}
+          </Dialog.Content>
+        </Dialog.Overlay>
+      </Dialog.Portal>
+    </Dialog.Root>
+  )
+}
+
+// The icon button that we inject next to our anchor (send btn)
+const GmailContent = () => {
   // note (richard): no idea why this is necessary, but encountering this error:
   // https://github.com/theKashey/react-remove-scroll-bar/blob/3dd80e28c92b8aac025e41f4258ff926cdc88af9/src/utils.ts#L22
 
   if (process.env.NODE_ENV !== "production")
     document.body.style.cssText = "overflow-y: auto!important;"
 
-  // Configure tRPC
+  const isAuthed = useIsAuthed()
+
+  const [location] = React.useState(
+    () => new ReactLocation(reactLocationOptions)
+  )
 
   return (
     <div className="pl-1">
-      <Dialog.Root open={open} onOpenChange={setOpen}>
-        <Dialog.Trigger className="bg-white rounded px-1.5 py-1.5  hover:bg-gray-50 focus:outline-none ">
-          <img
-            className="w-6"
-            src="https://www.agreeto.app/%2Flogo.png"
-            alt="AgreeTo Logo"
-          />
-        </Dialog.Trigger>
-        <Dialog.Portal container={portalContainer}>
-          <Dialog.Overlay className="fixed w-screen h-screen bg-black bg-opacity-50 pointer-events-auto z-[2147483646]">
-            <Dialog.Content
-              id="agreeto-app"
-              className="fixed -translate-x-1/2 -translate-y-1/2 bg-white shadow-sm top-1/2 left-1/2 shadow-transparent l-1/2 z-[2147483646] w-[800] h-[600]">
-              <App />
-            </Dialog.Content>
-          </Dialog.Overlay>
-        </Dialog.Portal>
-      </Dialog.Root>
+      <Modal>
+        <Router location={location} routes={getRoutes()}>
+          <div className="h-[600] w-[800]">
+            {isAuthed ? (
+              // Render app layout if user is authed
+              <Layout>
+                <Outlet />
+              </Layout>
+            ) : (
+              // Render sign in page if user is not authed
+              <SignIn />
+            )}
+          </div>
+        </Router>
+      </Modal>
     </div>
+  )
+}
+
+const Gmail = () => {
+  return (
+    <TRPCProvider>
+      <GmailContent />
+    </TRPCProvider>
   )
 }
 
