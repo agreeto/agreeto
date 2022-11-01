@@ -25,6 +25,8 @@ export const TRPCProvider: React.FC<{ children: React.ReactNode }> = ({
           async headers() {
             const { token, status } = await getStorageToken()
 
+            console.log("TOKEN FROM TRPC PROVIDER", token, status)
+
             return status === "success"
               ? {
                   authorization: `Bearer ${token}`

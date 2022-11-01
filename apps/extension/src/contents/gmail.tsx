@@ -7,8 +7,6 @@ import type { PlasmoContentScript, PlasmoGetInlineAnchor } from "plasmo"
 import { useState } from "react"
 
 import { App } from "~app"
-import { Layout } from "~app/layout"
-import { TRPCProvider } from "~features/trpc/api/provider"
 
 export const config: PlasmoContentScript = {
   matches: ["https://mail.google.com/*"]
@@ -70,30 +68,26 @@ const Gmail = () => {
   // Configure tRPC
 
   return (
-    <TRPCProvider>
-      <div className="pl-1">
-        <Dialog.Root open={open} onOpenChange={setOpen}>
-          <Dialog.Trigger className="bg-white rounded px-1.5 py-1.5  hover:bg-gray-50 focus:outline-none ">
-            <img
-              className="w-6"
-              src="https://www.agreeto.app/%2Flogo.png"
-              alt="AgreeTo Logo"
-            />
-          </Dialog.Trigger>
-          <Dialog.Portal container={portalContainer}>
-            <Dialog.Overlay className="fixed w-screen h-screen bg-black bg-opacity-50 pointer-events-auto z-[2147483646]">
-              <Dialog.Content
-                id="agreeto-app"
-                className="fixed -translate-x-1/2 -translate-y-1/2 bg-white shadow-sm top-1/2 left-1/2 shadow-transparent l-1/2 z-[2147483646] w-[800] h-[600]">
-                <Layout>
-                  <App />
-                </Layout>
-              </Dialog.Content>
-            </Dialog.Overlay>
-          </Dialog.Portal>
-        </Dialog.Root>
-      </div>
-    </TRPCProvider>
+    <div className="pl-1">
+      <Dialog.Root open={open} onOpenChange={setOpen}>
+        <Dialog.Trigger className="bg-white rounded px-1.5 py-1.5  hover:bg-gray-50 focus:outline-none ">
+          <img
+            className="w-6"
+            src="https://www.agreeto.app/%2Flogo.png"
+            alt="AgreeTo Logo"
+          />
+        </Dialog.Trigger>
+        <Dialog.Portal container={portalContainer}>
+          <Dialog.Overlay className="fixed w-screen h-screen bg-black bg-opacity-50 pointer-events-auto z-[2147483646]">
+            <Dialog.Content
+              id="agreeto-app"
+              className="fixed -translate-x-1/2 -translate-y-1/2 bg-white shadow-sm top-1/2 left-1/2 shadow-transparent l-1/2 z-[2147483646] w-[800] h-[600]">
+              <App />
+            </Dialog.Content>
+          </Dialog.Overlay>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </div>
   )
 }
 
