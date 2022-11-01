@@ -93,7 +93,7 @@ const GmailContent = () => {
   if (process.env.NODE_ENV !== "production")
     document.body.style.cssText = "overflow-y: auto!important;"
 
-  const isAuthed = useIsAuthed()
+  const { isAuthed, isLoading } = useIsAuthed()
 
   const [location] = React.useState(
     () => new ReactLocation(reactLocationOptions)
@@ -104,7 +104,11 @@ const GmailContent = () => {
       <Modal>
         <Router location={location} routes={getRoutes()}>
           <div className="h-[600] w-[800]">
-            {isAuthed ? (
+            {isLoading ? (
+              <div className="h-full w-full grid place-content-center">
+                <div className="h-12 w-12 rounded-full border-2 animate-pulse"></div>
+              </div>
+            ) : isAuthed ? (
               // Render app layout if user is authed
               <Layout>
                 <Outlet />
