@@ -81,10 +81,12 @@ const PopupContent: React.FC = () => {
         ) : (
           /** OR: SIGN IN */
           // <SignIn />
-          <div>
-            Sign in to use the extension. <br />
+          <div className="w-full h-full grid place-content-center space-y-2">
+            <h1 className="text-2xl font-medium">
+              Sign in to use the extension.
+            </h1>
             <button
-              className="text-white bg-blue-500 border border-blue-500 hover:ring hover:ring-yellow-500"
+              className="text-white font-medium bg-indigo-600 border-indigo-700 border-2 hover:bg-indigo-700 rounded-lg p-4"
               onClick={signIn}>
               Sign In
             </button>
