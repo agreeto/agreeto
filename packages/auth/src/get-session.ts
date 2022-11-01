@@ -22,7 +22,9 @@ export const getServerSession = async (
     ctx.res,
     authOptions
   );
-  if (session) return session;
+  if (session) {
+    return session;
+  }
 
   const sessionToken = ctx.req.headers.authorization;
   if (!sessionToken?.startsWith("Bearer ")) {
