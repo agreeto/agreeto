@@ -6,13 +6,48 @@ import "../style.css"
 import { Outlet, ReactLocation, Router } from "@tanstack/react-location"
 import React from "react"
 
-import { useStorage } from "@plasmohq/storage/hook"
-
 import { Layout } from "~app/layout"
-import { SignIn } from "~features/auth"
 import { getRoutes, reactLocationOptions } from "~features/router/config"
 import { TRPCProvider } from "~features/trpc//api/provider"
-import { ChromeStorage } from "~features/trpc/chrome/storage"
+import { trpcApi } from "~features/trpc/api"
+import { storage } from "~features/trpc/chrome/storage"
+
+/**
+ * Custom hook to get the accessToken from storage
+ * and validate it with the server
+ * @returns boolean whether the token is valid or not
+ */
+const useIsAuthed = () => {
+  const [isAuthed, setIsAuthed] = React.useState(false)
+
+  const validateToken = trpcApi.session.validate.useMutation({
+    onSuccess() {
+      setIsAuthed(true)
+    },
+    async onError() {
+      // TODO: call with trpc-chrome, update others?
+      // await storage.set("accessToken", "")
+    }
+  })
+
+  // Validate the token on server
+  React.useEffect(() => {
+    storage.get("accessToken").then((token) => {
+      console.log(token)
+      validateToken.mutate({ token })
+    })
+  }, [])
+
+  return isAuthed
+}
+
+const signIn = () => {
+  window.open(
+    `http://localhost:3000/api/auth/signin?${new URLSearchParams({
+      callbackUrl: `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/extension`
+    })}`
+  )
+}
 
 /**
  * The IndexPopup is the entry-file for the popup script of the extension.
@@ -26,35 +61,44 @@ import { ChromeStorage } from "~features/trpc/chrome/storage"
  *
  * @returns `<SignIn />` Page OR `<App/>` wrapped in JSX Providers
  */
-const _isDev = process.env.NODE_ENV === "development"
-function IndexPopup() {
-  const [accessTokenValue] = useStorage({
-    key: "accessToken",
-    isSecret: true
-  })
-  const accessToken = ChromeStorage.accessToken.safeParse(accessTokenValue)
-  const isAuthenticated = !!accessToken.success
+const PopupContent: React.FC = () => {
+  const isAuthed = useIsAuthed()
 
   const [location] = React.useState(
     () => new ReactLocation(reactLocationOptions)
   )
 
   return (
-    <TRPCProvider>
-      <Router routes={getRoutes()} location={location}>
-        {/* maximum size of popup */}
-        <div className="w-[800] h-[600]">
+    <Router routes={getRoutes()} location={location}>
+      {/* maximum size of popup */}
+      <div className="w-[800] h-[600]">
+        {isAuthed ? (
+          /** THE ACTUAL APP */
           <Layout>
-            {isAuthenticated ? (
-              /** THE ACTUAL APP */
-              <Outlet />
-            ) : (
-              /** OR: SIGN IN */
-              <SignIn />
-            )}
+            <Outlet />
           </Layout>
-        </div>
-      </Router>
+        ) : (
+          /** OR: SIGN IN */
+          // <SignIn />
+          <div>
+            Sign in to use the extension. <br />
+            <button
+              className="text-white bg-blue-500 border border-blue-500 hover:ring hover:ring-yellow-500"
+              onClick={signIn}>
+              Sign In
+            </button>
+          </div>
+        )}
+      </div>
+    </Router>
+  )
+}
+
+/** Content needs access to the tRPC context, so we need a wrapper */
+const IndexPopup: React.FC = () => {
+  return (
+    <TRPCProvider>
+      <PopupContent />
     </TRPCProvider>
   )
 }

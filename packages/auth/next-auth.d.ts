@@ -1,4 +1,4 @@
-import { type DefaultSession, type TokenSet, type User } from "next-auth";
+import { type DefaultSession } from "next-auth";
 
 /**
  * Module augmentation for `next-auth` types
@@ -7,20 +7,10 @@ import { type DefaultSession, type TokenSet, type User } from "next-auth";
  * @see https://next-auth.js.org/getting-started/typescript#module-augmentation
  */
 
-declare module "next-auth/jwt" {
-  interface JWT {
-    accessToken: TokenSet["access_token"];
-    accessTokenExpires: TokenSet["expires_at"];
-    refreshToken: TokenSet["refresh_token"];
-    user: User;
-  }
-}
-
 declare module "next-auth" {
   interface Session {
     user: {
       id: string;
     } & DefaultSession["user"];
-    accessToken: TokenSet["access_token"];
   }
 }

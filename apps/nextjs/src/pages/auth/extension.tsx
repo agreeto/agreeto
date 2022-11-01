@@ -63,11 +63,14 @@ const Extension: NextPage<
 };
 
 export async function getServerSideProps({ req }: GetServerSidePropsContext) {
-  const jwt = await getToken({ req, raw: true });
+  /** A bit weird that we're calling a JWT function when using session strategy,
+   * but seems to work. Otherwise we'd need a db call to check if the session exists?
+   */
+  const sessionToken = await getToken({ req, raw: true });
 
   return {
     props: {
-      accessToken: jwt,
+      accessToken: sessionToken,
     },
   };
 }

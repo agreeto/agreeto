@@ -1,16 +1,9 @@
 import type { inferAsyncReturnType } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
-import {
-  // getToken,
-  getServerSession,
-  // type JWTToken,
-  type Session,
-  type User,
-} from "@agreeto/auth";
+import { getServerSession, type Session, type User } from "@agreeto/auth";
 import { prisma } from "@agreeto/db";
 
 export type CreateContextOptions = {
-  // token: JWTToken | null;
   session: Session | null;
   user: User | undefined;
 };
@@ -23,7 +16,6 @@ export type CreateContextOptions = {
 export const createContextInner = async (opts: CreateContextOptions) => {
   return {
     prisma,
-    // token: opts.token,
     session: opts.session,
     user: opts.user,
   };
@@ -34,14 +26,9 @@ export const createContextInner = async (opts: CreateContextOptions) => {
  * @link https://trpc.io/docs/context
  **/
 export const createContext = async ({ req, res }: CreateNextContextOptions) => {
-  // const token = await getToken({ req });
-  // console.log("token from trpc context");
-  // console.dir({ token }, { depth: 2 });
-  // console.log("\n");
-
   const session = await getServerSession({ req, res });
-  console.log("session from trpc context");
-  console.dir({ session }, { depth: 2 });
+  // console.log("session from trpc context");
+  // console.dir({ session }, { depth: 2 });
 
   return await createContextInner({ session, user: session?.user });
 };

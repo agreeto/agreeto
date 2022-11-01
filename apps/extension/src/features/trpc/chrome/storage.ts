@@ -26,8 +26,8 @@ export const storage = new Storage({
   secretKeyList: ["accessToken"]
 })
 
-export const getStorageToken = () => {
-  const token = storage.get("accessToken")
+export const getStorageToken = async () => {
+  const token = await storage.get("accessToken")
   if (ChromeStorage.accessToken.safeParse(token).success) {
     return { token, status: "success" } as const
   }

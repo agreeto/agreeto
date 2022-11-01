@@ -1,7 +1,7 @@
 import { trpcApi } from "~features/trpc/api"
 
 export const Settings = () => {
-  const userQuery = trpcApi.user.current.useQuery()
+  const userQuery = trpcApi.user.myAccounts.useQuery()
 
   console.log(userQuery.data)
   return (

@@ -20,6 +20,14 @@ export const signOut = async () => {
   window.open(`http://localhost:3000/auth/signout`)
 }
 
+const signIn = () => {
+  window.open(
+    `http://localhost:3000/api/auth/signin?${new URLSearchParams({
+      callbackUrl: `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/extension`
+    })}`
+  )
+}
+
 export const SignIn = () => {
   // Provide authentication to router
   const [accessTokenValue] = useStorage({
@@ -36,32 +44,22 @@ export const SignIn = () => {
       Not signed in <br />
       <button
         className="text-white bg-blue-500 border border-blue-500 hover:ring hover:ring-yellow-500"
-        onClick={() => {
-          window.open(
-            `http://localhost:3000/api/auth/signin?${new URLSearchParams({
-              callbackUrl: `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/extension`
-            })}`
-          )
-        }}>
+        onClick={signIn}>
         Sign in
       </button>
     </>
   )
 }
+
+// TODO: This is never rendered
 export const SignOut = () => {
   return (
     <>
       Not signed in <br />
       <button
         className="text-white bg-blue-500 border border-blue-500 hover:ring hover:ring-yellow-500"
-        onClick={() => {
-          window.open(
-            `http://localhost:3000/api/auth/signin?${new URLSearchParams({
-              callbackUrl: `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/extension`
-            })}`
-          )
-        }}>
-        Sign in
+        onClick={signOut}>
+        Sign out
       </button>
     </>
   )

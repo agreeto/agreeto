@@ -39,7 +39,8 @@ export const getRoutes: () => Route[] = () => {
           // TODO: add account fetching to the settings route
           async loader({ params }) {
             console.log({ params })
-            utils.user.current.fetch()
+            // FIXME: Should prob not include all this information
+            utils.user.myAccounts.fetch()
             return {}
             // accounts: await utils.account.all.fetch()
           }

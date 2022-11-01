@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { router, publicProcedure } from "../trpc";
+import { router, publicProcedure, privateProcedure } from "../trpc";
 
 export const userRouter = router({
   current: publicProcedure.query(async ({ ctx }) => {
@@ -13,5 +13,11 @@ export const userRouter = router({
       });
     }
     return user;
+  }),
+  myAccounts: privateProcedure.query(({ ctx }) => {
+    return ctx.prisma.user.findMany({
+      where: { id: ctx.user.id },
+      include: { accounts: true },
+    });
   }),
 });

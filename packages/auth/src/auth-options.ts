@@ -1,113 +1,90 @@
 import { prisma } from "@agreeto/db";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import type { NextAuthOptions } from "next-auth";
-// import { refreshAccessToken } from "./refresh-access-token";
-import { getGoogleProvider } from "./providers/google";
-import { getAzureAdProvider } from "./providers/azure";
-import DiscordProvider from "next-auth/providers/discord";
+import GoogleProvider from "next-auth/providers/google";
+import AzureAdProvider from "next-auth/providers/azure-ad";
 
-export type GetAuthOptionsParams = {
-  secret: string;
-  googleClientId: string;
-  googleClientSecret: string;
-  azureAdClientId: string;
-  azureAdClientSecret: string;
-  azureAdTenantId: string;
-  discordClientId: string;
-  discordClientSecret: string;
-};
-type GetAuthOptions = (params: GetAuthOptionsParams) => NextAuthOptions;
+/**
+ * The process.env is loaded from the Next.js application
+ * so they should only be set there. No need to have a .env
+ * in this auth package.
+ * TODO: Maybe do a shared `env` package in the future?
+ **/
+if (
+  !process.env.NEXTAUTH_SECRET ||
+  !process.env.GOOGLE_ID ||
+  !process.env.GOOGLE_SECRET ||
+  !process.env.AZURE_AD_CLIENT_ID ||
+  !process.env.AZURE_AD_CLIENT_SECRET ||
+  !process.env.AZURE_AD_TENANT_ID
+) {
+  throw new Error("NEXTAUTH_SECRET is not set");
+}
 
-export const getAuthOptions: GetAuthOptions = (opts) => ({
+export const authOptions: NextAuthOptions = {
   /** Use Prisma adapter to persist user information */
   /** @see https://next-auth.js.org/adapters/prisma */
   adapter: PrismaAdapter(prisma),
+
+  /** Built in providers, adjusted to our needs */
+  /** @see https://next-auth.js.org/providers */
   providers: [
-    getGoogleProvider({
-      clientId: opts.googleClientId,
-      clientSecret: opts.googleClientSecret,
+    GoogleProvider({
+      clientId: process.env.GOOGLE_ID,
+      clientSecret: process.env.GOOGLE_SECRET,
+      authorization: {
+        params: {
+          access_type: "offline",
+          prompt: "consent",
+          scope: [
+            "openid",
+            "https://www.googleapis.com/auth/calendar.readonly",
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/userinfo.profile",
+            "https://www.googleapis.com/auth/calendar.events",
+            "https://www.googleapis.com/auth/admin.directory.user.readonly",
+          ].join(" "),
+        },
+      },
     }),
-    getAzureAdProvider({
-      clientId: opts.azureAdClientId,
-      clientSecret: opts.azureAdClientSecret,
-      tenantId: opts.azureAdTenantId,
-    }),
-    // Testing purposes while I don't have Azure setup
-    DiscordProvider({
-      clientId: opts.discordClientId,
-      clientSecret: opts.discordClientSecret,
+    AzureAdProvider({
+      clientId: process.env.AZURE_AD_CLIENT_ID,
+      clientSecret: process.env.AZURE_AD_CLIENT_SECRET,
+      tenantId: process.env.AZURE_AD_TENANT_ID,
+      authorization: {
+        params: {
+          access_type: "offline",
+          prompt: "select_account",
+          // TODO: Validate this is the correct scope and that it's working
+          // scope: [
+          //   "user.read",
+          //   "openid",
+          //   "profile",
+          //   "email",
+          //   "offline_access",
+          //   "Calendars.Read",
+          //   "Calendars.ReadWrite",
+          //   "Calendars.Read",
+          //   "OnlineMeetings.Read",
+          //   "OnlineMeetings.ReadWrite",
+          // ].join(" "),
+        },
+      },
     }),
   ],
 
   /** Secret used to encrypt and hash tokens */
   /** @see https://next-auth.js.org/configuration/options#secret */
-  secret: opts.secret,
-
-  /**  Session options */
-  /** @see https://next-auth.js.org/configuration/options#session */
-  // session: { strategy: "jwt" },
+  secret: process.env.NEXTAUTH_SECRET,
 
   /** Callbacks used to control actions */
   /** @see https://next-auth.js.org/configuration/callbacks */
   callbacks: {
-    async signIn({ user, account, profile, email }) {
-      console.log("signIn");
-      console.log("user");
-      console.dir(user, { depth: 4 });
-      console.log("account");
-      console.dir(account, { depth: 4 });
-      console.log("profile");
-      console.dir(profile, { depth: 4 });
-      console.log("email");
-      console.dir(email, { depth: 4 });
-      return true;
-    },
-    // JWT is called first, whatever we return is passed to the session callback
-    // async jwt({ token, user, account }) {
-    //   // Initial sign in
-    //   if (account && user) {
-    //     return {
-    //       accessToken: account.access_token,
-    //       // TODO: Look into if Azure has `expires_in`,
-    //       // if so we can augment the type to always be defined
-    //       accessTokenExpires: Date.now() + (account.expires_at ?? 0) * 1_000,
-    //       refreshToken: account.refresh_token,
-    //       user,
-    //     };
-    //   }
-
-    //   // Check if token is still active
-    //   if (
-    //     token &&
-    //     token.accessTokenExpires &&
-    //     token.accessTokenExpires >= Date.now()
-    //   ) {
-    //     return token;
-    //   }
-
-    //   // Refresh token
-    //   return refreshAccessToken(token, opts);
-    // },
-    // session callback is called after the JWT callback, and it's return value is passed to the client
-    session({ token, session, user }) {
+    session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
       }
-
-      console.log("token");
-      console.log(token);
-      console.log("session from session callback");
-      console.log(session);
-      console.log("\n\n");
-
-      return {
-        ...session,
-        user: {
-          ...user,
-          id: user.id,
-        },
-        accessToken: token?.accessToken,
-      };
+      return session;
     },
   },
-});
+};
