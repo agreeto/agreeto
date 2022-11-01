@@ -24,7 +24,10 @@ export const TRPCProvider: React.FC<{ children: React.ReactNode }> = ({
           url: `${getBaseUrl()}/api/trpc`,
           async headers() {
             // TODO: Where do we store token?
-            return {};
+            // const accessToken = await Office.auth.getAccessToken();
+            return {
+              // Authorization: `Bearer ${accessToken}`,
+            };
           },
         }),
       ],
