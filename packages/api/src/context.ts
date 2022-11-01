@@ -27,10 +27,13 @@ export const createContextInner = async (opts: CreateContextOptions) => {
  **/
 export const createContext = async ({ req, res }: CreateNextContextOptions) => {
   const session = await getServerSession({ req, res });
-  // console.log("session from trpc context");
-  // console.dir({ session }, { depth: 2 });
+  console.log("session from trpc context");
+  console.dir({ session }, { depth: 2 });
 
-  return await createContextInner({ session, user: session?.user });
+  return await createContextInner({
+    session: session as any,
+    user: session?.user,
+  });
 };
 
 export type Context = inferAsyncReturnType<typeof createContext>;

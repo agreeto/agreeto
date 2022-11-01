@@ -5,6 +5,8 @@ import type {
 } from "next";
 import { unstable_getServerSession } from "next-auth";
 
+import { prisma } from "@agreeto/db";
+
 import { authOptions } from "./auth-options";
 
 export const getServerSession = async (
@@ -15,5 +17,32 @@ export const getServerSession = async (
       }
     | { req: NextApiRequest; res: NextApiResponse }
 ) => {
-  return await unstable_getServerSession(ctx.req, ctx.res, authOptions);
+  const session = await unstable_getServerSession(
+    ctx.req,
+    ctx.res,
+    authOptions
+  );
+  if (session) return session;
+
+  const sessionToken = ctx.req.headers.authorization;
+  if (!sessionToken?.startsWith("Bearer ")) {
+    return null;
+  }
+  const dbSession = await prisma.session.findUnique({
+    where: {
+      sessionToken: sessionToken.replace("Bearer ", ""),
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          image: true,
+        },
+      },
+    },
+  });
+
+  return dbSession;
 };
