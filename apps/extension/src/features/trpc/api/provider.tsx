@@ -5,7 +5,7 @@ import React from "react"
 
 import { getStorageToken } from "~features/trpc/chrome/storage"
 
-import { trpcApi } from "./index"
+import { trpcApi } from "./hooks"
 
 export const TRPCProvider: React.FC<{ children: React.ReactNode }> = ({
   children

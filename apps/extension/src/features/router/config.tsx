@@ -5,7 +5,7 @@ import {
 } from "@tanstack/react-location"
 
 import { SignIn } from "~features/auth"
-import { trpcApi } from "~features/trpc/api"
+import { trpcApi } from "~features/trpc/api/hooks"
 
 import { Calendar } from "./routes/calendar"
 import { Settings } from "./routes/settings"

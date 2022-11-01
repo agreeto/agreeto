@@ -1,4 +1,4 @@
-import { trpcApi } from "~features/trpc/api"
+import { trpcApi } from "~features/trpc/api/hooks"
 
 export const Settings = () => {
   const userQuery = trpcApi.user.myAccounts.useQuery()

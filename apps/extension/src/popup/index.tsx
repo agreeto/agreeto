@@ -9,7 +9,7 @@ import React from "react"
 import { Layout } from "~app/layout"
 import { getRoutes, reactLocationOptions } from "~features/router/config"
 import { TRPCProvider } from "~features/trpc//api/provider"
-import { trpcApi } from "~features/trpc/api"
+import { trpcApi } from "~features/trpc/api/hooks"
 import { storage } from "~features/trpc/chrome/storage"
 
 /**
