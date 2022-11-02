@@ -1,5 +1,6 @@
 import { type GetServerSideProps } from "next";
 import { getToken } from "next-auth/jwt";
+import { env } from "../../env/client.mjs";
 
 const OutlookRedirect = () => {
   return <div>Redirecting...</div>;
@@ -13,8 +14,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   return {
     props: {},
     redirect: {
-      destination:
-        "https://localhost:8082/auth-redirect.html?token=" + sessionToken,
+      destination: `${env.NEXT_PUBLIC_OUTLOOK_ADDIN_URL}/auth-redirect.html?token=${sessionToken}`,
       permanent: false,
     },
   };

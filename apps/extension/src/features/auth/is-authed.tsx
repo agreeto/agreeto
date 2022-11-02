@@ -13,14 +13,9 @@ export const useIsAuthed = () => {
   const [isLoading, setIsLoading] = React.useState(true)
 
   const validateToken = trpcApi.session.validate.useMutation({
-    retry: 0,
     onSuccess() {
       setIsAuthed(true)
       setIsLoading(false)
-    },
-    async onError() {
-      // TODO: call with trpc-chrome, update others?
-      // await storage.set("accessToken", "")
     },
     onSettled() {
       setIsLoading(false)
