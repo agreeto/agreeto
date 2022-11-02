@@ -1,26 +1,14 @@
-// import { Outlet } from "@tanstack/react-location"
-
-// import { useStorage } from "@plasmohq/storage/hook"
-
-// import { ChromeStorage } from "~features/trpc/chrome/storage"
-
 const signIn = () => {
+  const signInUrl = `${process.env.PLASMO_PUBLIC_WEB_URL}/api/auth/signin`
+  const callbackUrl = `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/extension`
   window.open(
-    `http://localhost:3000/api/auth/signin?${new URLSearchParams({
-      callbackUrl: `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/extension`
+    `${signInUrl}?${new URLSearchParams({
+      callbackUrl
     })}`
   )
 }
 
 export const SignIn = () => {
-  // Provide authentication to router
-  // const [accessTokenValue] = useStorage({
-  //   key: "accessToken",
-  //   isSecret: true
-  // })
-  // if (ChromeStorage.accessToken.safeParse(accessTokenValue).success) {
-  //   return <Outlet />
-  // }
   return (
     <div className="grid w-full h-full space-y-2 place-content-center">
       <h1 className="text-2xl font-medium">Sign in to use the extension.</h1>
