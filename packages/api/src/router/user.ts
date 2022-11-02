@@ -26,7 +26,7 @@ export const userRouter = router({
     return user;
   }),
   myAccounts: privateProcedure.query(({ ctx }) => {
-    return ctx.prisma.user.findMany({
+    return ctx.prisma.user.findUnique({
       where: { id: ctx.user.id },
       include: { accounts: true },
     });

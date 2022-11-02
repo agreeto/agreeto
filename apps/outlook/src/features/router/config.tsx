@@ -1,7 +1,6 @@
 import { type Route } from "@tanstack/react-location";
 
 import { Home } from "../../pages/home";
-import { Settings } from "../../pages/settings";
 import { Taskpane } from "../../pages/taskpane";
 
 export const getRoutes: () => Route[] = () => {
@@ -14,10 +13,6 @@ export const getRoutes: () => Route[] = () => {
     {
       path: "taskpane",
       element: <Taskpane />,
-    },
-    {
-      path: "settings",
-      element: <Settings />,
     },
   ];
 };
