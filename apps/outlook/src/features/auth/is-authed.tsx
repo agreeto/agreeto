@@ -29,6 +29,7 @@ export const useIsAuthed = () => {
   }, []);
 
   React.useEffect(() => {
+    /** listen for changes on localStorage */
     window.addEventListener("storage", storageEventHandler);
     return () => {
       window.removeEventListener("storage", storageEventHandler);
@@ -36,6 +37,7 @@ export const useIsAuthed = () => {
   }, [storageEventHandler]);
 
   React.useEffect(() => {
+    /** fire mutation on mount */
     const token = localStorage.getItem("token");
     validateToken.mutate({ token: token ?? "" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
