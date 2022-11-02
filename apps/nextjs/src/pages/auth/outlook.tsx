@@ -11,10 +11,14 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
 
   console.log("sessionToken", sessionToken);
 
+  const redirect = sessionToken
+    ? "/signin-redirect.html"
+    : "/signout-redirect.html";
+
   return {
     props: {},
     redirect: {
-      destination: `${env.NEXT_PUBLIC_OUTLOOK_ADDIN_URL}/auth-redirect.html?token=${sessionToken}`,
+      destination: `${env.NEXT_PUBLIC_OUTLOOK_ADDIN_URL}${redirect}?token=${sessionToken}`,
       permanent: false,
     },
   };
