@@ -1,6 +1,6 @@
 import React from "react";
-import { signIn } from "./features/auth/sign-in";
-import { signOut } from "./features/auth/sign-out";
+import { signIn } from "../auth/sign-in";
+import { signOut } from "../auth/sign-out";
 
 const Navbar = () => {
   return (

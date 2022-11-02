@@ -13,6 +13,9 @@ export const useIsAuthed = () => {
     onSuccess() {
       setIsAuthed(true);
     },
+    onError() {
+      setIsAuthed(false);
+    },
     onSettled() {
       setIsAuthenticating(false);
     },
