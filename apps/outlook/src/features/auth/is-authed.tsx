@@ -10,10 +10,8 @@ export const useIsAuthed = () => {
   const [isAuthenticating, setIsAuthenticating] = React.useState(true);
 
   const validateToken = trpc.session.validate.useMutation({
-    retry: 0,
     onSuccess() {
       setIsAuthed(true);
-      setIsAuthenticating(false);
     },
     onSettled() {
       setIsAuthenticating(false);

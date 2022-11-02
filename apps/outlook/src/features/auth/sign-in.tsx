@@ -1,3 +1,5 @@
+import { openDialog } from "./open-dialog";
+
 export const signIn = () => {
   const url =
     import.meta.env.VITE_API_URL +
@@ -6,15 +8,7 @@ export const signIn = () => {
       callbackUrl: import.meta.env.VITE_API_URL + "/auth/outlook",
     });
 
-  Office.context.ui.displayDialogAsync(
-    url,
-    {
-      height: 50,
-      width: 20,
-      promptBeforeOpen: false,
-    },
-    (res) => console.log(res)
-  );
+  openDialog(url);
 };
 
 export const SignIn = () => {
