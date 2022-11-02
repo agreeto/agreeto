@@ -15,20 +15,29 @@ export const useIsAuthed = () => {
       setIsAuthed(true);
       setIsAuthenticating(false);
     },
-    async onError() {
-      // TODO: call with trpc-chrome, update others?
-      // await storage.set("accessToken", "")
-    },
     onSettled() {
       setIsAuthenticating(false);
     },
   });
 
-  // Validate the token on server
+  const storageEventHandler = React.useCallback((e: StorageEvent) => {
+    console.log(e);
+    if (e.key === "token") {
+      validateToken.mutate({ token: e.newValue ?? "" });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   React.useEffect(() => {
-    const token = window?.localStorage.getItem("token") ?? "";
-    validateToken.mutate({ token });
-    console.log("firing mutation");
+    window.addEventListener("storage", storageEventHandler);
+    return () => {
+      window.removeEventListener("storage", storageEventHandler);
+    };
+  }, [storageEventHandler]);
+
+  React.useEffect(() => {
+    const token = localStorage.getItem("token");
+    validateToken.mutate({ token: token ?? "" });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

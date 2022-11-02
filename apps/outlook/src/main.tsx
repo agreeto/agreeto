@@ -24,25 +24,21 @@ const location = new ReactLocation({
 const App = () => {
   const { isAuthed, isAuthenticating } = useIsAuthed();
 
-  console.log(isAuthed);
-
-  if (isAuthenticating) {
-    return (
-      <div className="h-full w-full grid place-content-center">
-        <div className="h-12 w-12 rounded-full border-4 animate-pulse"></div>
-      </div>
-    );
-  }
-
-  if (!isAuthed) {
-    return <SignIn />;
-  }
-
   return (
     <Router routes={getRoutes()} location={location}>
-      <Layout>
-        <Outlet />
-      </Layout>
+      {isAuthenticating ? (
+        <div className="h-full w-full grid place-content-center">
+          <div className="h-12 w-12 rounded-full border-2 animate-pulse"></div>
+        </div>
+      ) : isAuthed ? (
+        /** THE ACTUAL APP */
+        <Layout>
+          <Outlet />
+        </Layout>
+      ) : (
+        /** OR: SIGN IN */
+        <SignIn />
+      )}
     </Router>
   );
 };
