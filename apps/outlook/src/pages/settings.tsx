@@ -1,5 +1,5 @@
 import React from "react";
-import { trpc } from "../../trpc/hooks";
+import { trpc } from "../features/trpc/hooks";
 
 export const Settings: React.FC = () => {
   const { data: user } = trpc.user.byId.useQuery({

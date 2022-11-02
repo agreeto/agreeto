@@ -3,6 +3,9 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
 export const sessionRouter = router({
+  get: publicProcedure.query(({ ctx }) => {
+    return ctx.session;
+  }),
   validate: publicProcedure
     .input(z.object({ token: z.string() }))
     .mutation(async ({ ctx, input }) => {

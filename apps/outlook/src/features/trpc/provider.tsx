@@ -23,10 +23,9 @@ export const TRPCProvider: React.FC<{ children: React.ReactNode }> = ({
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
           async headers() {
-            // TODO: Where do we store token?
-            // const accessToken = await Office.auth.getAccessToken();
+            const token = window?.localStorage.getItem("token");
             return {
-              // Authorization: `Bearer ${accessToken}`,
+              Authorization: `Bearer ${token}`,
             };
           },
         }),

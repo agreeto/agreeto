@@ -25,7 +25,7 @@
   },
   "globalEnv": [
     "NODE_ENV",
-    "PORT",
+    "NEXT_PUBLIC_PORT",
     "VERCEL",
     "VERCEL_URL",
     "PLASMO_PUBLIC_WEB_URL",
@@ -38,6 +38,7 @@
     "GOOGLE_SECRET",
     "AZURE_AD_CLIENT_ID",
     "AZURE_AD_CLIENT_SECRET",
-    "AZURE_AD_TENANT_ID"
+    "AZURE_AD_TENANT_ID",
+    "VITE_API_URL"
   ]
 }
