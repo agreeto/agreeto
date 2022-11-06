@@ -1,4 +1,5 @@
 import { type NextPage } from "next";
+import Image from "next/image";
 import { useEffect } from "react";
 
 const Success: NextPage = () => {
@@ -7,9 +8,21 @@ const Success: NextPage = () => {
   }, []);
 
   return (
-    <div>
-      <p>Successfully signed in!</p>
-      <p>Closing this tab...</p>
+    <div className="font-semibold text-xl text-center pt-16 h-screen">
+      <div className="flex justify-center items-center my-16">
+        <div className="h-20 w-20 relative">
+          <Image src="/icon512.png" alt="AgreeTo" layout="fill" />
+        </div>
+        <h1 className="color-primary ml-2 text-4xl font-semibold text-[#2e81ff]">
+          AgreeTo
+        </h1>
+      </div>
+      <p className="text-2xl text-green-600">You are successfully logged in!</p>
+      <br />
+      <p className="text-lg text-gray-600">You can open your extension now.</p>
+      <p className="text-lg text-gray-600">
+        This page will close automatically.
+      </p>
     </div>
   );
 };
