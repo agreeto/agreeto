@@ -10,14 +10,9 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id      String @id @default(cuid())
-    title   String
-    content String
-    userId  String
-    user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
+// ======================================
+// Start Mostly Next-Auth.js
+// ======================================
 model Account {
     id                String  @id @default(cuid())
     userId            String
@@ -33,7 +28,12 @@ model Account {
     session_state     String?
     ext_expires_in    Int?
 
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+    eventGroups EventGroup[]
+    Event       Event[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
 
     @@unique([provider, providerAccountId])
 }
@@ -54,7 +54,10 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
-    posts         Post[]
+
+    createdAt  DateTime    @default(now())
+    updatedAt  DateTime    @default(now()) @updatedAt
+    preference Preference?
 }
 
 model VerificationToken {
@@ -64,3 +67,104 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
+
+// ======================================
+// End Mostly Next-Auth.js
+// ======================================
+
+// ======================================
+// Start Enums
+// ======================================
+
+enum Language {
+    EN
+    DE
+    IT
+    FR
+    ES
+}
+
+enum EventCalendarType {
+    BLOCKER
+}
+
+enum EventResponseStatus {
+    ACCEPTED
+    DECLINED
+    NEEDS_ACTION
+    TENTATIVE
+}
+
+// ======================================
+// End Enums
+// ======================================
+
+// ======================================
+// Start AgreeTo Specifics
+// ======================================
+
+model Preference {
+    id             String   @id @default(cuid())
+    formatLanguage Language @default(EN)
+    user           User     @relation(fields: [userId], references: [id])
+    userId         String   @unique
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+}
+
+model EventGroup {
+    id              String  @id @default(cuid())
+    userId          String
+    accountId       String
+    title           String
+    events          Event[]
+    createBlocker   Boolean @default(false)
+    isSelectionDone Boolean @default(false)
+
+    deletedAt DateTime?
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @default(now()) @updatedAt
+    account   Account   @relation(fields: [accountId], references: [id])
+}
+
+model Event {
+    id             String            @id @default(cuid())
+    userId         String
+    microsoftId    String?
+    eventGroupId   String
+    accountId      String
+    title          String
+    location       String?
+    description    String            @default("")
+    attendees      Attendee[]
+    calendarType   EventCalendarType @default(BLOCKER)
+    startDate      DateTime
+    endDate        DateTime
+    isAgreeToEvent Boolean           @default(true)
+    isSelected     Boolean           @default(false)
+    hasConference  Boolean           @default(false)
+
+    deletedAt  DateTime?
+    createdAt  DateTime   @default(now())
+    updatedAt  DateTime   @default(now()) @updatedAt
+    eventGroup EventGroup @relation(fields: [eventGroupId], references: [id])
+    account    Account    @relation(fields: [accountId], references: [id])
+
+    @@index([eventGroupId])
+}
+
+model Attendee {
+    id             String              @id @default(cuid())
+    email          String
+    name           String
+    surname        String
+    provider       String
+    responseStatus EventResponseStatus
+    Event          Event?              @relation(fields: [eventId], references: [id])
+    eventId        String?
+}
+
+// ======================================
+// End AgreeTo Specifics
+// ======================================
