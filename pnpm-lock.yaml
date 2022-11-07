@@ -172,9 +172,16 @@ importers:
 
   apps/outlook:
     specifiers:
+      '@agreeto/api': workspace:*
+      '@agreeto/auth': workspace:*
       '@agreeto/tailwind-config': workspace:*
       '@agreeto/tsconfig': workspace:*
       '@microsoft/office-js': ^1.1.78
+      '@tanstack/react-location': ^3.7.4
+      '@tanstack/react-query': ^4.13.0
+      '@trpc/client': 10.0.0-rc.2
+      '@trpc/react-query': 10.0.0-rc.2
+      '@trpc/server': 10.0.0-rc.2
       '@types/office-js': ^1.0.266
       '@types/react': ^18.0.24
       '@types/react-dom': ^18.0.8
@@ -186,15 +193,20 @@ importers:
       office-addin-manifest: ^1.9.0
       react: 18.2.0
       react-dom: 18.2.0
-      react-router-dom: ^6.4.0
       typescript: ^4.8.4
       vite: ^3.0.0
       vite-plugin-mkcert: ^1.6.0
     dependencies:
+      '@agreeto/api': link:../../packages/api
+      '@agreeto/auth': link:../../packages/auth
       '@microsoft/office-js': 1.1.82
+      '@tanstack/react-location': 3.7.4_biqbaboplfbrettd7655fr4n2y
+      '@tanstack/react-query': 4.13.4_biqbaboplfbrettd7655fr4n2y
+      '@trpc/client': 10.0.0-rc.2_@trpc+server@10.0.0-rc.2
+      '@trpc/react-query': 10.0.0-rc.2_gbpiwntwg3r4esrcurtf5532ta
+      '@trpc/server': 10.0.0-rc.2
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-      react-router-dom: 6.4.2_biqbaboplfbrettd7655fr4n2y
     devDependencies:
       '@agreeto/tailwind-config': link:../../packages/config/tailwind
       '@agreeto/tsconfig': link:../../packages/config/tsconfig
@@ -1642,7 +1654,7 @@ packages:
       '@prisma/client': '>=2.26.0 || >=3'
       next-auth: ^4
     dependencies:
-      next-auth: 4.15.0_y3vnqhrq6kacn7e7j5j4tjxiry
+      next-auth: 4.15.0_azq6kxkn3od7qdylwkyksrwopy
     dev: false
 
   /@next/env/12.3.1:
@@ -3611,11 +3623,6 @@ packages:
     dependencies:
       '@babel/runtime': 7.19.0
       react: 18.2.0
-    dev: false
-
-  /@remix-run/router/1.0.2:
-    resolution: {integrity: sha512-GRSOFhJzjGN+d4sKHTMSvNeUPoZiDHWmRnXfzaxrqe7dE/Nzlc8BiMSJdLDESZlndM7jIUrZ/F4yWqVYlI0rwQ==}
-    engines: {node: '>=14'}
     dev: false
 
   /@rushstack/eslint-patch/1.2.0:
@@ -10360,29 +10367,6 @@ packages:
       tslib: 2.4.0
       use-callback-ref: 1.3.0_bbvjflvjoibwhtpmedigb26h6y
       use-sidecar: 1.1.2_bbvjflvjoibwhtpmedigb26h6y
-    dev: false
-
-  /react-router-dom/6.4.2_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-yM1kjoTkpfjgczPrcyWrp+OuQMyB1WleICiiGfstnQYo/S8hPEEnVjr/RdmlH6yKK4Tnj1UGXFSa7uwAtmDoLQ==}
-    engines: {node: '>=14'}
-    peerDependencies:
-      react: '>=16.8'
-      react-dom: '>=16.8'
-    dependencies:
-      '@remix-run/router': 1.0.2
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
-      react-router: 6.4.2_react@18.2.0
-    dev: false
-
-  /react-router/6.4.2_react@18.2.0:
-    resolution: {integrity: sha512-Rb0BAX9KHhVzT1OKhMvCDMw776aTYM0DtkxqUBP8dNBom3mPXlfNs76JNGK8wKJ1IZEY1+WGj+cvZxHVk/GiKw==}
-    engines: {node: '>=14'}
-    peerDependencies:
-      react: '>=16.8'
-    dependencies:
-      '@remix-run/router': 1.0.2
-      react: 18.2.0
     dev: false
 
   /react-ssr-prepass/1.5.0_react@18.2.0:
