@@ -87,4 +87,31 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
+
+  /** Events used to control actions */
+  /** @see https://next-auth.js.org/configuration/events */
+  events: {
+    // REVIEW: I don't know if this is the proper way to do this?
+    linkAccount({ account, profile }) {
+      if (!account.provider || !account.providerAccountId || !profile.email) {
+        // should not happen for the providers we are using
+        console.error("Provider didn't send the required data");
+        console.log({ account, profile });
+        return;
+      }
+
+      // Intentionally not `await`ing this to not block the user
+      prisma.account.update({
+        where: {
+          provider_providerAccountId: {
+            provider: account.provider,
+            providerAccountId: account.providerAccountId,
+          },
+        },
+        data: {
+          email: profile.email,
+        },
+      });
+    },
+  },
 };

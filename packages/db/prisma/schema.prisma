@@ -16,6 +16,7 @@ datasource db {
 model Account {
     id                String  @id @default(cuid())
     userId            String
+    email             String?
     type              String
     provider          String
     providerAccountId String

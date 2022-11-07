@@ -46,7 +46,9 @@ export const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
               title="Add Account"
               onClick={() => {
                 window.open(
-                  `http://localhost:3000/api/auth/signin?${new URLSearchParams({
+                  `${
+                    process.env.PLASMO_PUBLIC_WEB_URL
+                  }/api/auth/signin?${new URLSearchParams({
                     callbackUrl: `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/extension`
                   })}`
                 )
