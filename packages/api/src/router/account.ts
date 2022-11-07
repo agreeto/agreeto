@@ -1,5 +1,6 @@
 import { router, privateProcedure } from "../trpc";
 import { z } from "zod";
+// import { TRPCError } from "@trpc/server";
 
 export const accountRouter = router({
   // Get the accounts for the current user
@@ -31,4 +32,24 @@ export const accountRouter = router({
         },
       });
     }),
+
+  // deleteByEmail: privateProcedure
+  //   .input(
+  //     z.object({
+  //       email: z.string().email(),
+  //     })
+  //   )
+  //   .mutation(async ({ ctx, input }) => {
+  //     if (input.email !== ctx.user.email) {
+  //       throw new TRPCError({
+  //         code: "UNAUTHORIZED",
+  //         message: "The entered email does not match your account",
+  //       });
+  //     }
+  //     return ctx.prisma.account.delete({
+  //       where: {
+  //         email: input.email,
+  //       },
+  //     });
+  //   }),
 });
