@@ -1,6 +1,8 @@
 import { privateProcedure, router } from "../trpc";
 import { z } from "zod";
 
+import { Language } from "@agreeto/db";
+
 export const preferenceRouter = router({
   // Get all Preferences belonging to the current user
   byCurrentUser: privateProcedure.query(async ({ ctx }) => {
@@ -26,7 +28,7 @@ export const preferenceRouter = router({
   update: privateProcedure
     .input(
       z.object({
-        formatLanguage: z.enum(["EN", "DE", "IT", "FR", "ES"]),
+        formatLanguage: z.nativeEnum(Language),
       })
     )
     .mutation(async ({ ctx, input }) => {
