@@ -106,10 +106,11 @@ export class MicrosoftCalendarService {
   }
 
   async getEvents({ startDate, endDate }: IGetEvents) {
-    const params: any = {};
+    const params: Record<string, string> = {};
 
-    if (startDate) params.startDateTime = encodeURIComponent(startDate);
-    if (endDate) params.endDateTime = encodeURIComponent(endDate);
+    if (startDate)
+      params.startDateTime = encodeURIComponent(startDate.toISOString());
+    if (endDate) params.endDateTime = encodeURIComponent(endDate.toISOString());
 
     try {
       // Fetch events
@@ -145,11 +146,11 @@ export class MicrosoftCalendarService {
     const params = {
       subject: title,
       start: {
-        dateTime: startDate,
+        dateTime: startDate.toUTCString(),
         timeZone: "UTC",
       },
       end: {
-        dateTime: endDate,
+        dateTime: endDate.toUTCString(),
         timeZone: "UTC",
       },
       attendees: attendeeEmails?.map((email) => ({
@@ -190,7 +191,7 @@ export class MicrosoftCalendarService {
     id: string,
     { hasConference, title, attendeeEmails }: IUpdateEvent
   ) {
-    const params: any = {};
+    const params: Record<string, unknown> = {};
 
     if (attendeeEmails) {
       params.attendees = attendeeEmails.map((email) => ({

@@ -50,10 +50,10 @@ export const eventGroupRouter = router({
           .object({
             id: z.string().optional(),
             title: z.string(),
-            startDate: z.string(),
-            endDate: z.string(),
+            startDate: z.date(),
+            endDate: z.date(),
             attendees: AttendeeValidator.array(),
-            attendeeEmails: z.string().array(),
+            attendeeEmails: z.string().array().optional(),
           })
           .array(),
       })
@@ -130,8 +130,8 @@ export const eventGroupRouter = router({
                 id: ev.id,
                 title: ev.title,
                 attendeeEmails: [...attendeeEmails],
-                startDate: ev.startDate.toISOString(),
-                endDate: ev.endDate.toISOString(),
+                startDate: ev.startDate,
+                endDate: ev.endDate,
               })
               .then(async ({ event }) => {
                 // Update microsoft id of event

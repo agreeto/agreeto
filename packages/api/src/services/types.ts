@@ -3,8 +3,8 @@ import { type Attendee } from "@agreeto/db";
 export interface ICreateEvent {
   id?: string;
   title: string;
-  startDate: string;
-  endDate: string;
+  startDate: Date;
+  endDate: Date;
   attendees?: Attendee[]; // This is used to create attendees on our db
   attendeeEmails?: string[]; // This is used to create attendees on providers
 }
@@ -18,7 +18,7 @@ export interface IUpdateEvent {
 }
 
 export interface IGetEvents {
-  startDate?: string;
-  endDate?: string;
+  startDate?: Date;
+  endDate?: Date;
   email?: string;
 }

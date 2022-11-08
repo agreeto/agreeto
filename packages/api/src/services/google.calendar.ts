@@ -108,10 +108,10 @@ export class GoogleCalendarService {
         id,
         summary: title,
         start: {
-          dateTime: startDate,
+          dateTime: startDate.toISOString(),
         },
         end: {
-          dateTime: endDate,
+          dateTime: endDate.toISOString(),
         },
         extendedProperties: {
           private: {

@@ -6,7 +6,7 @@ import { Language } from "@agreeto/db";
 export const preferenceRouter = router({
   // Get all Preferences belonging to the current user
   byCurrentUser: privateProcedure.query(async ({ ctx }) => {
-    const current = await ctx.prisma.preference.findMany({
+    const current = await ctx.prisma.preference.findFirst({
       where: {
         userId: ctx.user.id,
       },

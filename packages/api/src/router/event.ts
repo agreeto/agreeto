@@ -7,14 +7,66 @@ import { EventResponseStatus, type Event } from "@agreeto/db";
 import { getCalendarService } from "../services/service-helpers";
 
 export const eventRouter = router({
-  // Get all Events belonging to the current user
-  all: privateProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.account.findMany({
-      where: {
-        userId: ctx.user.id,
-      },
-    });
-  }),
+  // Get Accounts and AgreeTo Events
+  all: privateProcedure
+    .input(z.object({ startDate: z.date(), endDate: z.date() }))
+    .query(async ({ ctx, input }) => {
+      // Get accounts and events from the current user
+      const [accounts, userEvents] = await Promise.all([
+        ctx.prisma.account.findMany({
+          where: {
+            userId: ctx.user.id,
+          },
+        }),
+        ctx.prisma.event.findMany({
+          where: {
+            userId: ctx.user.id,
+            deletedAt: null,
+            startDate: {
+              gte: input.startDate,
+            },
+            endDate: {
+              lte: input.endDate,
+            },
+          },
+          include: {
+            account: true,
+          },
+        }),
+      ]);
+
+      // Get calendar Events
+      const calendarEvents = await Promise.all(
+        accounts.map(async (account) => {
+          const { service } = getCalendarService(account);
+          const { events } = await service.getEvents(input);
+          return events.map((e) => ({ ...e, account }));
+        })
+      );
+
+      // Merge events
+      const allEvents = [...userEvents, ...calendarEvents.flat()];
+
+      // Remove duplicate events
+      const addedEvents = new Map<string | undefined, boolean>();
+      const newEvents = allEvents.filter((event) => {
+        const { id, startDate, endDate, title } = event;
+        // TODO: Find a better way for composite key
+        // This composite key is used to avoid duplicate events which have the same name and date, but a different id
+        // Note: Having different ids occur when a user with multiple accounts creates an event. The reason for this is that
+        // we cannot update non-primary calender ids only by having them attendees
+        const compositeKey = `${title},${startDate},${endDate}`;
+        // If an event with the same is added before, just skip it to avoid duplicates
+        if (addedEvents.has(compositeKey) || addedEvents.has(id)) {
+          return false;
+        }
+        addedEvents.set(compositeKey, true);
+        addedEvents.set(id, true);
+        return true;
+      });
+
+      return newEvents;
+    }),
 
   // Confirm an Event by Id
   confirm: privateProcedure
@@ -174,8 +226,8 @@ export const eventRouter = router({
   directoryUsers: privateProcedure
     .input(
       z.object({
-        startDate: z.string(),
-        endDate: z.string(),
+        startDate: z.date(),
+        endDate: z.date(),
         users: z
           .object({
             id: z.string(),
