@@ -4,6 +4,7 @@ import { TRPCError } from "@trpc/server";
 import { GoogleCalendarService } from "../services/google.calendar";
 import { EventValidator } from "../validators/event";
 import { EventResponseStatus, type Event } from "@agreeto/db";
+import { getCalendarService } from "../services/service-helpers";
 
 export const eventRouter = router({
   // Get all Events belonging to the current user
@@ -41,6 +42,13 @@ export const eventRouter = router({
         where: {
           id: input.id,
         },
+        include: {
+          eventGroup: {
+            include: {
+              account: true,
+            },
+          },
+        },
       });
 
       if (!event) {
@@ -57,21 +65,18 @@ export const eventRouter = router({
         });
       }
 
-      // Confirm the event
-      const eventPromise = Promise.all([
+      const [updatedEvent, _, eventGroup] = await Promise.all([
+        // Update event
         ctx.prisma.event.update({
           where: { id: event.id },
           data: {
             isSelected: true,
             title: input.title,
             hasConference: input.addConference,
-            attendees: {
-              createMany: {
-                data: input.attendees,
-              },
-            },
+            // attendees: input.attendees,
           },
         }),
+        // Delete all other events in the group
         ctx.prisma.event.updateMany({
           where: {
             eventGroupId: event.eventGroupId,
@@ -82,35 +87,21 @@ export const eventRouter = router({
           data: {
             deletedAt: new Date(),
             title: input.title,
-            // FIXME: How do I update this???
-            // attendees:
+            // attendees: input.attendees,
+          },
+        }),
+        // Update event group
+        ctx.prisma.eventGroup.update({
+          where: { id: event.eventGroupId },
+          data: {
+            isSelectionDone: true,
+            title: input.title,
           },
         }),
       ]);
 
-      // Update the event group
-      const eventGroupPromise = ctx.prisma.eventGroup.update({
-        where: { id: event.eventGroupId },
-        data: {
-          isSelectionDone: true,
-          title: input.title,
-        },
-      });
-
-      const [{ selected, deleted }, eventGroup] = await Promise.all([
-        eventPromise,
-        eventGroupPromise,
-      ]);
-
-      if (eventGroup.createBlocker) {
-        await Promise.all([
-          // Delete from actual calendars if created
-          // Update
-        ]);
-      }
-
       // Get deleted rows
-      const deleted = await ctx.prisma.event.findMany({
+      const deletedEvents = await ctx.prisma.event.findMany({
         where: {
           eventGroupId: event.eventGroupId,
           id: {
@@ -119,7 +110,64 @@ export const eventRouter = router({
         },
       });
 
-      return { selected: result[0], deleted };
+      if (eventGroup.createBlocker) {
+        // Delete events from calendar
+        const deletePromise = (async () => {
+          const { account } = event.eventGroup;
+          await Promise.all(
+            deletedEvents.map((del) => {
+              const { service, eventId } = getCalendarService(account, del);
+              return service
+                .deleteEvent(eventId as string)
+                .catch((err) =>
+                  console.error(
+                    `Failed to delete the event from the calendar service for the event: ${eventId}`,
+                    err
+                  )
+                );
+            })
+          );
+        })();
+
+        // Update event in calendar
+        const updatePromise = (async () => {
+          const accounts = await ctx.prisma.account.findMany({
+            where: { userId: ctx.user.id },
+          });
+          const primaryAccount = accounts.find((a) => a.isPrimary);
+          if (!primaryAccount) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "User has no primary account",
+            });
+          }
+
+          // Create a unique array of attendee and user's other emails
+          const attendeeEmails = [
+            ...new Set([
+              ...input.attendees.map((a) => a.email),
+              ...accounts
+                .map((a) => a.email)
+                .filter((e): e is string => Boolean(e)),
+            ]),
+          ];
+
+          const { service, eventId } = getCalendarService(
+            primaryAccount,
+            event
+          );
+          await service.updateEvent(eventId as string, {
+            hasConference: input.addConference,
+            title: input.title,
+            attendeeEmails,
+          });
+        })();
+
+        // Await both promises
+        await Promise.all([deletePromise, updatePromise]);
+      }
+
+      return updatedEvent;
     }),
 
   // Get directory users with belonging events

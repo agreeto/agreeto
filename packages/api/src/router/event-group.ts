@@ -1,36 +1,9 @@
-import { type Account, type Event } from "@agreeto/db";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { GoogleCalendarService } from "../services/google.calendar";
-import { MicrosoftCalendarService } from "../services/microsoft.calendar";
+import { getCalendarService } from "../services/service-helpers";
+
 import { privateProcedure, router } from "../trpc";
 import { AttendeeValidator } from "../validators/attendee";
-
-const getCalendarService = (account: Account, event?: Event) => {
-  switch (account.provider) {
-    case "google":
-      return {
-        service: new GoogleCalendarService(
-          account.access_token,
-          account.refresh_token
-        ),
-        eventId: event?.id,
-      };
-    case "azure-ad":
-      return {
-        service: new MicrosoftCalendarService(
-          account.access_token,
-          account.refresh_token
-        ),
-        eventId: event?.microsoftId,
-      };
-    default:
-      throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: `Provider ${account.provider} not supported`,
-      });
-  }
-};
 
 export const eventGroupRouter = router({
   byId: privateProcedure
