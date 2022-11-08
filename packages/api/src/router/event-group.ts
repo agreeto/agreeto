@@ -64,7 +64,9 @@ export const eventGroupRouter = router({
           userId: ctx.user.id,
         },
       });
-      const accountEmails = accounts.map((a) => a.email) as string[];
+      const accountEmails = accounts
+        .map((a) => a.email)
+        .filter((e): e is string => Boolean(e));
       const primaryAccount = accounts.find((a) => a.isPrimary);
 
       if (!primaryAccount) {
