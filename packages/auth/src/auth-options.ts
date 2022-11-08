@@ -3,6 +3,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import AzureAdProvider from "next-auth/providers/azure-ad";
+import { azureScopes, googleScopes } from "./scopes";
 
 /**
  * The process.env is loaded from the Next.js application
@@ -36,14 +37,7 @@ export const authOptions: NextAuthOptions = {
         params: {
           access_type: "offline",
           prompt: "consent",
-          scope: [
-            "openid",
-            "https://www.googleapis.com/auth/calendar.readonly",
-            "https://www.googleapis.com/auth/userinfo.email",
-            "https://www.googleapis.com/auth/userinfo.profile",
-            "https://www.googleapis.com/auth/calendar.events",
-            "https://www.googleapis.com/auth/admin.directory.user.readonly",
-          ].join(" "),
+          scope: googleScopes.join(" "),
         },
       },
     }),
@@ -55,19 +49,7 @@ export const authOptions: NextAuthOptions = {
         params: {
           access_type: "offline",
           prompt: "select_account",
-          // TODO: Validate this is the correct scope and that it's working
-          // scope: [
-          //   "user.read",
-          //   "openid",
-          //   "profile",
-          //   "email",
-          //   "offline_access",
-          //   "Calendars.Read",
-          //   "Calendars.ReadWrite",
-          //   "Calendars.Read",
-          //   "OnlineMeetings.Read",
-          //   "OnlineMeetings.ReadWrite",
-          // ].join(" "),
+          scope: azureScopes.join(" "),
         },
       },
     }),
@@ -92,16 +74,24 @@ export const authOptions: NextAuthOptions = {
   /** @see https://next-auth.js.org/configuration/events */
   events: {
     // REVIEW: I don't know if this is the proper way to do this?
-    linkAccount({ account, profile }) {
+    async linkAccount({ account, user, profile }) {
       if (!account.provider || !account.providerAccountId || !profile.email) {
         // should not happen for the providers we are using
         console.error("Provider didn't send the required data");
-        console.log({ account, profile });
+        console.log({ account, user, profile });
         return;
       }
 
-      // Intentionally not `await`ing this to not block the user
-      prisma.account.update({
+      const dbUser = await prisma.user.findUnique({
+        where: {
+          id: user.id,
+        },
+        include: {
+          accounts: true,
+        },
+      });
+
+      await prisma.account.update({
         where: {
           provider_providerAccountId: {
             provider: account.provider,
@@ -109,7 +99,10 @@ export const authOptions: NextAuthOptions = {
           },
         },
         data: {
+          // Set email to the one from the oauth provider's profile
           email: profile.email,
+          // Set account to primary if it's the first one
+          isPrimary: !!(dbUser && dbUser.accounts.length <= 1),
         },
       });
     },

@@ -16,18 +16,21 @@ datasource db {
 model Account {
     id                String  @id @default(cuid())
     userId            String
+    // Email is optional cause it's not set at login, but with a custom event
+    // Meaning it is null initially, but should always be set after the first login
     email             String?
     type              String
     provider          String
     providerAccountId String
-    refresh_token     String? @db.Text
-    access_token      String? @db.Text
-    expires_at        Int?
-    token_type        String?
-    scope             String?
+    refresh_token     String  @db.Text
+    access_token      String  @db.Text
+    expires_at        Int
+    token_type        String
+    scope             String
     id_token          String? @db.Text
     session_state     String?
     ext_expires_in    Int?
+    isPrimary         Boolean @default(false)
 
     user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
     eventGroups EventGroup[]

@@ -10,6 +10,8 @@
   "dependencies": {
     "@agreeto/auth": "workspace:*",
     "@agreeto/db": "workspace:*",
+    "@azure/msal-node": "^1.12.1",
+    "@microsoft/microsoft-graph-client": "^3.0.3",
     "@trpc/server": "10.0.0-rc.2",
     "googleapis": "^109.0.1",
     "superjson": "1.9.1",

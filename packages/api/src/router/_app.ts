@@ -1,7 +1,7 @@
 import { router } from "../trpc";
 
 import { accountRouter } from "./account";
-import { eventRouter } from "./event/event.router";
+import { eventRouter } from "./event";
 import { sessionRouter } from "./session";
 import { userRouter } from "./user";
 
