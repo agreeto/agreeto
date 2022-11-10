@@ -1,4 +1,4 @@
-import { router, privateProcedure } from "../trpc";
+import { router, privateProcedure, publicProcedure } from "../trpc";
 import { z } from "zod";
 // import { TRPCError } from "@trpc/server";
 
@@ -7,6 +7,13 @@ export const accountRouter = router({
   me: privateProcedure.query(async ({ ctx }) => {
     return ctx.prisma.account.findMany({
       where: { userId: ctx.user.id },
+      include: { color: true },
+    });
+  }),
+
+  colors: publicProcedure.query(({ ctx }) => {
+    return ctx.prisma.accountColor.findMany({
+      orderBy: { order: "asc" },
     });
   }),
 
@@ -25,13 +32,16 @@ export const accountRouter = router({
           userId: ctx.user.id,
           email: { not: input.email },
         },
-        select: {
-          id: true,
-          provider: true,
-          email: true,
-        },
+        include: { color: true },
       });
     }),
+
+  // TODO:
+  // downgrade: privateProcedure.input(z.object({
+  //   id: z.string(),
+  // })).query(async ({ ctx, input }) => {
+
+  // }),
 
   // deleteByEmail: privateProcedure
   //   .input(

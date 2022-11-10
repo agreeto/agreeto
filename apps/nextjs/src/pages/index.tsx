@@ -2,8 +2,12 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { trpc } from "../utils/trpc";
 
+const startDate = new Date("2021-01-01T00:00:00.000Z");
+const endDate = new Date("2022-12-31T23:59:59.999Z");
+
 const Home: NextPage = () => {
-  const currentUser = trpc.user.current.useQuery();
+  const currentUser = trpc.user.me.useQuery();
+  const eventQuery = trpc.event.all.useQuery({ startDate, endDate });
 
   return (
     <>
@@ -26,7 +30,9 @@ const Home: NextPage = () => {
         <h1 className="text-5xl md:text-[5rem] leading-normal font-extrabold text-gray-700">
           Create <span className="text-purple-300">T3</span> App
         </h1>
-        <div className="flex items-center justify-center w-full pt-6 text-2xl text-blue-500"></div>
+        <pre className="bg-gray-200 overflow-scroll w-4/5">
+          {JSON.stringify(eventQuery.data, null, 2)}
+        </pre>
       </main>
     </>
   );

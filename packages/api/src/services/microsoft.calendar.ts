@@ -101,7 +101,7 @@ export class MicrosoftCalendarService {
     };
   }
 
-  private toEvents(items: MicrosoftEvent[]): Partial<Event>[] {
+  private toEvents(items: MicrosoftEvent[]) {
     return items.map((item) => this.toEvent(item));
   }
 
@@ -123,11 +123,14 @@ export class MicrosoftCalendarService {
         .top(100)
         .get();
 
+      console.log(response);
+
       return {
         rawData: response,
         events: this.toEvents(response.value || []),
       };
     } catch (err) {
+      console.error(err);
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "An error occured in Microsoft services",

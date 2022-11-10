@@ -14,9 +14,8 @@ export const eventRouter = router({
       // Get accounts and events from the current user
       const [accounts, userEvents] = await Promise.all([
         ctx.prisma.account.findMany({
-          where: {
-            userId: ctx.user.id,
-          },
+          where: { userId: ctx.user.id },
+          include: { color: true },
         }),
         ctx.prisma.event.findMany({
           where: {
@@ -30,18 +29,27 @@ export const eventRouter = router({
             },
           },
           include: {
-            account: true,
+            account: {
+              include: {
+                color: true,
+              },
+            },
+            attendees: true,
           },
         }),
       ]);
 
       // Get calendar Events
       const calendarEvents = await Promise.all(
-        accounts.map(async (account) => {
-          const { service } = getCalendarService(account);
-          const { events } = await service.getEvents(input);
-          return events.map((e) => ({ ...e, account }));
-        })
+        accounts
+          // FIXME: REMOVE GOOGLE FILTER
+          .filter((a) => a.provider === "google")
+          .map(async (account) => {
+            const { service } = getCalendarService(account);
+            const { events } = await service.getEvents(input);
+            console.log("events", events);
+            return events.map((e) => ({ ...e, account }));
+          })
       );
 
       // Merge events
@@ -64,7 +72,6 @@ export const eventRouter = router({
         addedEvents.set(id, true);
         return true;
       });
-
       return newEvents;
     }),
 
@@ -185,6 +192,7 @@ export const eventRouter = router({
         const updatePromise = (async () => {
           const accounts = await ctx.prisma.account.findMany({
             where: { userId: ctx.user.id },
+            include: { color: true },
           });
           const primaryAccount = accounts.find((a) => a.isPrimary);
           if (!primaryAccount) {
@@ -243,6 +251,7 @@ export const eventRouter = router({
     .query(async ({ ctx, input }) => {
       const accounts = await ctx.prisma.account.findMany({
         where: { userId: ctx.user.id },
+        include: { color: true },
       });
       const googleAccounts = accounts.filter(
         (account) => account.provider === "google"

@@ -60,20 +60,13 @@ export const userRouter = router({
     )
     .query(async ({ ctx, input }) => {
       const accounts = await ctx.prisma.account.findMany({
-        where: {
-          userId: ctx.user.id,
-        },
+        where: { userId: ctx.user.id },
+        include: { color: true },
       });
 
       const promises = accounts
         .filter((account) => account.provider === "google")
         .map((account) => {
-          if (!account.access_token || !account.refresh_token) {
-            throw new TRPCError({
-              code: "INTERNAL_SERVER_ERROR",
-              message: "Account is missing access token or refresh token",
-            });
-          }
           return getGoogleUsers({
             search: input.search,
             accessToken: account.access_token,

@@ -1,0 +1,117 @@
+$grey-75: #E3E5E8;
+$grey-300: #6A7482;
+$grey-600: #3A3F46;
+
+.fc-toolbar-chunk {
+  display: flex;
+  align-items: center;
+}
+
+.fc-toolbar-title {
+  color: $grey-600;
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.fc-prev-button.fc-button.fc-button-primary {
+  background: transparent;
+  border: none;
+  color: $grey-600;
+
+  &:active, &:focus, &:active:focus {
+    color: $grey-600;
+    box-shadow: none;
+    background: transparent;
+  }
+}
+
+.fc-next-button.fc-button.fc-button-primary {
+  background: transparent;
+  border: none;
+  color: $grey-600;
+
+  &:active, &:focus, &:active:focus {
+    color: $grey-600;
+    box-shadow: none;
+    background: transparent;
+  }
+}
+
+.fc-today-button.fc-button.fc-button-primary {
+  background: transparent;
+  border: none;
+  color: $grey-600;
+  font-size: 14px;
+  border: 1.5px solid $grey-75;
+  border-radius: 4px;
+
+  &:active, &:focus, &:active:focus {
+    border: 1.5px solid $grey-75;
+    color: $grey-600;
+    box-shadow: none;
+    background: transparent;
+  }
+}
+
+.fc-today-button.fc-button.fc-button-primary:disabled {
+  display: none;
+}
+
+.fc-feedBackButton-button.fc-button.fc-button-primary {
+  background: transparent;
+  border: none;
+  color: $grey-300;
+  font-size: 11px;
+
+  &:active, &:focus, &:active:focus {
+    color: $grey-600;
+    box-shadow: none;
+    background: transparent;
+  }
+}
+
+.fc-timegrid-slot.fc-timegrid-slot-lane.fc-timegrid-slot-minor,
+.fc-timegrid-slot.fc-timegrid-slot-label.fc-scrollgrid-shrink,
+.fc-timegrid-slot.fc-timegrid-slot-label.fc-timegrid-slot-minor {
+  border-top: none;
+}
+
+.fc-timegrid-slot.fc-timegrid-slot-lane {
+  border-top: 0.5px solid $grey-75;
+}
+
+.fc-timegrid-slot {
+  // Height of the slots
+  // Update this and renderSlotLabels style to change the height
+  height: 12px !important;
+  line-height: 12px !important;
+}
+
+.fc-theme-standard td {
+  border-left: 0.5px solid $grey-75;
+  border-right: 0.5px solid $grey-75;
+}
+
+.fc-scrollgrid.fc-scrollgrid-liquid {
+  border: none;
+}
+
+.fc-col-header-cell.fc-day {
+  border-left: hidden;
+}
+
+.fc-day-today {
+  background: transparent !important;
+}
+
+.fc-scrollgrid-section > th {
+  border: hidden;
+}
+
+.fc-col-header > thead {
+  border: hidden;
+}
+
+.fc-timegrid-now-indicator-arrow {
+  display: none;
+}

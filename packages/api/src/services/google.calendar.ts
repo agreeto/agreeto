@@ -67,7 +67,7 @@ export class GoogleCalendarService {
     };
   }
 
-  private toEvents(items: calendar_v3.Schema$Event[]): Partial<Event>[] {
+  private toEvents(items: calendar_v3.Schema$Event[]) {
     return items.map((item) => this.toEvent(item));
   }
 
@@ -85,6 +85,9 @@ export class GoogleCalendarService {
 
     // Fetch events
     const response = await this.calendarClient.events.list(params);
+
+    console.log("FROM GOOGLE");
+    console.dir(response.data.items, { depth: 4 });
 
     return {
       rawData: response.data,

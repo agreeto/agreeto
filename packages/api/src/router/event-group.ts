@@ -15,10 +15,17 @@ export const eventGroupRouter = router({
           deletedAt: null,
         },
         include: {
-          account: true,
+          account: {
+            include: {
+              color: true,
+            },
+          },
           events: {
             where: {
               deletedAt: null,
+            },
+            include: {
+              attendees: true,
             },
           },
         },
@@ -60,9 +67,8 @@ export const eventGroupRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const accounts = await ctx.prisma.account.findMany({
-        where: {
-          userId: ctx.user.id,
-        },
+        where: { userId: ctx.user.id },
+        include: { color: true },
       });
       const accountEmails = accounts
         .map((a) => a.email)

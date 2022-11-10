@@ -31,18 +31,12 @@ export const authOptions: NextAuthOptions = {
     // Override the adapter to add `color` field
     async linkAccount(account) {
       const currentAccounts = await prisma.account.findMany({
-        where: {
-          userId: account.userId,
-        },
-        include: {
-          color: true,
-        },
+        where: { userId: account.userId },
+        include: { color: true },
       });
 
       const colors = await prisma.accountColor.findMany({
-        orderBy: {
-          order: "asc",
-        },
+        orderBy: { order: "asc" },
       });
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       let colorId = colors[0]!.id;
