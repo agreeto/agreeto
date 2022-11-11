@@ -15,10 +15,12 @@ export const useIsAuthed = () => {
   const validateToken = trpcApi.session.validate.useMutation({
     onSuccess() {
       setIsAuthed(true)
-      setIsLoading(false)
     },
     onSettled() {
       setIsLoading(false)
+    },
+    onError() {
+      setIsAuthed(false)
     }
   })
 

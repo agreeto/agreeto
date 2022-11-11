@@ -6,17 +6,10 @@ import { Popover } from "@headlessui/react";
 import OutsideClickHandler from "react-outside-click-handler";
 import searchIcon from "../../assets/search.svg";
 import uniq from "lodash/uniq";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  addTimeZone,
-  changeTimeZone,
-  deleteTimeZone,
-} from "../../redux/time-zone.slice";
-import type { RootState } from "../../redux/store";
-import { getTimeZoneAbv } from "../../utils/time-zone.helper";
-import { Membership } from "@agreeto/db";
+import { Membership, getTimeZoneAbv } from "@agreeto/calendar-core";
 import { Float } from "@headlessui-float/react";
 import { trpc } from "../../utils/trpc";
+import { useStore } from "../../utils/store";
 
 type Props = {
   value: string;
@@ -34,15 +27,14 @@ const TimeZoneSelect: FC<Props> = ({
   referenceDate,
   onPageChange,
 }) => {
-  const dispatch = useDispatch();
-
   const { data: user } = trpc.user.me.useQuery();
   const isFree = user?.membership === Membership.FREE;
 
-  // Redux
-  const { recentlyUsedTimeZones, timeZones } = useSelector(
-    (state: RootState) => state.timeZone
-  );
+  const recentlyUsedTimeZones = useStore((s) => s.recentlyUsedTimeZones);
+  const timeZones = useStore((s) => s.timeZones);
+  const deleteTimeZone = useStore((s) => s.deleteTimeZone);
+  const addTimeZone = useStore((s) => s.addTimeZone);
+  const changeTimeZone = useStore((s) => s.changeTimeZone);
 
   const [isOpen, setIsOpen] = useState(false);
   const [showProTooltip, setShowProTooltip] = useState(false);
@@ -117,7 +109,7 @@ const TimeZoneSelect: FC<Props> = ({
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
-                      dispatch(deleteTimeZone(value));
+                      deleteTimeZone(value);
                     }}
                   >
                     X
@@ -137,7 +129,7 @@ const TimeZoneSelect: FC<Props> = ({
               This feature is part of the Pro Plan
             </div>
             <div
-              className="w-full mt-8 h-8 flex justify-center items-center cursor-pointer border rounded border-primary color-primary cursor-pointer"
+              className="w-full mt-8 h-8 flex justify-center items-center border rounded border-primary color-primary cursor-pointer"
               onClick={() => onPageChange?.("settings")}
             >
               Upgrade
@@ -257,9 +249,9 @@ const TimeZoneSelect: FC<Props> = ({
                           className="px-5 h-8 text-sm flex items-center justify-between cursor-pointer hover:bg-gray-300"
                           onClick={() => {
                             if (type === "addIcon") {
-                              dispatch(addTimeZone(tz));
+                              addTimeZone(tz);
                             } else {
-                              dispatch(changeTimeZone({ timeZone: tz, index }));
+                              changeTimeZone(tz, index);
                             }
                           }}
                         >
@@ -272,6 +264,7 @@ const TimeZoneSelect: FC<Props> = ({
                           {isSame && (
                             <div>
                               <img
+                                alt=""
                                 className="w-4 h-4"
                                 src={checkmarkBlueIcon}
                               />

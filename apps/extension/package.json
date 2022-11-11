@@ -13,6 +13,7 @@
   "dependencies": {
     "@agreeto/api": "workspace:*",
     "@agreeto/auth": "workspace:*",
+    "@agreeto/calendar-react": "workspace:*",
     "@fullcalendar/common": "^5.11.3",
     "@fullcalendar/interaction": "^5.11.3",
     "@fullcalendar/react": "^5.11.2",

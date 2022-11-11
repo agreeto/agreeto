@@ -1,14 +1,17 @@
-import { type Preference, Language } from "@agreeto/db";
+import { Language } from "../types";
 import { de, enUS, es, fr, it } from "date-fns/locale";
 import { type Locale } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
+import { type RouterOutputs } from "@agreeto/api";
 
 interface DateFnsTzOptions {
+  timeZone: string;
   locale?: Locale;
-  timeZone?: string;
 }
 
-export const getCopyTitle = (preference?: Preference) => {
+export const getCopyTitle = (
+  preference?: RouterOutputs["preference"]["byCurrentUser"]
+) => {
   switch (preference?.formatLanguage) {
     case Language.DE:
       return "Ich bin zu folgenden Zeiten verfügbar:";
@@ -25,17 +28,19 @@ export const getCopyTitle = (preference?: Preference) => {
 
 export const getHourText = (
   date: Date,
-  { locale, timeZone }: DateFnsTzOptions
+  { timeZone = "UTC", locale }: DateFnsTzOptions
 ) => {
   switch (locale) {
     case enUS:
-      return formatInTimeZone(date, timeZone!, "hh:mmaaa", { locale });
+      return formatInTimeZone(date, timeZone, "hh:mmaaa", { locale });
     default:
-      return formatInTimeZone(date, timeZone!, "HH:mm", { locale });
+      return formatInTimeZone(date, timeZone, "HH:mm", { locale });
   }
 };
 
-export const getDateLocale = (preference?: Preference) => {
+export const getDateLocale = (
+  preference?: RouterOutputs["preference"]["byCurrentUser"]
+) => {
   switch (preference?.formatLanguage) {
     case Language.DE:
       return de;

@@ -1,3 +1,4 @@
+import Calendar from "@agreeto/calendar-react"
 import {
   type ReactLocationOptions,
   type Route,
@@ -7,7 +8,7 @@ import {
 import { SignIn } from "~features/auth"
 import { trpcApi } from "~features/trpc/api/hooks"
 
-import { Calendar } from "./routes/calendar"
+import { Calendar as CalendarLite } from "./routes/calendar"
 import { Settings } from "./routes/settings"
 
 // Create a memory history
@@ -32,6 +33,10 @@ export const getRoutes: () => Route[] = () => {
           //   const events = await utils.post.all.fetch()
           //   return { user, events }
           // },
+          element: <CalendarLite />
+        },
+        {
+          path: "calendar-new",
           element: <Calendar />
         },
         {
@@ -41,7 +46,7 @@ export const getRoutes: () => Route[] = () => {
           async loader({ params }) {
             console.log({ params })
             // FIXME: Should prob not include all this information
-            utils.user.myAccounts.fetch()
+            utils.account.me.fetch()
             return {}
             // accounts: await utils.account.all.fetch()
           }

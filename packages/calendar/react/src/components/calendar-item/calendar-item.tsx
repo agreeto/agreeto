@@ -19,15 +19,19 @@ import { getTimezoneOffset } from "date-fns-tz";
 import "./calendar-item.scss";
 import type { FC } from "react";
 import { useEffect, useRef } from "react";
-import { EventResponseStatus } from "@agreeto/db";
+import { EventResponseStatus } from "@agreeto/calendar-core";
 import { eventMocks } from "./mock";
 import { ulid } from "ulid";
-import { getDateLocale, getHourText } from "../../utils/locale.helper";
+import {
+  getDateLocale,
+  getHourText,
+  getPrimaryTimeZone,
+} from "@agreeto/calendar-core";
 import TimeZoneSelect from "./time-zone-select";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../redux/store";
-import { getPrimaryTimeZone } from "../../utils/time-zone.helper";
-import { type RouterOutputs, trpc } from "../../utils/trpc";
+
+import { trpc } from "../../utils/trpc";
+import { type RouterOutputs } from "@agreeto/api";
+import { useStore } from "../../utils/store";
 
 type EventGroupEvent = RouterOutputs["eventGroup"]["byId"]["events"][number];
 type Event = RouterOutputs["event"]["all"][number];
@@ -69,7 +73,7 @@ const CalendarItem: FC<Props> = ({
   const enableMock = false;
 
   // Redux
-  const { timeZones } = useSelector((state: RootState) => state.timeZone);
+  const timeZones = useStore((s) => s.timeZones);
   const primaryTimeZone = getPrimaryTimeZone(timeZones);
 
   const { data: currentUser } = trpc.user.me.useQuery();

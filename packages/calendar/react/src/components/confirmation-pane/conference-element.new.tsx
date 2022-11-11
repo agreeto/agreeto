@@ -1,5 +1,5 @@
 import React from "react";
-import { type RouterOutputs } from "../../utils/trpc";
+import { type RouterOutputs } from "@agreeto/api";
 import checkMark2Icon from "../../assets/check-mark-2.png";
 import googleMeetIcon from "../../assets/google-meet.svg";
 import teamsIcon from "../../assets/ms-teams.svg";

@@ -4,17 +4,17 @@ import closeIcon from "../../assets/close.svg";
 import backIcon from "../../assets/double-arrow-left.svg";
 
 import { Attendees } from "./../action-pane/attendees";
-import { EventResponseStatus } from "@agreeto/db";
+import { EventResponseStatus } from "@agreeto/calendar-core";
 // TODO: This modal should come from `ui` package. I disabled it because we are having trouble with tailwindcss
 // on `ext` app when we import the modal from the `ui` package
 import { Modal } from "../modal";
 
-import { useDispatch } from "react-redux";
-import { changePane } from "../../redux/view.slice";
-import { type RouterInputs, trpc, type RouterOutputs } from "../../utils/trpc";
+import { type RouterInputs, type RouterOutputs } from "@agreeto/api";
+import { trpc } from "../../utils/trpc";
 import { ConferenceElement } from "./conference-element.new";
 import { EventElement } from "./event-element.new";
 import { Title } from "./title.new";
+import { useStore } from "../../utils/store";
 
 type Event = RouterOutputs["event"]["all"][number];
 type EventGroupEvent = RouterOutputs["eventGroup"]["byId"]["events"][number];
@@ -46,8 +46,9 @@ const ConfirmationPane: FC<Props> = ({
   directoryUsersWithEvents,
   onDirectoryUsersWithEventsChange,
 }) => {
-  const dispatch = useDispatch();
   const utils = trpc.useContext();
+
+  const changePane = useStore((s) => s.changePane);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [addConference, setAddConference] = useState(false);
@@ -106,7 +107,7 @@ const ConfirmationPane: FC<Props> = ({
           autoClose: 1000,
           type: "success",
         });
-        dispatch(changePane("action"));
+        changePane("action");
       },
       onError() {
         toast("Failed to delete event group", {
@@ -119,7 +120,7 @@ const ConfirmationPane: FC<Props> = ({
     });
 
   const handleSave = async () => {
-    if (!checkedEvent) {
+    if (!checkedEvent || !checkedEvent.id) {
       toast("Please select a slot", {
         position: "bottom-center",
         hideProgressBar: true,
@@ -131,7 +132,7 @@ const ConfirmationPane: FC<Props> = ({
 
     // Save events to DB
     confirmEvent({
-      id: checkedEvent.id!,
+      id: checkedEvent.id,
       addConference,
       title,
       attendees: unknownAttendees.concat(
@@ -164,7 +165,7 @@ const ConfirmationPane: FC<Props> = ({
                 src={backIcon}
                 alt="back"
                 className="cursor-pointer w-8 h-8"
-                onClick={() => dispatch(changePane("action"))}
+                onClick={() => changePane("action")}
               />
             </div>
 

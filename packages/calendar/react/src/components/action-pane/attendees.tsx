@@ -3,14 +3,15 @@ import uniqBy from "lodash/uniqBy";
 import { type FC } from "react";
 import { useCallback, useEffect, useState } from "react";
 import OutsideClickHandler from "react-outside-click-handler";
-import { EventResponseStatus, Membership } from "@agreeto/db";
+import { EventResponseStatus, Membership } from "@agreeto/calendar-core";
 import searchIcon from "../../assets/search.svg";
-import { getNextColor } from "../../utils/color.helper";
+import { getNextColor } from "@agreeto/calendar-core";
 import { Spinner } from "../spinner";
 import { SelectedAttendeeCard } from "./selected-attendee-card";
 import { UnknownAttendeeCard } from "./unknown-attendee-card";
 import { Float } from "@headlessui-float/react";
-import { type RouterInputs, type RouterOutputs, trpc } from "../../utils/trpc";
+import { trpc } from "../../utils/trpc";
+import { type RouterInputs, type RouterOutputs } from "@agreeto/api";
 
 type Props = {
   eventsQuery: RouterInputs["event"]["all"];

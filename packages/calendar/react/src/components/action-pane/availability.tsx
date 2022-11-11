@@ -10,22 +10,20 @@ import flagEsIcon from "../../assets/flag-es.svg";
 import flagItIcon from "../../assets/flag-it.svg";
 import flagFrIcon from "../../assets/flag-fr.svg";
 import arrowDownIcon from "../../assets/arrow-down.svg";
-import { convertToDate } from "../../utils/date.helper";
-import { copyToClipboard, getGroupedSlots } from "../../utils/event.helper";
-import { ulid } from "ulid";
-
-import { Language, Membership } from "@agreeto/db";
 import {
+  convertToDate,
+  copyToClipboard,
+  getGroupedSlots,
   getCopyTitle,
   getDateLocale,
   getHourText,
-} from "../../utils/locale.helper";
+  getTimeZoneAbv,
+} from "@agreeto/calendar-core";
+import { ulid } from "ulid";
+import { Language, Membership } from "@agreeto/calendar-core";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import type { RootState } from "../../redux/store";
-import { useDispatch, useSelector } from "react-redux";
-import { changeSelectedTimeZone } from "../../redux/time-zone.slice";
-import { getTimeZoneAbv } from "../../utils/time-zone.helper";
 import { trpc } from "../../utils/trpc";
+import { useStore } from "../../utils/store";
 
 type Props = {
   selectedSlots: EventInput[];
@@ -34,25 +32,25 @@ type Props = {
 };
 
 const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
-  const dispatch = useDispatch();
   const utils = trpc.useContext();
 
-  // Redux
-  const { timeZones, selectedTimeZone } = useSelector(
-    (state: RootState) => state.timeZone
-  );
+  const timeZones = useStore((s) => s.timeZones);
+  const selectedTimeZone = useStore((s) => s.selectedTimeZone);
+  const changeSelectedTimeZone = useStore((s) => s.changeSelectedTimeZone);
 
   const { data: user } = trpc.user.me.useQuery();
   const isFree = user?.membership === Membership.FREE;
+
   const { data: preference, isFetching: isFetchingPreference } =
     trpc.preference.byCurrentUser.useQuery();
+  const locale = getDateLocale(preference);
+
   const { mutate: updatePreference, isLoading: isUpdatingPreference } =
     trpc.preference.update.useMutation({
       async onSettled() {
         await utils.preference.byCurrentUser.invalidate();
       },
     });
-  const locale = getDateLocale(preference);
 
   const handleLanguageChange = (lang: Language) => {
     updatePreference({ formatLanguage: lang });
@@ -240,9 +238,7 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
         {timeZones.map((tz, idx) => (
           <DropdownMenu.Item
             key={`${tz}-${idx}`}
-            onSelect={() => {
-              dispatch(changeSelectedTimeZone(tz));
-            }}
+            onSelect={() => changeSelectedTimeZone(tz)}
           >
             <div className="px-3 bg-white py-1 cursor-pointer">
               <div className="text-xs">{getTimeZoneAbv(tz)}</div>

@@ -1,5 +1,26 @@
 {
   "name": "@agreeto/calendar-core",
   "private": true,
-  "version": "0.0.0"
+  "version": "0.0.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "typings": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "dependencies": {
+    "@agreeto/api": "workspace:*",
+    "copy-to-clipboard": "^3.3.2",
+    "date-fns": "^2.29.3",
+    "date-fns-tz": "^1.3.7",
+    "zustand": "^4.1.4"
+  },
+  "devDependencies": {
+    "tsup": "^6.4.0",
+    "typescript": "^4.8.4"
+  }
 }

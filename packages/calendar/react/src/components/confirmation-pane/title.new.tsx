@@ -1,7 +1,8 @@
 import React from "react";
 import { toast } from "react-toastify";
-import { copyToClipboard, convertToSlot } from "../../utils/event.helper";
-import { type RouterOutputs, trpc } from "../../utils/trpc";
+import { copyToClipboard, convertToSlot } from "@agreeto/calendar-core";
+import { trpc } from "../../utils/trpc";
+import { type RouterOutputs } from "@agreeto/api";
 import copyIcon from "../../assets/copy.svg";
 
 type EventGroupEvents = RouterOutputs["eventGroup"]["byId"]["events"];

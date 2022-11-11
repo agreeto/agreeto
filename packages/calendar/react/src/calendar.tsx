@@ -9,13 +9,12 @@ import CalendarItem from "./components/calendar-item";
 import { type CalendarApi, type EventInput } from "@fullcalendar/react";
 import ConfirmationPane from "./components/confirmation-pane";
 import { ulid } from "ulid";
-import { Provider, useSelector } from "react-redux";
-import { type RootState, store, useAppDispatch } from "./redux/store";
-import { changePane } from "./redux/view.slice";
-import { setTimeZoneDefaults } from "./redux/time-zone.slice";
-import { type PLATFORM } from "./utils/constants";
+
+import { type PLATFORM } from "@agreeto/calendar-core";
 import { type PRIMARY_ACTION_TYPES } from "./utils/enums";
-import { type RouterOutputs, trpc } from "./utils/trpc";
+import { trpc } from "./utils/trpc";
+import { type RouterOutputs } from "@agreeto/api";
+import { useStore } from "./utils/store";
 
 type Props = {
   onClose?: () => void;
@@ -28,18 +27,18 @@ type Props = {
 type EventGroupEvent = RouterOutputs["eventGroup"]["byId"]["events"][number];
 type DirectoryUser = RouterOutputs["event"]["directoryUsers"][number];
 
-const Content: React.FC<Props> = ({
+const Calendar: React.FC<Props> = ({
   onClose,
   renderKey,
   platform = "web",
   onPageChange,
   onPrimaryActionClick,
 }) => {
-  const dispatch = useAppDispatch();
   const utils = trpc.useContext();
 
-  // Redux
-  const { openPane } = useSelector((state: RootState) => state.view);
+  const openPane = useStore((s) => s.openPane);
+  const setTzDefaults = useStore((s) => s.setTimeZoneDefaults);
+  const changePane = useStore((s) => s.changePane);
 
   const [eventsQuery, setEventsQuery] = useState({
     startDate: startOfWeek(new Date()),
@@ -61,7 +60,9 @@ const Content: React.FC<Props> = ({
     trpc.event.all.useQuery(eventsQuery, { staleTime: 30 * 1000 });
 
   useEffect(() => {
-    dispatch(setTimeZoneDefaults({ platform, user: utils.user.me.getData() }));
+    // get user from the query cache
+    const user = utils.user.me.getData();
+    setTzDefaults(user, platform);
 
     // Prefetch next week data
     utils.event.all.prefetch({
@@ -77,12 +78,12 @@ const Content: React.FC<Props> = ({
           changes.recentlyUsedTimeZones ||
           changes.selectedTimeZone
         ) {
-          dispatch(
-            setTimeZoneDefaults({ platform, user: utils.user.me.getData() })
-          );
+          setTzDefaults(user, platform);
         }
       });
     }
+    // Only on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -94,7 +95,7 @@ const Content: React.FC<Props> = ({
 
   useEffect(() => {
     if (selectedSlots.length > 0) {
-      dispatch(changePane("action"));
+      changePane("action");
     }
   }, [selectedSlots]);
 
@@ -204,7 +205,7 @@ const Content: React.FC<Props> = ({
               if (event.extendedProps.isAgreeToEvent) {
                 setSelectedEventGroupId(event.extendedProps?.eventGroupId);
                 setCheckedEvent(event.extendedProps?.event);
-                dispatch(changePane("confirmation"));
+                changePane("confirmation");
               }
             }}
           />
@@ -258,10 +259,4 @@ const Content: React.FC<Props> = ({
   );
 };
 
-export default function Calendar(props: Props) {
-  return (
-    <Provider store={store}>
-      <Content {...props} />
-    </Provider>
-  );
-}
+export default Calendar;

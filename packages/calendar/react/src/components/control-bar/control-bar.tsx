@@ -1,27 +1,23 @@
-import type { FC} from 'react';
-import { useState } from 'react'
-import leftArrowIcon from '../../assets/left-arrow.svg'
-import rightArrowIcon from '../../assets/right-arrow.svg'
-import { addDays, getISOWeek } from 'date-fns'
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import arrowDownIcon from '../../assets/arrow-down.svg'
-import { useSelector } from 'react-redux'
-import type { RootState } from '../../redux/store'
-import {
-  getPrimaryTimeZone,
-  getTimeZoneAbv,
-} from '../../utils/time-zone.helper'
+import type { FC } from "react";
+import { useState } from "react";
+import leftArrowIcon from "../../assets/left-arrow.svg";
+import rightArrowIcon from "../../assets/right-arrow.svg";
+import { addDays, getISOWeek } from "date-fns";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import arrowDownIcon from "../../assets/arrow-down.svg";
+import { getPrimaryTimeZone, getTimeZoneAbv } from "@agreeto/calendar-core";
+import { useStore } from "../../utils/store";
 
-export type CalendarType = '5 days' | '7 days'
+export type CalendarType = "5 days" | "7 days";
 
 type Props = {
-  date: Date
-  onPrevious?: () => void
-  onNext?: () => void
-  onToday?: () => void
-   
-  onCalendarTypeChange?: (type: CalendarType) => void
-}
+  date: Date;
+  onPrevious?: () => void;
+  onNext?: () => void;
+  onToday?: () => void;
+
+  onCalendarTypeChange?: (type: CalendarType) => void;
+};
 
 const ControlBar: FC<Props> = ({
   date,
@@ -30,17 +26,16 @@ const ControlBar: FC<Props> = ({
   onToday,
   onCalendarTypeChange,
 }) => {
-  const month = date.toLocaleString(undefined, { month: 'long' })
-  const year = date.toLocaleString(undefined, { year: 'numeric' })
+  const month = date.toLocaleString(undefined, { month: "long" });
+  const year = date.toLocaleString(undefined, { year: "numeric" });
   // 2 days added to get the start of the week.
   // Otherwise it will get the saturday of the previous week
-  const weekNumber = getISOWeek(addDays(date, 2))
+  const weekNumber = getISOWeek(addDays(date, 2));
 
-  // Redux
-  const { timeZones } = useSelector((state: RootState) => state.timeZone)
-  const primaryTimeZone = getPrimaryTimeZone(timeZones)
+  const timeZones = useStore((s) => s.timeZones);
+  const primaryTimeZone = getPrimaryTimeZone(timeZones);
 
-  const [calendarType, setCalendarType] = useState<CalendarType>('5 days')
+  const [calendarType, setCalendarType] = useState<CalendarType>("5 days");
 
   // const handleFeedback = () => {
   //   console.log('Show feedback page here')
@@ -96,7 +91,12 @@ const ControlBar: FC<Props> = ({
                   <div className="bg-white color-gray-700 rounded border border-gray-300 flex py-1 px-2 items-center space-x-3">
                     <div className="text-sm">{calendarType}</div>
                     <div>
-                      <img src={arrowDownIcon} width={12} height={7} />
+                      <img
+                        src={arrowDownIcon}
+                        width={12}
+                        height={7}
+                        alt="down"
+                      />
                     </div>
                   </div>
                 </DropdownMenu.Trigger>
@@ -106,8 +106,8 @@ const ControlBar: FC<Props> = ({
                 >
                   <DropdownMenu.Item
                     onSelect={() => {
-                      setCalendarType('5 days')
-                      onCalendarTypeChange?.('5 days')
+                      setCalendarType("5 days");
+                      onCalendarTypeChange?.("5 days");
                     }}
                   >
                     <div className="pl-4 py-3 flex items-center w-40 cursor-pointer">
@@ -116,12 +116,12 @@ const ControlBar: FC<Props> = ({
                   </DropdownMenu.Item>
                   <DropdownMenu.Separator
                     className="bg-gray-100 mx-3"
-                    style={{ height: '1px' }}
+                    style={{ height: "1px" }}
                   />
                   <DropdownMenu.Item
                     onSelect={() => {
-                      setCalendarType('7 days')
-                      onCalendarTypeChange?.('7 days')
+                      setCalendarType("7 days");
+                      onCalendarTypeChange?.("7 days");
                     }}
                   >
                     <div className="pl-4 py-3 flex items-center w-40 cursor-pointer">
@@ -140,7 +140,7 @@ const ControlBar: FC<Props> = ({
         {`(${getTimeZoneAbv(primaryTimeZone)}) ${primaryTimeZone}`}
       </div>
     </>
-  )
-}
+  );
+};
 
-export default ControlBar
+export default ControlBar;

@@ -4,7 +4,9 @@
     "node_modules/@agreeto/auth/next-auth.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "vite.config.ts"
+    "vite.config.ts",
+    "../core/src/redux/store.ts",
+    "../core/src/helpers/date.ts"
   ],
   "exclude": ["dist", "build"],
   "compilerOptions": {

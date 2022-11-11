@@ -1,13 +1,9 @@
 import React from "react";
-import { type RouterOutputs } from "../../utils/trpc";
+import { type RouterOutputs } from "@agreeto/api";
 import checkMark2Icon from "../../assets/check-mark-2.png";
 import { format } from "date-fns-tz";
-import {
-  getPrimaryTimeZone,
-  getTimeZoneAbv,
-} from "../../utils/time-zone.helper";
-import { useSelector } from "react-redux";
-import { type RootState } from "../../redux/store";
+import { getPrimaryTimeZone, getTimeZoneAbv } from "@agreeto/calendar-core";
+import { useStore } from "../../utils/store";
 
 type EventGroupEvent = RouterOutputs["eventGroup"]["byId"]["events"][number];
 
@@ -17,7 +13,7 @@ export const EventElement: React.FC<{
   isChecked: boolean;
   onCheck: (event: EventGroupEvent) => void;
 }> = ({ event, onHover, isChecked, onCheck }) => {
-  const { timeZones } = useSelector((state: RootState) => state.timeZone);
+  const timeZones = useStore((s) => s.timeZones);
 
   return (
     <div

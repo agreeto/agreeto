@@ -1,12 +1,11 @@
 import { type EventInput } from "@fullcalendar/react";
 import copy from "copy-to-clipboard";
 import { format } from "date-fns-tz";
-import { type Preference } from "@agreeto/db";
-import { store } from "../redux/store";
-import { convertToDate } from "./date.helper";
-import { getCopyTitle, getDateLocale, getHourText } from "./locale.helper";
-import { getTimeZoneAbv } from "./time-zone.helper";
-import { type RouterOutputs } from "./trpc";
+import { store } from "../store";
+import { convertToDate } from "./date";
+import { getCopyTitle, getDateLocale, getHourText } from "./locale";
+import { getTimeZoneAbv } from "./timezone";
+import { type RouterOutputs } from "@agreeto/api";
 
 type Event = RouterOutputs["event"]["all"][number];
 
@@ -45,12 +44,11 @@ export const getGroupedSlots = (selectedSlots: EventInput[]) => {
 
 export const copyToClipboard = (
   selectedSlots: EventInput[],
-  preference?: Preference
+  preference?: RouterOutputs["preference"]["byCurrentUser"]
 ) => {
   let text = getCopyTitle(preference);
   const locale = getDateLocale(preference);
-  const reduxState = store.getState();
-  const timeZone = reduxState.timeZone.selectedTimeZone;
+  const timeZone = store.getState().selectedTimeZone;
 
   // Group slots based on days
   const groupedSlots = getGroupedSlots(selectedSlots);

@@ -3,9 +3,11 @@ import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import closeIcon from "../../assets/close.svg";
 import { type EventInput } from "@fullcalendar/react";
-import { convertToDate } from "../../utils/date.helper";
-import { EventResponseStatus } from "@agreeto/db";
-import { copyToClipboard } from "../../utils/event.helper";
+import {
+  convertToDate,
+  EventResponseStatus,
+  copyToClipboard,
+} from "@agreeto/calendar-core";
 import Availability from "./availability";
 import { Attendees } from "./attendees";
 import { PRIMARY_ACTION_TYPES } from "../../utils/enums";
@@ -15,7 +17,8 @@ import checkmarkBlueIcon from "../../assets/check-mark-blue-2.svg";
 import { Float } from "@headlessui-float/react";
 import OutsideClickHandler from "react-outside-click-handler";
 import { Spinner } from "../spinner";
-import { type RouterInputs, trpc, type RouterOutputs } from "../../utils/trpc";
+import { trpc } from "../../utils/trpc";
+import { type RouterInputs, type RouterOutputs } from "@agreeto/api";
 
 type CreatedEventGroup = RouterOutputs["eventGroup"]["create"];
 type DirectoryUsers = RouterOutputs["event"]["directoryUsers"];

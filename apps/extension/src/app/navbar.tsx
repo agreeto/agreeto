@@ -1,7 +1,8 @@
-// FIXME: Why is Next lint rules slipping in here?
-
-/* eslint-disable @next/next/no-img-element */
-import { CalendarDaysIcon, Cog8ToothIcon } from "@heroicons/react/20/solid"
+import {
+  CalendarDaysIcon,
+  CalendarIcon,
+  Cog8ToothIcon
+} from "@heroicons/react/20/solid"
 import { Link } from "@tanstack/react-location"
 
 export const Navbar = () => {
@@ -20,6 +21,9 @@ export const Navbar = () => {
           aria-label="Sidebar">
           <Link to="calendar">
             <CalendarDaysIcon className="h-10 w-10 p-1 text-indigo-600 hover:text-indigo-700" />
+          </Link>
+          <Link to="calendar-new">
+            <CalendarIcon className="h-10 w-10 p-1 text-indigo-600 hover:text-indigo-700" />
           </Link>
           <Link to="settings">
             <Cog8ToothIcon className="h-10 w-10 p-1 text-indigo-600 hover:text-indigo-700" />
