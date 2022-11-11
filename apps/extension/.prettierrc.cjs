@@ -1,16 +1,12 @@
-/**
- * @type {import('prettier').Options}
- */
+const rootConfig = require("../../prettier.config.cjs")
+
+/** @type {import('prettier').Options} */
 module.exports = {
-  printWidth: 80,
-  tabWidth: 2,
-  useTabs: false,
-  semi: false,
-  singleQuote: false,
-  trailingComma: "none",
-  bracketSpacing: true,
-  bracketSameLine: true,
-  plugins: [require.resolve("@plasmohq/prettier-plugin-sort-imports")],
+  ...rootConfig,
+  plugins: [
+    ...rootConfig.plugins,
+    require.resolve("@plasmohq/prettier-plugin-sort-imports")
+  ],
   importOrder: [
     "@fullcalendar/react(.*)$",
     "@fullcalendar/(.*)$",

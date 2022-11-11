@@ -29,7 +29,7 @@ export const preferenceRouter = router({
     .input(
       z.object({
         formatLanguage: z.nativeEnum(Language),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       return await ctx.prisma.preference.upsert({

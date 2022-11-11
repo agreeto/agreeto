@@ -1,19 +1,19 @@
-import { Button } from "@agreeto/ui"
-import { MinusCircleIcon } from "@heroicons/react/20/solid"
-import * as SeparatorPrimitive from "@radix-ui/react-separator"
-import type { FC, ReactNode } from "react"
+import { Button } from "@agreeto/ui";
+import { MinusCircleIcon } from "@heroicons/react/20/solid";
+import * as SeparatorPrimitive from "@radix-ui/react-separator";
+import type { FC, ReactNode } from "react";
 
-import { useStorage } from "@plasmohq/storage/hook"
+import { useStorage } from "@plasmohq/storage/hook";
 
-import { Navbar } from "~app/navbar"
-import { AccessTokenValidator } from "~features/trpc/chrome/storage"
+import { Navbar } from "~app/navbar";
+import { AccessTokenValidator } from "~features/trpc/chrome/storage";
 
 export const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
   const [accessTokenValue] = useStorage({
     key: "accessToken",
-    isSecret: true
-  })
-  const authentication = AccessTokenValidator.safeParse(accessTokenValue)
+    isSecret: true,
+  });
+  const authentication = AccessTokenValidator.safeParse(accessTokenValue);
 
   if (!process.env.PLASMO_PUBLIC_WEB_URL) {
     // FIXME: Intermediary solution to make sure the public web URL is set
@@ -21,7 +21,7 @@ export const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
       <h1 className="text-red-500 font-bold">
         PLASMO_PUBLIC_WEB_URL is not defined
       </h1>
-    )
+    );
   }
 
   return (
@@ -31,7 +31,8 @@ export const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
         <button
           title="minimize"
           type="button"
-          className="inline-flex items-center p-1 text-white bg-indigo-600 border border-transparent rounded-full shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+          className="inline-flex items-center p-1 text-white bg-indigo-600 border border-transparent rounded-full shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+        >
           <MinusCircleIcon className="w-5 h-5" aria-hidden="true" />
         </button>
         {authentication.success && (
@@ -49,9 +50,9 @@ export const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
                   `${
                     process.env.PLASMO_PUBLIC_WEB_URL
                   }/api/auth/signin?${new URLSearchParams({
-                    callbackUrl: `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/extension`
-                  })}`
-                )
+                    callbackUrl: `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/extension`,
+                  })}`,
+                );
               }}
             />
             <SeparatorPrimitive.Root
@@ -63,7 +64,9 @@ export const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
             <Button
               title="Sign Out"
               onClick={() => {
-                window.open(`${process.env.PLASMO_PUBLIC_WEB_URL}/auth/signout`)
+                window.open(
+                  `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/signout`,
+                );
               }}
             />
             <h2>Signed in as {authentication.data}</h2>
@@ -77,5 +80,5 @@ export const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
         <div className="flex-grow w-full h-full">{children}</div>
       </div>
     </div>
-  )
-}
+  );
+};

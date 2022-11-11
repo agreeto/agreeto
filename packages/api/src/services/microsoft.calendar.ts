@@ -75,7 +75,7 @@ export class MicrosoftCalendarService {
 
     // Get agreeToId from extended props if possible
     const agreeToId = singleValueExtendedProperties?.find(
-      (p: any) => p.id === EXTENDED_PROP_ID_SEARCH
+      (p: any) => p.id === EXTENDED_PROP_ID_SEARCH,
     );
 
     return {
@@ -86,7 +86,7 @@ export class MicrosoftCalendarService {
       startDate: new Date(`${start.dateTime}+00:00`),
       endDate: new Date(`${end.dateTime}+00:00`),
       isAgreeToEvent: singleValueExtendedProperties?.some(
-        (p: any) => p.id === EXTENDED_PROP_SEARCH && p.value === "true"
+        (p: any) => p.id === EXTENDED_PROP_SEARCH && p.value === "true",
       ),
       attendees: !attendees
         ? []
@@ -118,7 +118,7 @@ export class MicrosoftCalendarService {
         .api("/me/calendarview")
         .query(params)
         .expand(
-          `singleValueExtendedProperties($filter=(id eq '${EXTENDED_PROP_SEARCH}') or (id eq '${EXTENDED_PROP_ID_SEARCH}'))`
+          `singleValueExtendedProperties($filter=(id eq '${EXTENDED_PROP_SEARCH}') or (id eq '${EXTENDED_PROP_ID_SEARCH}'))`,
         )
         .top(100)
         .get();
@@ -192,7 +192,7 @@ export class MicrosoftCalendarService {
 
   async updateEvent(
     id: string,
-    { hasConference, title, attendeeEmails }: IUpdateEvent
+    { hasConference, title, attendeeEmails }: IUpdateEvent,
   ) {
     const params: Record<string, unknown> = {};
 

@@ -54,7 +54,7 @@ export const createTimeZoneSlice: StateCreator<
         localStorage.setItem(LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE, tz);
         localStorage.setItem(
           LOCAL_STORAGE_KEYS.RECENTLY_USED_TIME_ZONES,
-          JSON.stringify(recentlyUsed)
+          JSON.stringify(recentlyUsed),
         );
       }
 
@@ -84,12 +84,12 @@ export const createTimeZoneSlice: StateCreator<
               }
             : {
                 [LOCAL_STORAGE_KEYS.TIME_ZONES]: timeZones,
-              }
+              },
         );
       } else {
         localStorage.setItem(
           LOCAL_STORAGE_KEYS.TIME_ZONES,
-          JSON.stringify(timeZones)
+          JSON.stringify(timeZones),
         );
         isSelected &&
           localStorage.setItem(LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE, tz);
@@ -124,17 +124,17 @@ export const createTimeZoneSlice: StateCreator<
               }
             : {
                 [LOCAL_STORAGE_KEYS.TIME_ZONES]: timeZones,
-              }
+              },
         );
       } else {
         localStorage.setItem(
           LOCAL_STORAGE_KEYS.TIME_ZONES,
-          JSON.stringify(timeZones)
+          JSON.stringify(timeZones),
         );
         timeZones[0] &&
           localStorage.setItem(
             LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE,
-            timeZones[0]
+            timeZones[0],
           );
       }
 
@@ -186,13 +186,13 @@ export const createTimeZoneSlice: StateCreator<
       // If there is no time zone in the array then push the current time zone
       if (data[LOCAL_STORAGE_KEYS.TIME_ZONES].length === 0) {
         data[LOCAL_STORAGE_KEYS.TIME_ZONES].push(
-          Intl.DateTimeFormat().resolvedOptions().timeZone
+          Intl.DateTimeFormat().resolvedOptions().timeZone,
         );
       }
       // If selected time zone is not in the array, make the selected the first element
       if (
         !data[LOCAL_STORAGE_KEYS.TIME_ZONES].includes(
-          data[LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE]
+          data[LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE],
         )
       ) {
         data[LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE] =
@@ -210,14 +210,14 @@ export const createTimeZoneSlice: StateCreator<
     } else {
       // Get data from local storage
       let timeZonesLS: string[] = JSON.parse(
-        localStorage.getItem(LOCAL_STORAGE_KEYS.TIME_ZONES) || "[]"
+        localStorage.getItem(LOCAL_STORAGE_KEYS.TIME_ZONES) || "[]",
       ) as string[];
       let selectedTimeZoneLS =
         localStorage.getItem(LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE) ||
         Intl.DateTimeFormat().resolvedOptions().timeZone;
       const recentlyUsedTimeZonesLS: string[] = JSON.parse(
         localStorage.getItem(LOCAL_STORAGE_KEYS.RECENTLY_USED_TIME_ZONES) ||
-          "[]"
+          "[]",
       );
 
       // If user is free and has multiple time zones then delete one of them
@@ -225,7 +225,7 @@ export const createTimeZoneSlice: StateCreator<
         const slicedTimeZones = timeZonesLS.slice(0, 1);
         localStorage.setItem(
           LOCAL_STORAGE_KEYS.TIME_ZONES,
-          JSON.stringify(slicedTimeZones)
+          JSON.stringify(slicedTimeZones),
         );
         timeZonesLS = slicedTimeZones;
       }

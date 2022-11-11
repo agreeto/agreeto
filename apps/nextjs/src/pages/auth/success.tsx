@@ -8,9 +8,9 @@ const Success: NextPage = () => {
   }, []);
 
   return (
-    <div className="font-semibold text-xl text-center pt-16 h-screen">
-      <div className="flex justify-center items-center my-16">
-        <div className="h-20 w-20 relative">
+    <div className="h-screen pt-16 text-center text-xl font-semibold">
+      <div className="my-16 flex items-center justify-center">
+        <div className="relative h-20 w-20">
           <Image src="/icon512.png" alt="AgreeTo" layout="fill" />
         </div>
         <h1 className="color-primary ml-2 text-4xl font-semibold text-[#2e81ff]">

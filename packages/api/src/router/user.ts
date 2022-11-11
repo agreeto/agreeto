@@ -56,7 +56,7 @@ export const userRouter = router({
     .input(
       z.object({
         search: z.string(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const accounts = await ctx.prisma.account.findMany({

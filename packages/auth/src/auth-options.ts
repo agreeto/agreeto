@@ -46,7 +46,7 @@ export const authOptions: NextAuthOptions = {
         colors.forEach((color) => {
           if (assignedANewColor) return;
           const foundColor = currentAccounts.find(
-            (a) => a.colorId === color.id
+            (a) => a.colorId === color.id,
           );
           if (!foundColor) {
             colorId = color.id;

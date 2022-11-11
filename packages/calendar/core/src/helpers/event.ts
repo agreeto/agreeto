@@ -29,7 +29,7 @@ export const getGroupedSlots = (selectedSlots: EventInput[]) => {
     .slice()
     .sort(
       (a, b) =>
-        convertToDate(a.start).getTime() - convertToDate(b.start).getTime()
+        convertToDate(a.start).getTime() - convertToDate(b.start).getTime(),
     )
     .forEach((slot) => {
       const day = format(convertToDate(slot.start), "yyyy-MM-dd");
@@ -44,7 +44,7 @@ export const getGroupedSlots = (selectedSlots: EventInput[]) => {
 
 export const copyToClipboard = (
   selectedSlots: EventInput[],
-  preference?: RouterOutputs["preference"]["byCurrentUser"]
+  preference?: RouterOutputs["preference"]["byCurrentUser"],
 ) => {
   let text = getCopyTitle(preference);
   const locale = getDateLocale(preference);

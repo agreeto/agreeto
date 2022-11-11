@@ -1,21 +1,21 @@
-import type { CSSProperties, FC } from 'react'
+import type { CSSProperties, FC } from "react";
 
 type Props = {
-  className?: string
-  containerClassName?: string
-  style?: CSSProperties
-}
+  className?: string;
+  containerClassName?: string;
+  style?: CSSProperties;
+};
 
 export const Spinner: FC<Props> = ({
-  className = '',
-  containerClassName = '',
+  className = "",
+  containerClassName = "",
   style,
 }) => {
   return (
     <div className={containerClassName} role="status">
       <svg
         aria-hidden="true"
-        className={`mr-2 w-4 h-4 text-gray-300 animate-spin fill-blue-600 ${className}`}
+        className={`mr-2 h-4 w-4 animate-spin fill-blue-600 text-gray-300 ${className}`}
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -32,5 +32,5 @@ export const Spinner: FC<Props> = ({
       </svg>
       <span className="sr-only">Loading...</span>
     </div>
-  )
-}
+  );
+};

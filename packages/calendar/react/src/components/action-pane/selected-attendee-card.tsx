@@ -9,12 +9,12 @@ export const SelectedAttendeeCard: React.FC<{
   hideDeleteButton: boolean;
 }> = ({ id, color, email, onDelete, hideDeleteButton }) => {
   return (
-    <div className="flex text-sm px-2 py-1 color-gray-900 rounded group hover:bg-gray-200">
-      <div className="flex w-full space-x-2 items-center justify-between">
+    <div className="color-gray-900 group flex rounded px-2 py-1 text-sm hover:bg-gray-200">
+      <div className="flex w-full items-center justify-between space-x-2">
         {/* Color and email */}
-        <div className="flex space-x-2 items-center">
+        <div className="flex items-center space-x-2">
           <div
-            className="w-3 h-3 rounded-full"
+            className="h-3 w-3 rounded-full"
             style={{ backgroundColor: color }}
           />
           <div className="text-xs">{email}</div>

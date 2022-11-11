@@ -8,7 +8,7 @@ export const CreateEventModal: React.FC<{
   onTitleChange: React.ChangeEventHandler<HTMLInputElement>;
 }> = ({ isOpen, onVisibilityChange, title, onTitleChange }) => {
   const titleElem = (
-    <div className="pt-8 flex justify-end">
+    <div className="flex justify-end pt-8">
       <input
         className="input input-big w-full"
         placeholder="Add a title"
@@ -27,7 +27,7 @@ export const CreateEventModal: React.FC<{
           {titleElem}
           {/* Date */}
           <div>
-            <div className="color-gray-600 font-medium pt-8">Date</div>
+            <div className="color-gray-600 pt-8 font-medium">Date</div>
           </div>
         </div>
       }

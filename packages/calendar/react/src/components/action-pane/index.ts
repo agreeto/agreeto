@@ -1,2 +1,2 @@
-import ActionPane from './action-pane'
-export default ActionPane
+import ActionPane from "./action-pane";
+export default ActionPane;

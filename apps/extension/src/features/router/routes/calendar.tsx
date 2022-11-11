@@ -1,32 +1,33 @@
 // TODO: replace w/ Tab from radixui
-import { Tab } from "@headlessui/react"
-import { Switch } from "@headlessui/react"
+import { Tab } from "@headlessui/react";
+import { Switch } from "@headlessui/react";
 import {
   AtSymbolIcon,
   CodeBracketIcon,
-  LinkIcon
-} from "@heroicons/react/20/solid"
-import add from "date-fns/add"
-import { type FC, useState } from "react"
+  LinkIcon,
+} from "@heroicons/react/20/solid";
+import add from "date-fns/add";
+import { type FC, useState } from "react";
 // import { CgCalendarNext } from "react-icons/cg"
-import { z } from "zod"
+import { z } from "zod";
 
-import FullCalendar, { type EventInput } from "@fullcalendar/react"
+import FullCalendar, { type EventInput } from "@fullcalendar/react";
 
 // needed for dateClick
-import interactionPlugin from "@fullcalendar/interaction"
+import interactionPlugin from "@fullcalendar/interaction";
 // needed for weekly cal-view
-import timeGridWeek from "@fullcalendar/timegrid"
+import timeGridWeek from "@fullcalendar/timegrid";
 
 export const Calendar: FC = () => {
-  const [createdSlots, setCreatedSlots] = useState<EventInput[]>()
+  const [createdSlots, setCreatedSlots] = useState<EventInput[]>();
   // state for clicked events goes here
   return (
     <div id="app" className="flex">
       <main
         id="content-column"
         role="main"
-        className="flex-grow w-full h-full p-3 overflow-auto">
+        className="flex-grow w-full h-full p-3 overflow-auto"
+      >
         <FullCalendar
           plugins={[timeGridWeek, interactionPlugin]}
           initialView="timeGridWeek"
@@ -39,24 +40,25 @@ export const Calendar: FC = () => {
               {
                 start: event.date,
                 end: add(event.date, { minutes: 30 }),
-                date: event.date
-              }
-            ])
+                date: event.date,
+              },
+            ]);
           }}
         />
       </main>
       <div
         id="right-column"
-        className="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 p-4 h-[600]">
+        className="sm:w-1/3 md:1/4 w-full flex-shrink flex-grow-0 p-4 h-[600]"
+      >
         {/* <!-- nav goes here --> */}
         <Sidebar slots={createdSlots} />
       </div>
     </div>
-  )
-}
+  );
+};
 
 function classNames(...classes: Array<string>) {
-  return classes.filter(Boolean).join(" ")
+  return classes.filter(Boolean).join(" ");
 }
 
 const Sidebar = ({ slots }: { slots: EventInput[] | undefined }) => {
@@ -72,9 +74,10 @@ const Sidebar = ({ slots }: { slots: EventInput[] | undefined }) => {
                     selected
                       ? "text-gray-900 bg-gray-100 hover:bg-gray-200"
                       : "text-gray-500 hover:text-gray-900 bg-white hover:bg-gray-100",
-                    "rounded-md border border-transparent px-3 py-1.5 text-sm font-medium"
+                    "rounded-md border border-transparent px-3 py-1.5 text-sm font-medium",
                   )
-                }>
+                }
+              >
                 CEST
               </Tab>
               <Tab
@@ -83,9 +86,10 @@ const Sidebar = ({ slots }: { slots: EventInput[] | undefined }) => {
                     selected
                       ? "text-gray-900 bg-gray-100 hover:bg-gray-200"
                       : "text-gray-500 hover:text-gray-900 bg-white hover:bg-gray-100",
-                    "ml-2 rounded-md border border-transparent px-3 py-1.5 text-sm font-medium"
+                    "ml-2 rounded-md border border-transparent px-3 py-1.5 text-sm font-medium",
                   )
-                }>
+                }
+              >
                 Eastern
               </Tab>
 
@@ -95,7 +99,8 @@ const Sidebar = ({ slots }: { slots: EventInput[] | undefined }) => {
                   <div className="flex items-center">
                     <button
                       type="button"
-                      className="-m-2.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-gray-400 hover:text-gray-500">
+                      className="-m-2.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-gray-400 hover:text-gray-500"
+                    >
                       <span className="sr-only">Insert link</span>
                       <LinkIcon className="w-5 h-5" aria-hidden="true" />
                     </button>
@@ -103,7 +108,8 @@ const Sidebar = ({ slots }: { slots: EventInput[] | undefined }) => {
                   <div className="flex items-center">
                     <button
                       type="button"
-                      className="-m-2.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-gray-400 hover:text-gray-500">
+                      className="-m-2.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-gray-400 hover:text-gray-500"
+                    >
                       <span className="sr-only">Insert code</span>
                       <CodeBracketIcon className="w-5 h-5" aria-hidden="true" />
                     </button>
@@ -111,7 +117,8 @@ const Sidebar = ({ slots }: { slots: EventInput[] | undefined }) => {
                   <div className="flex items-center">
                     <button
                       type="button"
-                      className="-m-2.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-gray-400 hover:text-gray-500">
+                      className="-m-2.5 inline-flex h-10 w-10 items-center justify-center rounded-full text-gray-400 hover:text-gray-500"
+                    >
                       <span className="sr-only">Mention someone</span>
                       <AtSymbolIcon className="w-5 h-5" aria-hidden="true" />
                     </button>
@@ -141,23 +148,23 @@ const Sidebar = ({ slots }: { slots: EventInput[] | undefined }) => {
                             weekday: "long",
                             day: "numeric",
                             month: "short",
-                            timeZoneName: "long"
+                            timeZoneName: "long",
                           }).format(new Date(slots[0].start!.toString()))}**
                     
 ${slots
   ?.map((slot) => {
-    if (!slot?.start || !slot?.end) return
-    const start = z.date().parse(slot.start)
-    const end = z.date().parse(slot.end)
+    if (!slot?.start || !slot?.end) return;
+    const start = z.date().parse(slot.start);
+    const end = z.date().parse(slot.end);
 
     const startTime = new Intl.DateTimeFormat("de-DE", {
-      timeStyle: "short"
-    }).format(start)
+      timeStyle: "short",
+    }).format(start);
     const endTime = new Intl.DateTimeFormat("de-DE", {
-      timeStyle: "short"
-    }).format(end)
+      timeStyle: "short",
+    }).format(end);
 
-    return `${startTime} - ${endTime}`
+    return `${startTime} - ${endTime}`;
   })
   .join(" ")}
                     `
@@ -183,23 +190,25 @@ ${slots
       <div className="mt-2">
         <button
           type="submit"
-          className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+          className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
           Save
         </button>
       </div>
     </form>
-  )
-}
+  );
+};
 
 const Toggle = ({ slots }: { slots: EventInput[] | undefined }) => {
-  const [enabled, setEnabled] = useState(false)
+  const [enabled, setEnabled] = useState(false);
   return (
     <Switch.Group as="div" className="flex items-center justify-between">
       <span className="flex flex-col flex-grow">
         <Switch.Label
           as="span"
           className="text-sm font-medium text-gray-900"
-          passive>
+          passive
+        >
           Create booking link
         </Switch.Label>
         <Switch.Description as="span" className="text-sm text-gray-500">
@@ -212,39 +221,40 @@ const Toggle = ({ slots }: { slots: EventInput[] | undefined }) => {
           if (!enabled) {
             window.open(
               `https://calendar.google.com/calendar/u/0/r/appointment?${new URLSearchParams(
-                [["ref", "agreeto"], ...getSlotsAsParams(slots)]
+                [["ref", "agreeto"], ...getSlotsAsParams(slots)],
               )}`,
-              "_blank"
-            )
+              "_blank",
+            );
           }
-          setEnabled((prev) => !prev)
+          setEnabled((prev) => !prev);
         }}
         className={classNames(
           enabled ? "bg-indigo-600" : "bg-gray-200",
-          "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-        )}>
+          "relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2",
+        )}
+      >
         <span
           aria-hidden="true"
           className={classNames(
             enabled ? "translate-x-5" : "translate-x-0",
-            "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+            "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out",
           )}
         />
       </Switch>
     </Switch.Group>
-  )
-}
+  );
+};
 
 const getSlotsAsParams = (slots: Array<EventInput> | undefined) => {
   // parse
   const slotsParsed = z
     .array(z.object({ start: z.date(), end: z.date() }))
-    .parse(slots)
+    .parse(slots);
   // flatten
   return slotsParsed.flatMap((slot, ix) => {
     return [
       [`slot-${ix}-start`, slot.start.toLocaleString()],
-      [`slot-${ix}-end`, slot.end.toLocaleString()]
-    ]
-  })
-}
+      [`slot-${ix}-end`, slot.end.toLocaleString()],
+    ];
+  });
+};

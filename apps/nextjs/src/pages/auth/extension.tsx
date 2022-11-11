@@ -38,7 +38,7 @@ const Extension: NextPage<
         } else {
           Router.push("/auth/error");
         }
-      }
+      },
     );
   }, [accessToken]);
 

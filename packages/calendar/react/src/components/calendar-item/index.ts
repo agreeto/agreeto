@@ -1,2 +1,2 @@
-import CalendarItem from './calendar-item'
-export default CalendarItem
+import CalendarItem from "./calendar-item";
+export default CalendarItem;

@@ -13,5 +13,5 @@ ReactDOM.createRoot(root).render(
     <TRPCProvider>
       <Calendar />
     </TRPCProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

@@ -9,7 +9,7 @@ export const getCalendarService = (account: Account, event?: Event) => {
       return {
         service: new GoogleCalendarService(
           account.access_token,
-          account.refresh_token
+          account.refresh_token,
         ),
         eventId: event?.id,
       };
@@ -17,7 +17,7 @@ export const getCalendarService = (account: Account, event?: Event) => {
       return {
         service: new MicrosoftCalendarService(
           account.access_token,
-          account.refresh_token
+          account.refresh_token,
         ),
         eventId: event?.microsoftId,
       };

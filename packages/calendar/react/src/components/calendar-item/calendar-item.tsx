@@ -104,9 +104,9 @@ const CalendarItem: FC<Props> = ({
 
     return (
       <div>
-        <div className="font-normal color-gray-600">{day}</div>
+        <div className="color-gray-600 font-normal">{day}</div>
         <div
-          className={`text-xl font-semibold my-1 w-10 h-10 flex items-center justify-center rounded-full ${
+          className={`my-1 flex h-10 w-10 items-center justify-center rounded-full text-xl font-semibold ${
             isToday ? "bg-primary text-white" : "color-gray-600"
           }`}
         >
@@ -127,9 +127,9 @@ const CalendarItem: FC<Props> = ({
 
     return (
       <div
-        className={`overflow-hidden h-full ${
+        className={`h-full overflow-hidden ${
           extendedProps?.isDeclined ? "line-through" : ""
-        } ${shrinkFont ? "" : "p-1"} ${diff <= 15 ? "space-x-1 flex" : ""}`}
+        } ${shrinkFont ? "" : "p-1"} ${diff <= 15 ? "flex space-x-1" : ""}`}
         style={{
           color: event.textColor,
           lineHeight: shrinkFont ? 1 : undefined,
@@ -148,7 +148,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
         {extendedProps?.new && (
           <div
             className={
-              "absolute text-white w-4 h-4 flex justify-center items-center rounded-full text-3xs-05 cursor-pointer bg-event-block"
+              "text-3xs-05 bg-event-block absolute flex h-4 w-4 cursor-pointer items-center justify-center rounded-full text-white"
             }
             style={{
               top: extendedProps?.new ? "-10px" : "-8px",
@@ -168,10 +168,10 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
   const renderSlotLabels = ({ time }: SlotLabelContentArg) => {
     return (
       <div
-        className={`text-xs text-ceter color-gray-300 flex ${
+        className={`text-ceter color-gray-300 flex text-xs ${
           timeZones.length === 1
-            ? "justify-center w-14"
-            : "justify-between w-24 pr-2"
+            ? "w-14 justify-center"
+            : "w-24 justify-between pr-2"
         }`}
         style={{
           lineHeight: "12px", // This is for slot height. Update this and fc-timegrid-slot in calendar-item.scss to chage the height
@@ -226,7 +226,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
       const isDeclined = attendees?.some(
         (a) =>
           a.email === currentUser?.email &&
-          a.responseStatus === EventResponseStatus.DECLINED
+          a.responseStatus === EventResponseStatus.DECLINED,
       );
 
       newEvents.push({
@@ -289,7 +289,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
   };
 
   return (
-    <div className="w-full relative">
+    <div className="relative w-full">
       <FullCalendar
         plugins={[interactionPlugin, timeGridPlugin, momentTimezonePlugin]}
         initialView="timeGridWeek"

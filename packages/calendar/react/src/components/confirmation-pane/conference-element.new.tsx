@@ -17,14 +17,14 @@ export const ConferenceElement: React.FC<{
       </div>
 
       <div
-        className={`relative mt-2 px-3 py-2 w-100 flex justify-between items-center bg-white rounded-lg ${
-          !eventGroup.createBlocker ? "opacity-50 cursor-not-allowed" : ""
+        className={`w-100 relative mt-2 flex items-center justify-between rounded-lg bg-white px-3 py-2 ${
+          !eventGroup.createBlocker ? "cursor-not-allowed opacity-50" : ""
         }`}
       >
         {/* Check icon */}
         {addConference && (
           <div className="absolute -right-2 -top-2">
-            <img src={checkMark2Icon} className="w-4 h-4" alt="" />
+            <img src={checkMark2Icon} className="h-4 w-4" alt="" />
           </div>
         )}
 
@@ -32,15 +32,15 @@ export const ConferenceElement: React.FC<{
         <div className="flex items-center">
           {provider === "google" ? (
             <>
-              <img src={googleMeetIcon} alt="meet" className="w-8 h-8" />
-              <span className="pl-3 color-gray-900 font-medium text-sm">
+              <img src={googleMeetIcon} alt="meet" className="h-8 w-8" />
+              <span className="color-gray-900 pl-3 text-sm font-medium">
                 Google Meet
               </span>
             </>
           ) : (
             <>
-              <img src={teamsIcon} alt="teams" className="w-7 h-7" />
-              <span className="pl-2 color-gray-900 font-medium text-sm">
+              <img src={teamsIcon} alt="teams" className="h-7 w-7" />
+              <span className="color-gray-900 pl-2 text-sm font-medium">
                 Microsoft Teams
               </span>
             </>

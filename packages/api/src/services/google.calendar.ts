@@ -7,7 +7,7 @@ export class GoogleCalendarService {
   private refreshToken: string;
   private oauthClient = new google.auth.OAuth2(
     process.env.GOOGLE_ID,
-    process.env.GOOGLE_SECRET
+    process.env.GOOGLE_SECRET,
   );
   private calendarClient: calendar_v3.Calendar;
 
@@ -51,7 +51,7 @@ export class GoogleCalendarService {
       startDate: new Date(start!.dateTime!),
       endDate: new Date(end!.dateTime!),
       isAgreeToEvent: Boolean(
-        extendedProperties?.private?.isAgreeToEvent === "true"
+        extendedProperties?.private?.isAgreeToEvent === "true",
       ),
       attendees: !attendees
         ? []
@@ -137,7 +137,7 @@ export class GoogleCalendarService {
 
   async updateEvent(
     id: string,
-    { hasConference, title, attendeeEmails }: IUpdateEvent
+    { hasConference, title, attendeeEmails }: IUpdateEvent,
   ) {
     const params: calendar_v3.Params$Resource$Events$Patch = {
       calendarId: "primary",

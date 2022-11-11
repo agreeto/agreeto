@@ -18,12 +18,12 @@ type Props = {
   directoryUsersWithEvents: RouterOutputs["event"]["directoryUsers"];
 
   onDirectoryUsersWithEventsChange: (
-    users: RouterOutputs["event"]["directoryUsers"]
+    users: RouterOutputs["event"]["directoryUsers"],
   ) => void;
   unknownAttendees: RouterInputs["eventGroup"]["create"]["events"][number]["attendees"];
 
   onUnknownAttendeesChange: (
-    attendees: RouterInputs["eventGroup"]["create"]["events"][number]["attendees"]
+    attendees: RouterInputs["eventGroup"]["create"]["events"][number]["attendees"],
   ) => void;
   eventGroup?: RouterOutputs["eventGroup"]["byId"];
 
@@ -105,7 +105,7 @@ export const Attendees: FC<Props> = ({
   // And yes it works
   const attendeeDebounceCallback = useCallback(
     (value: string) => debouncedAttendeeSearch(value),
-    []
+    [],
   );
 
   // Debounce the attendee search call to prevent multiple calls
@@ -117,19 +117,19 @@ export const Attendees: FC<Props> = ({
   }, 500);
 
   const attendeeOptionCard = (
-    user: RouterOutputs["user"]["getFriends"][number]
+    user: RouterOutputs["user"]["getFriends"][number],
   ) => {
     if (!user) return null;
 
     const alreadySelected = directoryUserEventParams.users.some(
-      (a) => a.id === user.id
+      (a) => a.id === user.id,
     );
     // Do not render if already selected
     if (alreadySelected) return null;
 
     return (
       <div
-        className="text-xs px-3 py-1 cursor-pointer color-gray-600 hover:bg-gray-200"
+        className="color-gray-600 cursor-pointer px-3 py-1 text-xs hover:bg-gray-200"
         key={user.id}
         onClick={() => {
           setDirectoryUserEventParams((params) => ({
@@ -148,7 +148,7 @@ export const Attendees: FC<Props> = ({
 
   const addUnknownAttendee = (
     <div
-      className="text-xs px-3 py-1 cursor-pointer color-gray-600 hover:bg-gray-200"
+      className="color-gray-600 cursor-pointer px-3 py-1 text-xs hover:bg-gray-200"
       onClick={() => {
         const newAttendee = {
           id: attendeeText,
@@ -159,7 +159,7 @@ export const Attendees: FC<Props> = ({
           responseStatus: EventResponseStatus.NEEDS_ACTION,
         };
         onUnknownAttendeesChange(
-          uniqBy([...unknownAttendees, newAttendee], "email")
+          uniqBy([...unknownAttendees, newAttendee], "email"),
         );
         setAttendeeText("");
         setAttendeeParams((params) => ({
@@ -181,7 +181,7 @@ export const Attendees: FC<Props> = ({
         </span>
       </div>
 
-      <div className="py-1 space-y-1 max-h-36 overflow-auto">
+      <div className="max-h-36 space-y-1 overflow-auto py-1">
         {/* Selected attendees */}
         {directoryUsersWithEvents.map((attendee) => (
           <SelectedAttendeeCard
@@ -222,7 +222,7 @@ export const Attendees: FC<Props> = ({
           if (
             e.path?.find(
               (p: any) =>
-                p.id === "attendeePopup" || p.id === "attendeePopupContainer"
+                p.id === "attendeePopup" || p.id === "attendeePopupContainer",
             )
           ) {
             return;
@@ -274,23 +274,23 @@ export const Attendees: FC<Props> = ({
                 </div>
               </div>
               <div
-                className="rounded border border-[#F9FAFA] p-4 w-60 bg-[#F9FAFA] text-left mt-4 cursor-auto"
+                className="mt-4 w-60 cursor-auto rounded border border-[#F9FAFA] bg-[#F9FAFA] p-4 text-left"
                 style={{ boxShadow: "2px 4px 12px 2px #dbd9d9" }}
               >
-                <div className="color-gray-900 font-semibold text-sm">
+                <div className="color-gray-900 text-sm font-semibold">
                   Unlock Other Attendees
                 </div>
-                <div className="color-gray-900 text-xs mt-2">
+                <div className="color-gray-900 mt-2 text-xs">
                   This feature is part of the Pro Plan
                 </div>
                 <div
-                  className="w-full mt-8 h-8 flex justify-center items-center border rounded border-primary color-primary cursor-pointer"
+                  className="border-primary color-primary mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border"
                   onClick={() => onPageChange?.("settings")}
                 >
                   Upgrade
                 </div>
                 <Float.Arrow
-                  className="absolute bg-[#F9FAFA] w-5 h-5 rotate-45"
+                  className="absolute h-5 w-5 rotate-45 bg-[#F9FAFA]"
                   offset={-12}
                 />
               </div>
@@ -301,7 +301,7 @@ export const Attendees: FC<Props> = ({
           {Boolean(isAttendeePopupOpen && directoryUsers) && (
             <div
               id="attendeePopup"
-              className="absolute bg-white py-1 rounded w-full shadow-xl mt-1 z-10"
+              className="absolute z-10 mt-1 w-full rounded bg-white py-1 shadow-xl"
             >
               <>
                 {attendeeText && addUnknownAttendee}

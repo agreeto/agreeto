@@ -10,6 +10,7 @@ importers:
       husky: ^8.0.1
       lint-staged: ^13.0.3
       prettier: ^2.7.1
+      prettier-plugin-tailwindcss: ^0.1.13
       tsc-files: ^1.1.3
       turbo: ^1.6.2
       typescript: ^4.8.4
@@ -20,6 +21,7 @@ importers:
       husky: 8.0.1
       lint-staged: 13.0.3
       prettier: 2.7.1
+      prettier-plugin-tailwindcss: 0.1.13_prettier@2.7.1
       tsc-files: 1.1.3_typescript@4.8.4
       turbo: 1.6.2
       typescript: 4.8.4
@@ -276,6 +278,8 @@ importers:
   packages/calendar/core:
     specifiers:
       '@agreeto/api': workspace:*
+      '@fullcalendar/react': ^5.11.2
+      '@types/chrome': ^0.0.197
       copy-to-clipboard: ^3.3.2
       date-fns: ^2.29.3
       date-fns-tz: ^1.3.7
@@ -289,6 +293,8 @@ importers:
       date-fns-tz: 1.3.7_date-fns@2.29.3
       zustand: 4.1.4
     devDependencies:
+      '@fullcalendar/react': 5.11.2
+      '@types/chrome': 0.0.197
       tsup: 6.4.0_typescript@4.8.4
       typescript: 4.8.4
 
@@ -1457,7 +1463,6 @@ packages:
     resolution: {integrity: sha512-welVwyfQOXQQGfDwBMSfYEPbiO1cPfUD+C7jd3ZoweJR+dSO11ddFugxIQ7dGfABAGZ63oq/+LW9FsmAJezVNg==}
     dependencies:
       tslib: 2.4.0
-    dev: false
 
   /@fullcalendar/daygrid/5.11.3:
     resolution: {integrity: sha512-PCK0y80DRNCzWuC5lGpIWqCgKDvql1ah7rXql5lu+Gn2EeFj15ZQ8diMFjtNIQucEmFaNOXnR05Pgcry1n6Shg==}
@@ -1494,6 +1499,16 @@ packages:
       moment: 2.29.4
       tslib: 2.4.0
     dev: false
+
+  /@fullcalendar/react/5.11.2:
+    resolution: {integrity: sha512-OnLvfV406VEQcK4QGN8xR4ro6Manp9dKE7/n9dhs19J1kKpqS1w1sIEYg1dT11njbk0Ob+TdF3cXLDFq73jUlA==}
+    peerDependencies:
+      react: ^16.7.0 || ^17 || ^18
+      react-dom: ^16.7.0 || ^17 || ^18
+    dependencies:
+      '@fullcalendar/common': 5.11.3
+      tslib: 2.4.0
+    dev: true
 
   /@fullcalendar/react/5.11.2_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-OnLvfV406VEQcK4QGN8xR4ro6Manp9dKE7/n9dhs19J1kKpqS1w1sIEYg1dT11njbk0Ob+TdF3cXLDFq73jUlA==}
@@ -10907,6 +10922,15 @@ packages:
   /prelude-ls/1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
+
+  /prettier-plugin-tailwindcss/0.1.13_prettier@2.7.1:
+    resolution: {integrity: sha512-/EKQURUrxLu66CMUg4+1LwGdxnz8of7IDvrSLqEtDqhLH61SAlNNUSr90UTvZaemujgl3OH/VHg+fyGltrNixw==}
+    engines: {node: '>=12.17.0'}
+    peerDependencies:
+      prettier: '>=2.2.0'
+    dependencies:
+      prettier: 2.7.1
+    dev: false
 
   /prettier/2.2.1:
     resolution: {integrity: sha512-PqyhM2yCjg/oKkFPtTGUojv7gnZAoG80ttl45O6x2Ug/rMJw4wcc9k6aaf2hibP7BGVCCM33gZoGjyvt9mm16Q==}

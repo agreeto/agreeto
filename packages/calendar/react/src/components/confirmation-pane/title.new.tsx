@@ -27,7 +27,7 @@ export const Title: React.FC<{
         />
       </div>
 
-      <div className="w-100 flex justify-between mt-4">
+      <div className="w-100 mt-4 flex justify-between">
         <div>
           <span className="text-sm">
             {!isSelectionDone ? (
@@ -44,7 +44,7 @@ export const Title: React.FC<{
         {!isSelectionDone && (
           <div>
             <button
-              className="icon-button w-7 h-7"
+              className="icon-button h-7 w-7"
               title="copy"
               onClick={() => {
                 if (!events) return;
@@ -52,7 +52,7 @@ export const Title: React.FC<{
                 copyToClipboard(
                   // FIXME: ANY TYPE
                   events.map((e) => convertToSlot(e as any)),
-                  preference
+                  preference,
                 );
                 toast("Saved to clipboard!", {
                   position: "bottom-center",
@@ -62,7 +62,7 @@ export const Title: React.FC<{
                 });
               }}
             >
-              <img src={copyIcon} alt="copy" className="w-5 h-5" />
+              <img src={copyIcon} alt="copy" className="h-5 w-5" />
             </button>
           </div>
         )}

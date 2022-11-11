@@ -10,7 +10,7 @@ export interface ViewSlice {
 }
 
 export const createViewSlice: StateCreator<MyState, [], [], ViewSlice> = (
-  set
+  set,
 ) => ({
   // State
   openPane: "action",

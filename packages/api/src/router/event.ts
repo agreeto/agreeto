@@ -49,7 +49,7 @@ export const eventRouter = router({
             const { events } = await service.getEvents(input);
             console.log("events", events);
             return events.map((e) => ({ ...e, account }));
-          })
+          }),
       );
 
       // Merge events
@@ -90,10 +90,10 @@ export const eventRouter = router({
             email: z.string(),
             provider: z.string(),
             responseStatus: z.nativeEnum(EventResponseStatus),
-          })
+          }),
         ),
         // .optional(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       // Get event and confirm it belongs to the current user
@@ -181,10 +181,10 @@ export const eventRouter = router({
                 .catch((err) =>
                   console.error(
                     `Failed to delete the event from the calendar service for the event: ${eventId}`,
-                    err
-                  )
+                    err,
+                  ),
                 );
-            })
+            }),
           );
         })();
 
@@ -214,7 +214,7 @@ export const eventRouter = router({
 
           const { service, eventId } = getCalendarService(
             primaryAccount,
-            event
+            event,
           );
           await service.updateEvent(eventId as string, {
             hasConference: input.addConference,
@@ -246,7 +246,7 @@ export const eventRouter = router({
             events: z.array(EventValidator.partial()).optional(),
           })
           .array(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const accounts = await ctx.prisma.account.findMany({
@@ -254,7 +254,7 @@ export const eventRouter = router({
         include: { color: true },
       });
       const googleAccounts = accounts.filter(
-        (account) => account.provider === "google"
+        (account) => account.provider === "google",
       );
 
       const result = [...input.users].map((u) => ({
@@ -269,7 +269,7 @@ export const eventRouter = router({
           googleAccounts.forEach((account) => {
             const google = new GoogleCalendarService(
               account.access_token,
-              account.refresh_token
+              account.refresh_token,
             );
 
             promises.push(
@@ -289,7 +289,7 @@ export const eventRouter = router({
                     }));
                   }
                 })
-                .catch((e) => console.error("Could not fetch user events", e))
+                .catch((e) => console.error("Could not fetch user events", e)),
             );
           });
         });

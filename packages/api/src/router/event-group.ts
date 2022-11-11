@@ -63,7 +63,7 @@ export const eventGroupRouter = router({
             attendeeEmails: z.string().array().optional(),
           })
           .array(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const accounts = await ctx.prisma.account.findMany({
@@ -152,7 +152,7 @@ export const eventGroupRouter = router({
                   });
                 }
                 return event;
-              })
+              }),
           );
         });
       }
@@ -199,7 +199,7 @@ export const eventGroupRouter = router({
             // Initialize the service
             const { service, eventId } = getCalendarService(
               group.account,
-              event
+              event,
             );
 
             return service
@@ -207,10 +207,10 @@ export const eventGroupRouter = router({
               .catch((err) =>
                 console.error(
                   `Failed to delete the event from the calendar service for the event: ${eventId}`,
-                  err
-                )
+                  err,
+                ),
               );
-          })
+          }),
         ));
 
       // "Delete" event from DB

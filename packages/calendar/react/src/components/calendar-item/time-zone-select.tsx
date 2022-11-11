@@ -74,18 +74,18 @@ const TimeZoneSelect: FC<Props> = ({
         >
           <div onMouseEnter={() => setShowProTooltip(true)}>
             <div
-              className={`group rounded flex justify-center items-center border text-3xs-05 ${
+              className={`text-3xs-05 group flex items-center justify-center rounded border ${
                 type === "primary"
                   ? "color-primary cursor-pointer"
                   : !isFree
-                  ? "bg-[#F0F1F2] border-[#F0F1F2] hover:border-gray-300 cursor-pointer"
-                  : "bg-[#F0F1F2] border-[#F0F1F2]"
+                  ? "cursor-pointer border-[#F0F1F2] bg-[#F0F1F2] hover:border-gray-300"
+                  : "border-[#F0F1F2] bg-[#F0F1F2]"
               } ${
                 type === "addIcon"
-                  ? "w-6 mr-2"
+                  ? "mr-2 w-6"
                   : timeZones.length === 1
-                  ? "w-12 text-2xs"
-                  : "w-10 text-3xs-05"
+                  ? "text-2xs w-12"
+                  : "text-3xs-05 w-10"
               }`}
               onClick={() => {
                 if (isFree && type !== "primary") return;
@@ -101,7 +101,7 @@ const TimeZoneSelect: FC<Props> = ({
                 <div>
                   <div
                     className={
-                      "absolute text-white w-0 h-4 group-hover:w-4 flex justify-center items-center rounded-full text-3xs-05 cursor-pointer bg-gray-500 hover:bg-gray-600"
+                      "text-3xs-05 absolute flex h-4 w-0 cursor-pointer items-center justify-center rounded-full bg-gray-500 text-white hover:bg-gray-600 group-hover:w-4"
                     }
                     style={{
                       top: "-8px",
@@ -119,23 +119,23 @@ const TimeZoneSelect: FC<Props> = ({
             </div>
           </div>
           <div
-            className="rounded border border-[#F9FAFA] p-4 w-60 bg-[#F9FAFA] text-left mt-4 cursor-auto"
+            className="mt-4 w-60 cursor-auto rounded border border-[#F9FAFA] bg-[#F9FAFA] p-4 text-left"
             style={{ boxShadow: "2px 4px 12px 2px #dbd9d9" }}
           >
-            <div className="color-gray-900 font-semibold text-sm">
+            <div className="color-gray-900 text-sm font-semibold">
               Unlock Multiple Time Zones
             </div>
-            <div className="color-gray-900 text-xs mt-2">
+            <div className="color-gray-900 mt-2 text-xs">
               This feature is part of the Pro Plan
             </div>
             <div
-              className="w-full mt-8 h-8 flex justify-center items-center border rounded border-primary color-primary cursor-pointer"
+              className="border-primary color-primary mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border"
               onClick={() => onPageChange?.("settings")}
             >
               Upgrade
             </div>
             <Float.Arrow
-              className="absolute bg-[#F9FAFA] w-5 h-5 rotate-45"
+              className="absolute h-5 w-5 rotate-45 bg-[#F9FAFA]"
               offset={-12}
             />
           </div>
@@ -154,17 +154,17 @@ const TimeZoneSelect: FC<Props> = ({
             }}
           >
             <div
-              className="absolute z-10 bg-white color-gray-700 rounded shadow-xl w-80 pt-6"
+              className="color-gray-700 absolute z-10 w-80 rounded bg-white pt-6 shadow-xl"
               id="timeZonePopupContainer"
             >
               {/* Upper part */}
               <div className="px-5 pb-3">
                 {/* Title */}
                 <div className="flex items-center justify-between pb-4">
-                  <div className="font-semibold text-xl">Time zone</div>
+                  <div className="text-xl font-semibold">Time zone</div>
 
                   <div
-                    className="border border-gray-50 rounded flex items-center justify-center h-8 w-8 cursor-pointer"
+                    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded border border-gray-50"
                     onClick={() => setIsOpen(false)}
                   >
                     X
@@ -174,7 +174,7 @@ const TimeZoneSelect: FC<Props> = ({
                 {/* Search */}
                 <div className="input-icon-after">
                   <input
-                    className="w-full outline-none border-b border-gray-50 h-8"
+                    className="h-8 w-full border-b border-gray-50 outline-none"
                     placeholder="Search for country or city"
                     autoFocus
                     onChange={(e) => {
@@ -196,11 +196,11 @@ const TimeZoneSelect: FC<Props> = ({
                   .filter((tz) => {
                     const isSame = tz === value;
                     const recentlyUsed = uniqTimeZones.some(
-                      (tz2) => tz2 === tz
+                      (tz2) => tz2 === tz,
                     );
                     const text = `(${getTimeZoneAbv(
                       tz,
-                      referenceDate
+                      referenceDate,
                     )}) ${tz}`.toLocaleLowerCase();
 
                     return (
@@ -215,7 +215,7 @@ const TimeZoneSelect: FC<Props> = ({
                   .map((tz: string) => {
                     const isSame = tz === value;
                     const recentlyUsed = uniqTimeZones.some(
-                      (tz2) => tz2 === tz
+                      (tz2) => tz2 === tz,
                     );
 
                     // Determine the location of divider which divides (selected + recently used) from (others)
@@ -238,7 +238,7 @@ const TimeZoneSelect: FC<Props> = ({
                       <div key={tz}>
                         {/* Put divider */}
                         {needsDivider && (
-                          <div className="px-3 my-1">
+                          <div className="my-1 px-3">
                             <div
                               className="bg-gray-200"
                               style={{ height: "1px" }}
@@ -246,7 +246,7 @@ const TimeZoneSelect: FC<Props> = ({
                           </div>
                         )}
                         <div
-                          className="px-5 h-8 text-sm flex items-center justify-between cursor-pointer hover:bg-gray-300"
+                          className="flex h-8 cursor-pointer items-center justify-between px-5 text-sm hover:bg-gray-300"
                           onClick={() => {
                             if (type === "addIcon") {
                               addTimeZone(tz);
@@ -258,14 +258,14 @@ const TimeZoneSelect: FC<Props> = ({
                           {/* Timezone */}
                           <div>{`(${getTimeZoneAbv(
                             tz,
-                            referenceDate
+                            referenceDate,
                           )}) ${tz}`}</div>
                           {/* Checmkark */}
                           {isSame && (
                             <div>
                               <img
                                 alt=""
-                                className="w-4 h-4"
+                                className="h-4 w-4"
                                 src={checkmarkBlueIcon}
                               />
                             </div>

@@ -2,7 +2,7 @@ import "@agreeto/tailwind-config";
 import "react-toastify/dist/ReactToastify.css";
 import { add, endOfWeek, startOfWeek } from "date-fns";
 import ActionPane from "./components/action-pane";
-import { useEffect, useState } from "react";
+import { type ChangeEventHandler, useEffect, useState } from "react";
 import ControlBar, { type CalendarType } from "./components/control-bar";
 
 import CalendarItem from "./components/calendar-item";
@@ -47,6 +47,7 @@ const Calendar: React.FC<Props> = ({
   const [focusedDate, setFocusedDate] = useState(new Date());
   const [weekends, setWeekends] = useState(false);
   const [title, setTitle] = useState("Blocker: ");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [calendarRef, setCalendarRef] = useState<any>();
   const [selectedSlots, setSelectedSlots] = useState([] as EventInput[]);
   const [checkedEvent, setCheckedEvent] = useState<EventGroupEvent>();
@@ -97,7 +98,7 @@ const Calendar: React.FC<Props> = ({
     if (selectedSlots.length > 0) {
       changePane("action");
     }
-  }, [selectedSlots]);
+  }, [selectedSlots, changePane]);
 
   // Unselect the eventGroupId when the confirmation pane is closed
   useEffect(() => {
@@ -115,7 +116,7 @@ const Calendar: React.FC<Props> = ({
         calendarApi.updateSize();
       }, 10);
     }
-  }, [renderKey]);
+  }, [renderKey, calendarRef]);
 
   const handleDateChange = (action: "prev" | "next" | "today") => {
     const calendarApi: CalendarApi = calendarRef.current.getApi();
@@ -140,7 +141,7 @@ const Calendar: React.FC<Props> = ({
     setSelectedSlots([...selectedSlots, slot]);
   };
 
-  const handleTitleChange = (e: any) => {
+  const handleTitleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const text = e.target.value;
     setTitle(text);
 
@@ -148,7 +149,7 @@ const Calendar: React.FC<Props> = ({
       [...selectedSlots].map((slot) => ({
         ...slot,
         title: text,
-      }))
+      })),
     );
   };
 
@@ -162,7 +163,7 @@ const Calendar: React.FC<Props> = ({
               start: event.start,
               end: event.end,
               id: ulid(),
-            }
+            },
       );
       setSelectedSlots(newSlots);
     }

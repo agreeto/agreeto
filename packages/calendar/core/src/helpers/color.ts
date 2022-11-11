@@ -7,7 +7,7 @@ export const DIRECTORY_USER_COLORS = [
 
 export const getNextColor = (
   idx: number,
-  schema: string[] = DIRECTORY_USER_COLORS
+  schema: string[] = DIRECTORY_USER_COLORS,
 ): string => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return schema[idx % schema.length]!;

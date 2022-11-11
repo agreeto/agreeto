@@ -74,7 +74,7 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
   const copyButton = (
     <div>
       <button
-        className="icon-button w-7 h-7"
+        className="icon-button h-7 w-7"
         title="copy"
         disabled={selectedSlots.length === 0}
         onClick={() => {
@@ -87,7 +87,7 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
           });
         }}
       >
-        <img src={copyIcon} alt="copy" className="w-5 h-5" />
+        <img src={copyIcon} alt="copy" className="h-5 w-5" />
       </button>
     </div>
   );
@@ -97,7 +97,7 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
       <DropdownMenu.Trigger
         disabled={isFetchingPreference || isUpdatingPreference}
       >
-        <div className="h-6 bg-white color-gray-700 rounded border border-gray-300 w-14 flex py-1 px-2 items-center space-x-3">
+        <div className="color-gray-700 flex h-6 w-14 items-center space-x-3 rounded border border-gray-300 bg-white py-1 px-2">
           <div>
             <img src={getLanguageIcon()} width={14} height={14} alt="" />
           </div>
@@ -107,7 +107,7 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
         </div>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content
-        className="z-10 bg-white color-gray-700 rounded"
+        className="color-gray-700 z-10 rounded bg-white"
         style={{ boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.10)" }}
         align="end"
       >
@@ -116,7 +116,7 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
             handleLanguageChange(Language.EN);
           }}
         >
-          <div className="pl-4 py-3 flex items-center w-40 cursor-pointer">
+          <div className="flex w-40 cursor-pointer items-center py-3 pl-4">
             <div>
               <img src={flagUSIcon} width={14} height={14} alt="" />
             </div>
@@ -124,13 +124,13 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
           </div>
         </DropdownMenu.Item>
         <DropdownMenu.Separator
-          className="bg-gray-100 mx-3"
+          className="mx-3 bg-gray-100"
           style={{ height: "1px" }}
         />
 
         {isFree ? (
           <>
-            <div className="pl-4 py-3 flex items-center w-40 cursor-not-allowed opacity-40">
+            <div className="flex w-40 cursor-not-allowed items-center py-3 pl-4 opacity-40">
               <div>
                 <img src={flagEsIcon} width={14} height={14} alt="" />
               </div>
@@ -138,14 +138,14 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
             </div>
 
             <div className="p-4">
-              <div className="color-gray-900 font-semibold text-sm">
+              <div className="color-gray-900 text-sm font-semibold">
                 Unlock More Languages
               </div>
-              <div className="color-gray-900 text-xs mt-2">
+              <div className="color-gray-900 mt-2 text-xs">
                 This feature is part of the Pro Plan
               </div>
               <div
-                className="w-full mt-8 h-8 flex justify-center items-center border rounded border-primary color-primary cursor-pointer"
+                className="border-primary color-primary mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border"
                 onClick={() => onPageChange?.("settings")}
               >
                 Upgrade
@@ -159,7 +159,7 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
                 handleLanguageChange(Language.ES);
               }}
             >
-              <div className="pl-4 py-3 flex items-center w-40 cursor-pointer">
+              <div className="flex w-40 cursor-pointer items-center py-3 pl-4">
                 <div>
                   <img src={flagEsIcon} width={14} height={14} alt="Spanish" />
                 </div>
@@ -167,7 +167,7 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
               </div>
             </DropdownMenu.Item>
             <DropdownMenu.Separator
-              className="bg-gray-100 mx-3"
+              className="mx-3 bg-gray-100"
               style={{ height: "1px" }}
             />
             <DropdownMenu.Item
@@ -175,7 +175,7 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
                 handleLanguageChange(Language.DE);
               }}
             >
-              <div className="pl-4 py-3 flex items-center w-40 cursor-pointer">
+              <div className="flex w-40 cursor-pointer items-center py-3 pl-4">
                 <div>
                   <img src={flagDeIcon} width={14} height={14} alt="German" />
                 </div>
@@ -183,7 +183,7 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
               </div>
             </DropdownMenu.Item>
             <DropdownMenu.Separator
-              className="bg-gray-100 mx-3"
+              className="mx-3 bg-gray-100"
               style={{ height: "1px" }}
             />
             <DropdownMenu.Item
@@ -191,7 +191,7 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
                 handleLanguageChange(Language.FR);
               }}
             >
-              <div className="pl-4 py-3 flex items-center w-40 cursor-pointer">
+              <div className="flex w-40 cursor-pointer items-center py-3 pl-4">
                 <div>
                   <img src={flagFrIcon} width={14} height={14} alt="French" />
                 </div>
@@ -199,7 +199,7 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
               </div>
             </DropdownMenu.Item>
             <DropdownMenu.Separator
-              className="bg-gray-100 mx-3"
+              className="mx-3 bg-gray-100"
               style={{ height: "1px" }}
             />
             <DropdownMenu.Item
@@ -207,7 +207,7 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
                 handleLanguageChange(Language.IT);
               }}
             >
-              <div className="pl-4 py-3 flex items-center w-40 cursor-pointer">
+              <div className="flex w-40 cursor-pointer items-center py-3 pl-4">
                 <div>
                   <img src={flagItIcon} width={14} height={14} alt="Italian" />
                 </div>
@@ -223,7 +223,7 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
   const timeZoneDropdown = (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
-        <div className="h-6 bg-white color-gray-700 rounded border border-gray-300 flex py-1 px-1 items-center space-x-2">
+        <div className="color-gray-700 flex h-6 items-center space-x-2 rounded border border-gray-300 bg-white py-1 px-1">
           <div className="text-2xs">{getTimeZoneAbv(selectedTimeZone)}</div>
           <div>
             <img src={arrowDownIcon} width={12} height={7} alt="" />
@@ -231,7 +231,7 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
         </div>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content
-        className="z-10 bg-white color-gray-700 rounded"
+        className="color-gray-700 z-10 rounded bg-white"
         align="end"
         style={{ boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.10)" }}
       >
@@ -240,7 +240,7 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
             key={`${tz}-${idx}`}
             onSelect={() => changeSelectedTimeZone(tz)}
           >
-            <div className="px-3 bg-white py-1 cursor-pointer">
+            <div className="cursor-pointer bg-white px-3 py-1">
               <div className="text-xs">{getTimeZoneAbv(tz)}</div>
             </div>
           </DropdownMenu.Item>
@@ -251,7 +251,7 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
 
   return (
     <>
-      <div className="flex items-center justify-between w-100">
+      <div className="w-100 flex items-center justify-between">
         <div>
           <span className="text-sm">Snippet Preview</span>
         </div>
@@ -262,11 +262,11 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
       </div>
 
       <div className="pt-2">
-        <div className="h-48 pl-3 pr-1 py-1 overflow-auto bg-white border rounded border-gray-50">
+        <div className="h-48 overflow-auto rounded border border-gray-50 bg-white py-1 pl-3 pr-1">
           {!selectedSlots.length ? (
             <div className="flex justify-between">
               <div
-                className="text-sm color-gray-200"
+                className="color-gray-200 text-sm"
                 style={{ paddingTop: "2px" }}
               >
                 Selected slots will appear here
@@ -275,7 +275,7 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
             </div>
           ) : (
             <div>
-              <div className="pb-3 flex justify-between">
+              <div className="flex justify-between pb-3">
                 <div className="text-sm" style={{ paddingTop: "2px" }}>
                   <span className="color-gray-700">
                     {getCopyTitle(preference)}
@@ -290,13 +290,13 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
                 if (!firstEvent) return null;
 
                 return (
-                  <div className="pb-1 text-xs-05 color-gray-700" key={idx}>
+                  <div className="text-xs-05 color-gray-700 pb-1" key={idx}>
                     {/* Day */}
                     <div className="font-bold">
                       {format(
                         convertToDate(firstEvent.start),
                         "MMMM d (EEEE)",
-                        { locale, timeZone: selectedTimeZone }
+                        { locale, timeZone: selectedTimeZone },
                       )}
                     </div>
                     {/* Hours */}
@@ -315,7 +315,7 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
                               timeZone: selectedTimeZone,
                             })} ${getTimeZoneAbv(
                               selectedTimeZone,
-                              convertToDate(start)
+                              convertToDate(start),
                             )}`}
                           </span>
                           <img

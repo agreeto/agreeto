@@ -13,7 +13,7 @@ if (Office !== undefined) {
         <TRPCProvider>
           <App />
         </TRPCProvider>
-      </React.StrictMode>
+      </React.StrictMode>,
     );
   });
 }

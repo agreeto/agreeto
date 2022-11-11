@@ -21,7 +21,7 @@ const Success: NextPage = () => {
               } else {
                 Router.push("/auth/signout/error");
               }
-            }
+            },
           );
         }}
       >

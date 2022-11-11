@@ -1,2 +1,2 @@
-import ConfirmationPane from './confirmation-pane'
-export default ConfirmationPane
+import ConfirmationPane from "./confirmation-pane";
+export default ConfirmationPane;

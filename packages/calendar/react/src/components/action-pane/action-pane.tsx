@@ -62,7 +62,7 @@ const ActionPane: FC<Props> = ({
   const [showCreatingSpinner, setShowCreatingSpinner] = useState(false);
 
   const [buttonType, setButtonType] = useState(
-    PRIMARY_ACTION_TYPES.COPY_AND_CLOSE
+    PRIMARY_ACTION_TYPES.COPY_AND_CLOSE,
   );
 
   const { data: preference } = trpc.preference.byCurrentUser.useQuery();
@@ -145,7 +145,7 @@ const ActionPane: FC<Props> = ({
               email: u.email,
               provider: u.provider,
               responseStatus: EventResponseStatus.NEEDS_ACTION,
-            }))
+            })),
           ),
         };
       }),
@@ -160,7 +160,7 @@ const ActionPane: FC<Props> = ({
           e.path?.find(
             (p: any) =>
               p.id === "primaryActionPopupContainerButton" ||
-              p.id === "primaryActionPopupContainerContent"
+              p.id === "primaryActionPopupContainerContent",
           )
         ) {
           return;
@@ -169,15 +169,15 @@ const ActionPane: FC<Props> = ({
       }}
     >
       <Float
-        className="flex items-stretch h-full"
+        className="flex h-full items-stretch"
         show={showActionTypesPopup}
         placement="top-end"
       >
         <div
           id="primaryActionPopupContainerButton"
-          className={`flex items-stretch justify-center w-10 rounded-r ${
+          className={`flex w-10 items-stretch justify-center rounded-r ${
             selectedSlots.length === 0 || isCreatingEventGroup
-              ? "bg-[#C0C0C0] cursor-not-allowed"
+              ? "cursor-not-allowed bg-[#C0C0C0]"
               : "bg-primary cursor-pointer"
           }`}
           onClick={() => {
@@ -186,7 +186,7 @@ const ActionPane: FC<Props> = ({
           }}
         >
           <div
-            className="border-l border-white w-full flex justify-center items-center"
+            className="flex w-full items-center justify-center border-l border-white"
             style={{ marginTop: "2px", marginBottom: "2px" }}
           >
             <img
@@ -203,12 +203,12 @@ const ActionPane: FC<Props> = ({
         </div>
         <div
           id="primaryActionPopupContainerContent"
-          className="rounded border border-[#E3E5E8] bg-white text-left mb-2"
+          className="mb-2 rounded border border-[#E3E5E8] bg-white text-left"
           style={{ width: "340px" }}
         >
           {/* Copy and Close */}
           <div
-            className="flex py-2 px-4 hover:bg-[#D9D9D9] cursor-pointer border-b border-[#C2C7CD]"
+            className="flex cursor-pointer border-b border-[#C2C7CD] py-2 px-4 hover:bg-[#D9D9D9]"
             onClick={() => {
               setButtonType(PRIMARY_ACTION_TYPES.COPY_AND_CLOSE);
               setShowActionTypesPopup(false);
@@ -229,7 +229,7 @@ const ActionPane: FC<Props> = ({
               >
                 Copy and Close
               </div>
-              <div className="text-xs text-[#767676] pt-1">
+              <div className="pt-1 text-xs text-[#767676]">
                 Copies the selected time slots to your clipboard, then closes
                 the application.
               </div>
@@ -237,7 +237,7 @@ const ActionPane: FC<Props> = ({
           </div>
           {/* Create Hold and Copy */}
           <div
-            className="flex py-2 px-4 hover:bg-[#D9D9D9] cursor-pointer"
+            className="flex cursor-pointer py-2 px-4 hover:bg-[#D9D9D9]"
             onClick={() => {
               setButtonType(PRIMARY_ACTION_TYPES.CREATE_HOLD_AND_COPY);
               setShowActionTypesPopup(false);
@@ -258,7 +258,7 @@ const ActionPane: FC<Props> = ({
               >
                 Create Hold and Copy
               </div>
-              <div className="text-xs text-[#767676] pt-1">
+              <div className="pt-1 text-xs text-[#767676]">
                 Creates unconfirmed events in the calendar of each attendee,
                 then copies the selected time slots.
               </div>
@@ -270,17 +270,17 @@ const ActionPane: FC<Props> = ({
   );
 
   return (
-    <div className="px-10 py-8 h-full bg-gray-100">
+    <div className="h-full bg-gray-100 px-10 py-8">
       {/* Loading container */}
       {isCreating && (
-        <div className="absolute inset-0 z-10 flex justify-center items-center bg-[#ffffff73]">
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#ffffff73]">
           {showCreatingSpinner && (
             <Spinner style={{ width: "70px", height: "70px" }} />
           )}
         </div>
       )}
 
-      <div className="flex flex-col h-full justify-between">
+      <div className="flex h-full flex-col justify-between">
         {/* Top */}
         <div>
           {/* Close icon */}
@@ -289,14 +289,14 @@ const ActionPane: FC<Props> = ({
               <img
                 src={closeIcon}
                 alt="close"
-                className="cursor-pointer w-8 h-8"
+                className="h-8 w-8 cursor-pointer"
                 onClick={handleClose}
               />
             </div>
           )}
 
           {/* Title input */}
-          <div className="pt-8 flex justify-end">
+          <div className="flex justify-end pt-8">
             <input
               className="input input-big w-full"
               placeholder="Add a title"

@@ -10,7 +10,7 @@ interface DateFnsTzOptions {
 }
 
 export const getCopyTitle = (
-  preference?: RouterOutputs["preference"]["byCurrentUser"]
+  preference?: RouterOutputs["preference"]["byCurrentUser"],
 ) => {
   switch (preference?.formatLanguage) {
     case Language.DE:
@@ -28,7 +28,7 @@ export const getCopyTitle = (
 
 export const getHourText = (
   date: Date,
-  { timeZone = "UTC", locale }: DateFnsTzOptions
+  { timeZone = "UTC", locale }: DateFnsTzOptions,
 ) => {
   switch (locale) {
     case enUS:
@@ -39,7 +39,7 @@ export const getHourText = (
 };
 
 export const getDateLocale = (
-  preference?: RouterOutputs["preference"]["byCurrentUser"]
+  preference?: RouterOutputs["preference"]["byCurrentUser"],
 ) => {
   switch (preference?.formatLanguage) {
     case Language.DE:

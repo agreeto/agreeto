@@ -23,7 +23,7 @@ export const accountRouter = router({
       z.object({
         id: z.string().optional(),
         email: z.string().email().optional(),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       return ctx.prisma.account.findMany({

@@ -71,7 +71,7 @@ const ConfirmationPane: FC<Props> = ({
         onSuccess: (eg) => {
           setTitle(eg.title || "");
         },
-      }
+      },
     );
 
   const { mutate: confirmEvent, isLoading: isConfirming } =
@@ -143,7 +143,7 @@ const ConfirmationPane: FC<Props> = ({
           email: u.email,
           provider: u.provider,
           responseStatus: EventResponseStatus.NEEDS_ACTION,
-        }))
+        })),
       ),
     });
   };
@@ -154,17 +154,17 @@ const ConfirmationPane: FC<Props> = ({
   };
 
   return (
-    <div className="px-10 py-8 h-full bg-gray-100">
-      <div className="flex flex-col h-full justify-between">
+    <div className="h-full bg-gray-100 px-10 py-8">
+      <div className="flex h-full flex-col justify-between">
         {/* Top */}
         <div>
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             {/* Back icon */}
             <div>
               <img
                 src={backIcon}
                 alt="back"
-                className="cursor-pointer w-8 h-8"
+                className="h-8 w-8 cursor-pointer"
                 onClick={() => changePane("action")}
               />
             </div>
@@ -175,7 +175,7 @@ const ConfirmationPane: FC<Props> = ({
                 <img
                   src={closeIcon}
                   alt="close"
-                  className="cursor-pointer w-8 h-8"
+                  className="h-8 w-8 cursor-pointer"
                   onClick={() => onClose?.()}
                 />
               </div>
@@ -197,7 +197,7 @@ const ConfirmationPane: FC<Props> = ({
           />
 
           {/* Events */}
-          <div className="pt-1 space-y-4 overflow-auto max-h-56">
+          <div className="max-h-56 space-y-4 overflow-auto pt-1">
             {eventGroup?.events
               ?.sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
               .map((event) => (
@@ -223,7 +223,7 @@ const ConfirmationPane: FC<Props> = ({
 
           {/* Conference */}
           {eventGroup && !eventGroup.isSelectionDone && primaryAccount && (
-            <div className="pt-2 overflow-visible">
+            <div className="overflow-visible pt-2">
               <ConferenceElement
                 {...{
                   eventGroup,

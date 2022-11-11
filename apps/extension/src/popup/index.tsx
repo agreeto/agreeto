@@ -1,16 +1,16 @@
 // note (richard): import order is important to not run into specificity issues
-import "@fullcalendar/common/main.css"
-import "@fullcalendar/timegrid/main.css"
-import "../style.css"
+import "@fullcalendar/common/main.css";
+import "@fullcalendar/timegrid/main.css";
+import "../style.css";
 
-import { Outlet, ReactLocation, Router } from "@tanstack/react-location"
-import React from "react"
+import { Outlet, ReactLocation, Router } from "@tanstack/react-location";
+import React from "react";
 
-import { Layout } from "~app/layout"
-import { useIsAuthed } from "~features/auth/is-authed"
-import { SignIn } from "~features/auth/sign-in"
-import { getRoutes, reactLocationOptions } from "~features/router/config"
-import { TRPCProvider } from "~features/trpc//api/provider"
+import { Layout } from "~app/layout";
+import { useIsAuthed } from "~features/auth/is-authed";
+import { SignIn } from "~features/auth/sign-in";
+import { getRoutes, reactLocationOptions } from "~features/router/config";
+import { TRPCProvider } from "~features/trpc//api/provider";
 
 /**
  * The IndexPopup is the entry-file for the popup script of the extension.
@@ -25,11 +25,11 @@ import { TRPCProvider } from "~features/trpc//api/provider"
  * @returns `<SignIn />` Page OR `<App/>` wrapped in JSX Providers
  */
 const PopupContent: React.FC = () => {
-  const { isAuthed, isLoading } = useIsAuthed()
+  const { isAuthed, isLoading } = useIsAuthed();
 
   const [location] = React.useState(
-    () => new ReactLocation(reactLocationOptions)
-  )
+    () => new ReactLocation(reactLocationOptions),
+  );
 
   return (
     <Router routes={getRoutes()} location={location}>
@@ -50,8 +50,8 @@ const PopupContent: React.FC = () => {
         )}
       </div>
     </Router>
-  )
-}
+  );
+};
 
 /** Content needs access to the tRPC context, so we need a wrapper */
 const IndexPopup: React.FC = () => {
@@ -59,7 +59,7 @@ const IndexPopup: React.FC = () => {
     <TRPCProvider>
       <PopupContent />
     </TRPCProvider>
-  )
-}
+  );
+};
 
-export default IndexPopup
+export default IndexPopup;

@@ -1,20 +1,20 @@
-import { Outlet, ReactLocation, Router } from "@tanstack/react-location"
-import React from "react"
+import { Outlet, ReactLocation, Router } from "@tanstack/react-location";
+import React from "react";
 
-import { useIsAuthed } from "~features/auth/is-authed"
-import { SignIn } from "~features/auth/sign-in"
-import { getRoutes, reactLocationOptions } from "~features/router/config"
-import { TRPCProvider } from "~features/trpc/api/provider"
+import { useIsAuthed } from "~features/auth/is-authed";
+import { SignIn } from "~features/auth/sign-in";
+import { getRoutes, reactLocationOptions } from "~features/router/config";
+import { TRPCProvider } from "~features/trpc/api/provider";
 
-import { Layout } from "./layout"
+import { Layout } from "./layout";
 
 const AppContent: React.FC = () => {
-  const isAuthed = useIsAuthed()
+  const isAuthed = useIsAuthed();
   // const utils = trpcApi.useContext()
 
   const [location] = React.useState(
-    () => new ReactLocation(reactLocationOptions)
-  )
+    () => new ReactLocation(reactLocationOptions),
+  );
 
   return (
     <Router location={location} routes={getRoutes()}>
@@ -30,13 +30,13 @@ const AppContent: React.FC = () => {
         )}
       </div>
     </Router>
-  )
-}
+  );
+};
 
 export const App: React.FC = () => {
   return (
     <TRPCProvider>
       <AppContent />
     </TRPCProvider>
-  )
-}
+  );
+};

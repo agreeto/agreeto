@@ -23,18 +23,18 @@ export const EventElement: React.FC<{
     >
       <label htmlFor={`selectEvent-${event.id}`}>
         <div
-          className={`bg-white px-4 py-2 rounded-lg ${
+          className={`rounded-lg bg-white px-4 py-2 ${
             event.isSelected ? "" : "cursor-pointer"
           }`}
         >
-          <div className="flex space-x-3 items-center">
+          <div className="flex items-center space-x-3">
             {/* Checkbox */}
             {event.isSelected ? (
-              <div className="w-6 h-6 mb-1">
-                <img src={checkMark2Icon} className="w-6 h-6" alt="" />
+              <div className="mb-1 h-6 w-6">
+                <img src={checkMark2Icon} className="h-6 w-6" alt="" />
               </div>
             ) : (
-              <div className="w-4 h-4 mb-1">
+              <div className="mb-1 h-4 w-4">
                 <input
                   type="checkbox"
                   id={`selectEvent-${event.id}`}
@@ -46,13 +46,13 @@ export const EventElement: React.FC<{
             )}
             {/* Date */}
             <div>
-              <div className="text-xs font-medium color-gray-600">
+              <div className="color-gray-600 text-xs font-medium">
                 {format(new Date(event.startDate), "MMMM d (EEEE)")}
               </div>
-              <div className="text-xs color-gray-300 font-medium">
+              <div className="color-gray-300 text-xs font-medium">
                 {`${format(new Date(event.startDate), "HH:mm")} - ${format(
                   new Date(event.endDate),
-                  "HH:mm"
+                  "HH:mm",
                 )} ${getTimeZoneAbv(getPrimaryTimeZone(timeZones))}`}
               </div>
             </div>

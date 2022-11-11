@@ -48,7 +48,7 @@ const ControlBar: FC<Props> = ({
         <div>
           <div className="flex items-center space-x-4">
             {/* Date */}
-            <div className="color-gray-600 font-semibold text-xl w-64">
+            <div className="color-gray-600 w-64 text-xl font-semibold">
               <span>{`${month} ${year}, Week ${weekNumber}`}</span>
             </div>
 
@@ -74,7 +74,7 @@ const ControlBar: FC<Props> = ({
 
         {/* Right part */}
         <div className="self-center">
-          <div className="flex space-x-4 items-center">
+          <div className="flex items-center space-x-4">
             <div>
               {/* <div
                 className="color-gray-300 bg-transparent text-xs cursor-pointer"
@@ -88,7 +88,7 @@ const ControlBar: FC<Props> = ({
             <div className="hidden">
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger>
-                  <div className="bg-white color-gray-700 rounded border border-gray-300 flex py-1 px-2 items-center space-x-3">
+                  <div className="color-gray-700 flex items-center space-x-3 rounded border border-gray-300 bg-white py-1 px-2">
                     <div className="text-sm">{calendarType}</div>
                     <div>
                       <img
@@ -101,7 +101,7 @@ const ControlBar: FC<Props> = ({
                   </div>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content
-                  className="z-10 bg-white color-gray-700 rounded shadow-xl"
+                  className="color-gray-700 z-10 rounded bg-white shadow-xl"
                   align="end"
                 >
                   <DropdownMenu.Item
@@ -110,12 +110,12 @@ const ControlBar: FC<Props> = ({
                       onCalendarTypeChange?.("5 days");
                     }}
                   >
-                    <div className="pl-4 py-3 flex items-center w-40 cursor-pointer">
+                    <div className="flex w-40 cursor-pointer items-center py-3 pl-4">
                       5 days
                     </div>
                   </DropdownMenu.Item>
                   <DropdownMenu.Separator
-                    className="bg-gray-100 mx-3"
+                    className="mx-3 bg-gray-100"
                     style={{ height: "1px" }}
                   />
                   <DropdownMenu.Item
@@ -124,7 +124,7 @@ const ControlBar: FC<Props> = ({
                       onCalendarTypeChange?.("7 days");
                     }}
                   >
-                    <div className="pl-4 py-3 flex items-center w-40 cursor-pointer">
+                    <div className="flex w-40 cursor-pointer items-center py-3 pl-4">
                       7 days
                     </div>
                   </DropdownMenu.Item>
@@ -136,7 +136,7 @@ const ControlBar: FC<Props> = ({
       </div>
 
       {/* Timezone */}
-      <div className="text-xs color-gray-600">
+      <div className="color-gray-600 text-xs">
         {`(${getTimeZoneAbv(primaryTimeZone)}) ${primaryTimeZone}`}
       </div>
     </>
