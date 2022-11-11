@@ -93,7 +93,7 @@ export const setTimeZoneDefaults = createAsyncThunk(
       }
       // If selected time zone is not in the array, make the selected the first element
       if (!timeZonesLS.includes(selectedTimeZoneLS)) {
-        selectedTimeZoneLS = timeZonesLS[0];
+        selectedTimeZoneLS = timeZonesLS[0]!;
       }
 
       // Return data

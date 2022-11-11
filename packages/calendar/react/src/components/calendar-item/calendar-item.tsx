@@ -242,7 +242,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
     });
 
     // Add events of directory users
-    directoryUsersWithEvents.forEach(({ events: directoryEvents, color }) => {
+    directoryUsersWithEvents.forEach(({ events: directoryEvents }) => {
       directoryEvents?.forEach((event) => {
         const { id, title, startDate, endDate } = event;
 
@@ -251,7 +251,8 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
           title: title,
           start: startDate,
           end: endDate,
-          backgroundColor: color,
+          // FIXME: Color
+          backgroundColor: "cyan", // color,
           textColor: "white",
           borderColor: "transparent",
           extendedProps: {
