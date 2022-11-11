@@ -195,6 +195,7 @@ model Attendee {
     surname        String
     provider       String
     responseStatus EventResponseStatus
+    color          String?
 
     event Event? @relation(fields: [eventId], references: [id])
 }

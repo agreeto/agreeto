@@ -1,19 +1,12 @@
-import { type ChangeEventHandler, type FC } from "react";
+import React from "react";
 import { Modal } from "../modal";
 
-type Props = {
+export const CreateEventModal: React.FC<{
   isOpen: boolean;
   onVisibilityChange: (open: boolean) => void;
   title: string;
-  onTitleChange: ChangeEventHandler<HTMLInputElement>;
-};
-
-const CreateEventModal: FC<Props> = ({
-  isOpen,
-  onVisibilityChange,
-  title,
-  onTitleChange,
-}) => {
+  onTitleChange: React.ChangeEventHandler<HTMLInputElement>;
+}> = ({ isOpen, onVisibilityChange, title, onTitleChange }) => {
   const titleElem = (
     <div className="pt-8 flex justify-end">
       <input
@@ -49,5 +42,3 @@ const CreateEventModal: FC<Props> = ({
     />
   );
 };
-
-export default CreateEventModal;

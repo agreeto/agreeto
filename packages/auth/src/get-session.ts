@@ -30,6 +30,7 @@ export const getServerSession = async (
   if (!sessionToken?.startsWith("Bearer ")) {
     return null;
   }
+
   const dbSession = await prisma.session.findUnique({
     where: {
       sessionToken: sessionToken.replace("Bearer ", ""),

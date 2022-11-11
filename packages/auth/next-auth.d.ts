@@ -13,6 +13,7 @@ declare module "next-auth" {
     user: {
       id: string;
     } & DefaultSession["user"];
+    expires: Date;
   }
 }
 

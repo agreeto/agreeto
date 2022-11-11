@@ -11,6 +11,7 @@
   "dependencies": {
     "@agreeto/db": "workspace:*",
     "@agreeto/api": "workspace:*",
+    "@agreeto/auth": "workspace:*",
     "@agreeto/react": "workspace:*",
     "@agreeto/ui": "workspace:*",
     "@fullcalendar/daygrid": "^5.11.2",

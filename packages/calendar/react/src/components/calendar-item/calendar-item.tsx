@@ -29,9 +29,12 @@ import type { RootState } from "../../redux/store";
 import { getPrimaryTimeZone } from "../../utils/time-zone.helper";
 import { type RouterOutputs, trpc } from "../../utils/trpc";
 
+type EventGroupEvent = RouterOutputs["eventGroup"]["byId"]["events"][number];
+type Event = RouterOutputs["event"]["all"][number];
+
 type Props = {
   referenceDate: Date;
-  events?: RouterOutputs["event"]["all"];
+  events?: Event[];
   weekends: boolean;
   title: string;
   selectedSlots: EventInput[];
@@ -40,7 +43,7 @@ type Props = {
   onSelect: (slot: EventInput) => void;
   onSelectedSlotDelete: (slot: EventInput) => void;
   onSlotUpdate: (slot: EventInput) => void;
-  hoveredEvent?: RouterOutputs["event"]["all"][number];
+  hoveredEvent?: EventGroupEvent;
   directoryUsersWithEvents: RouterOutputs["event"]["directoryUsers"];
   selectedEventGroupId?: string;
   onPageChange?: (page: string) => void;

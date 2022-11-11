@@ -7,8 +7,8 @@ import { EventResponseStatus, Membership } from "@agreeto/db";
 import searchIcon from "../../assets/search.svg";
 import { getNextColor } from "../../utils/color.helper";
 import { Spinner } from "../spinner";
-import SelectedAttendeeCard from "./selected-attendee-card";
-import UnknownAttendeeCard from "./unknown-attendee-card";
+import { SelectedAttendeeCard } from "./selected-attendee-card";
+import { UnknownAttendeeCard } from "./unknown-attendee-card";
 import { Float } from "@headlessui-float/react";
 import { type RouterInputs, type RouterOutputs, trpc } from "../../utils/trpc";
 
@@ -29,7 +29,7 @@ type Props = {
   onPageChange?: (page: string) => void;
 };
 
-const Attendees: FC<Props> = ({
+export const Attendees: FC<Props> = ({
   eventsQuery,
   directoryUsersWithEvents,
   onDirectoryUsersWithEventsChange,
@@ -84,8 +84,8 @@ const Attendees: FC<Props> = ({
   trpc.event.directoryUsers.useQuery(directoryUserEventParams, {
     keepPreviousData: true,
     enabled: !isFree,
-    onSuccess: (userEvents) => {
-      const userEventsWithColors = userEvents.map((u, idx) => ({
+    onSuccess: (data) => {
+      const userEventsWithColors = data.map((u, idx) => ({
         ...u,
         color: getNextColor(idx),
       }));
@@ -184,14 +184,18 @@ const Attendees: FC<Props> = ({
         {/* Selected attendees */}
         {directoryUsersWithEvents.map((attendee) => (
           <SelectedAttendeeCard
-            key={attendee.id}
-            attendee={attendee}
-            hideDeleteButton={!!eventGroup?.isSelectionDone}
-            onDelete={(id) => {
-              setDirectoryUserEventParams((params) => ({
-                ...params,
-                users: [...params.users.filter((a) => a.id !== id)],
-              }));
+            {...{
+              key: attendee.id,
+              id: attendee.id,
+              color: "red", // FIXME: Where does this come from?
+              email: attendee.email,
+              hideDeleteButton: !!eventGroup?.isSelectionDone,
+              onDelete(id) {
+                setDirectoryUserEventParams((params) => ({
+                  ...params,
+                  users: [...params.users.filter((a) => a.id !== id)],
+                }));
+              },
             }}
           />
         ))}
@@ -279,7 +283,7 @@ const Attendees: FC<Props> = ({
                   This feature is part of the Pro Plan
                 </div>
                 <div
-                  className="w-full mt-8 h-8 flex justify-center items-center cursor-pointer border rounded border-primary color-primary cursor-pointer"
+                  className="w-full mt-8 h-8 flex justify-center items-center border rounded border-primary color-primary cursor-pointer"
                   onClick={() => onPageChange?.("settings")}
                 >
                   Upgrade
@@ -309,5 +313,3 @@ const Attendees: FC<Props> = ({
     </div>
   );
 };
-
-export default Attendees;

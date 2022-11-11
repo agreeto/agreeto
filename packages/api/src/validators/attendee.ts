@@ -9,4 +9,5 @@ export const AttendeeValidator = z.object({
   provider: z.string(),
   responseStatus: z.nativeEnum(EventResponseStatus),
   eventId: z.string().optional(),
+  color: z.string().optional(),
 });

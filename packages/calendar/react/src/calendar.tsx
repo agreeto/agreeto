@@ -25,8 +25,7 @@ type Props = {
   onPrimaryActionClick?: (type: PRIMARY_ACTION_TYPES) => void;
 };
 
-type Event = RouterOutputs["event"]["all"][number];
-type EventGroupId = Event["eventGroupId"];
+type EventGroupEvent = RouterOutputs["eventGroup"]["byId"]["events"][number];
 type DirectoryUser = RouterOutputs["event"]["directoryUsers"][number];
 
 const Content: React.FC<Props> = ({
@@ -51,10 +50,9 @@ const Content: React.FC<Props> = ({
   const [title, setTitle] = useState("Blocker: ");
   const [calendarRef, setCalendarRef] = useState<any>();
   const [selectedSlots, setSelectedSlots] = useState([] as EventInput[]);
-  const [checkedEvent, setCheckedEvent] = useState<Event>();
-  const [selectedEventGroupId, setSelectedEventGroupId] =
-    useState<EventGroupId>();
-  const [hoveredEvent, setHoveredEvent] = useState<Event>();
+  const [checkedEvent, setCheckedEvent] = useState<EventGroupEvent>();
+  const [selectedEventGroupId, setSelectedEventGroupId] = useState<string>();
+  const [hoveredEvent, setHoveredEvent] = useState<EventGroupEvent>();
   const [directoryUsersWithEvents, setDirectoryUsersWithEvents] = useState<
     DirectoryUser[]
   >([]);
@@ -247,7 +245,7 @@ const Content: React.FC<Props> = ({
               eventGroupId={selectedEventGroupId}
               onClose={onClose}
               onHoverEvent={setHoveredEvent}
-              checkedEvent={checkedEvent}
+              checkedEvent={checkedEvent as any}
               onEventCheck={setCheckedEvent}
               eventsQuery={eventsQuery}
               directoryUsersWithEvents={directoryUsersWithEvents}

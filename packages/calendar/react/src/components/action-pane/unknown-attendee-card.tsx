@@ -1,13 +1,10 @@
-import { type FC } from "react";
+import React from "react";
 import trashIcon from "../../assets/trash.svg";
 
-type Props = {
+export const UnknownAttendeeCard: React.FC<{
   email: string;
-
   onDelete: (email: string) => void;
-};
-
-const UnknownAttendeeCard: FC<Props> = ({ email, onDelete }) => {
+}> = ({ email, onDelete }) => {
   return (
     <div className="flex text-sm px-2 py-1 color-gray-900 rounded group hover:bg-gray-200">
       <div className="flex w-full space-x-2 items-center justify-between">
@@ -33,5 +30,3 @@ const UnknownAttendeeCard: FC<Props> = ({ email, onDelete }) => {
     </div>
   );
 };
-
-export default UnknownAttendeeCard;

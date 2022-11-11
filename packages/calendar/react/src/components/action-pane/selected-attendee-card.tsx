@@ -1,21 +1,13 @@
-import { type FC } from "react";
+import React from "react";
 import trashIcon from "../../assets/trash.svg";
-import { type RouterOutputs } from "../../utils/trpc";
 
-type Props = {
-  attendee: RouterOutputs["user"]["getFriends"][number] & { color: string };
-
+export const SelectedAttendeeCard: React.FC<{
+  id: string;
+  color: string;
+  email: string;
   onDelete: (id: string) => void;
   hideDeleteButton: boolean;
-};
-
-const SelectedAttendeeCard: FC<Props> = ({
-  attendee,
-  onDelete,
-  hideDeleteButton,
-}) => {
-  const { id, color, email } = attendee;
-
+}> = ({ id, color, email, onDelete, hideDeleteButton }) => {
   return (
     <div className="flex text-sm px-2 py-1 color-gray-900 rounded group hover:bg-gray-200">
       <div className="flex w-full space-x-2 items-center justify-between">
@@ -46,5 +38,3 @@ const SelectedAttendeeCard: FC<Props> = ({
     </div>
   );
 };
-
-export default SelectedAttendeeCard;

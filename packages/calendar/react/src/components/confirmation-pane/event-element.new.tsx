@@ -1,0 +1,68 @@
+import React from "react";
+import { type RouterOutputs } from "../../utils/trpc";
+import checkMark2Icon from "../../assets/check-mark-2.png";
+import { format } from "date-fns-tz";
+import {
+  getPrimaryTimeZone,
+  getTimeZoneAbv,
+} from "../../utils/time-zone.helper";
+import { useSelector } from "react-redux";
+import { type RootState } from "../../redux/store";
+
+type EventGroupEvent = RouterOutputs["eventGroup"]["byId"]["events"][number];
+
+export const EventElement: React.FC<{
+  event: EventGroupEvent;
+  onHover: (event: EventGroupEvent | undefined) => void;
+  isChecked: boolean;
+  onCheck: (event: EventGroupEvent) => void;
+}> = ({ event, onHover, isChecked, onCheck }) => {
+  const { timeZones } = useSelector((state: RootState) => state.timeZone);
+
+  return (
+    <div
+      key={event.id}
+      onMouseEnter={() => !event.isSelected && onHover(event)}
+      onMouseLeave={() => !event.isSelected && onHover(undefined)}
+    >
+      <label htmlFor={`selectEvent-${event.id}`}>
+        <div
+          className={`bg-white px-4 py-2 rounded-lg ${
+            event.isSelected ? "" : "cursor-pointer"
+          }`}
+        >
+          <div className="flex space-x-3 items-center">
+            {/* Checkbox */}
+            {event.isSelected ? (
+              <div className="w-6 h-6 mb-1">
+                <img src={checkMark2Icon} className="w-6 h-6" alt="" />
+              </div>
+            ) : (
+              <div className="w-4 h-4 mb-1">
+                <input
+                  type="checkbox"
+                  id={`selectEvent-${event.id}`}
+                  className="h-4 w-4 cursor-pointer"
+                  checked={isChecked}
+                  onChange={() => onCheck(event)}
+                />
+              </div>
+            )}
+            {/* Date */}
+            <div>
+              <div className="text-xs font-medium color-gray-600">
+                {format(new Date(event.startDate), "MMMM d (EEEE)")}
+              </div>
+              <div className="text-xs color-gray-300 font-medium">
+                {`${format(new Date(event.startDate), "HH:mm")} - ${format(
+                  new Date(event.endDate),
+                  "HH:mm"
+                )} ${getTimeZoneAbv(getPrimaryTimeZone(timeZones))}`}
+              </div>
+            </div>
+          </div>
+        </div>
+      </label>
+    </div>
+  );
+};

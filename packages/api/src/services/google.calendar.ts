@@ -57,6 +57,7 @@ export class GoogleCalendarService {
         ? []
         : attendees.map((a) => ({
             id: a.id!,
+            color: null,
             eventId: id!,
             email: a.email!,
             name: a.displayName || "",

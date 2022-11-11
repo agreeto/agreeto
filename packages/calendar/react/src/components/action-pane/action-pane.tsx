@@ -7,7 +7,7 @@ import { convertToDate } from "../../utils/date.helper";
 import { EventResponseStatus } from "@agreeto/db";
 import { copyToClipboard } from "../../utils/event.helper";
 import Availability from "./availability";
-import Attendees from "./attendees";
+import { Attendees } from "./attendees";
 import { PRIMARY_ACTION_TYPES } from "../../utils/enums";
 import sortDownIcon from "../../assets/sort-down.png";
 import sortDownGrayIcon from "../../assets/sort-down-gray.png";

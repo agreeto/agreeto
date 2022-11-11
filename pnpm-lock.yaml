@@ -277,6 +277,7 @@ importers:
   packages/calendar/react:
     specifiers:
       '@agreeto/api': workspace:*
+      '@agreeto/auth': workspace:*
       '@agreeto/db': workspace:*
       '@agreeto/react': workspace:*
       '@agreeto/tailwind-config': workspace:*
@@ -323,6 +324,7 @@ importers:
       vite: ^3.2.3
     dependencies:
       '@agreeto/api': link:../../api
+      '@agreeto/auth': link:../../auth
       '@agreeto/db': link:../../db
       '@agreeto/react': link:../../react
       '@agreeto/ui': link:../../ui

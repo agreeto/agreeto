@@ -1,10 +1,10 @@
 import type { inferAsyncReturnType } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { getServerSession, type Session, type User } from "@agreeto/auth";
+import { getServerSession, type User } from "@agreeto/auth";
 import { prisma } from "@agreeto/db";
 
 export type CreateContextOptions = {
-  session: Session | null;
+  session: inferAsyncReturnType<typeof getServerSession>;
   user: User | undefined;
 };
 
@@ -31,7 +31,7 @@ export const createContext = async ({ req, res }: CreateNextContextOptions) => {
   console.dir({ session }, { depth: 2 });
 
   return await createContextInner({
-    session: session as any,
+    session: session,
     user: session?.user,
   });
 };
