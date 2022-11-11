@@ -1,6 +1,6 @@
 module.exports = {
   root: true,
-  // This tells ESLint to load the config from the package `eslint-config-agreeto`
-  // https://turbo.build/repo/docs/getting-started/create-new#understanding-eslint-config-custom
-  extends: ["agreeto"],
+  // This tells ESLint to load the config called `eslint-config-agreeto`
+ // @see https://turbo.build/repo/docs/getting-started/create-new#understanding-eslint-config-custom
+  extends: ["eslint-config-agreeto"], // -> packages/config/eslint
 };
