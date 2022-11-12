@@ -25,7 +25,7 @@ import { TRPCProvider } from "~features/trpc//api/provider";
  * @returns `<SignIn />` Page OR `<App/>` wrapped in JSX Providers
  */
 const PopupContent: React.FC = () => {
-  const { isAuthed, isLoading } = useIsAuthed();
+  const { isAuthed, isAuthenticating } = useIsAuthed();
 
   const [location] = React.useState(
     () => new ReactLocation(reactLocationOptions),
@@ -35,7 +35,7 @@ const PopupContent: React.FC = () => {
     <Router routes={getRoutes()} location={location}>
       {/* maximum size of popup */}
       <div className="w-[800] h-[600]">
-        {isLoading ? (
+        {isAuthenticating ? (
           <div className="h-full w-full grid place-content-center">
             <div className="h-12 w-12 rounded-full border-2 animate-pulse"></div>
           </div>

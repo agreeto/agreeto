@@ -10,14 +10,14 @@ import { storage } from "~features/trpc/chrome/storage";
  */
 export const useIsAuthed = () => {
   const [isAuthed, setIsAuthed] = React.useState(false);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [isAuthenticating, setisAuthenticating] = React.useState(true);
 
   const validateToken = trpcApi.session.validate.useMutation({
     onSuccess() {
       setIsAuthed(true);
     },
     onSettled() {
-      setIsLoading(false);
+      setisAuthenticating(false);
     },
     onError() {
       setIsAuthed(false);
@@ -33,5 +33,5 @@ export const useIsAuthed = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { isAuthed, isLoading };
+  return { isAuthed, isAuthenticating };
 };

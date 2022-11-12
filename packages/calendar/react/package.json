@@ -12,7 +12,6 @@
     "@agreeto/api": "workspace:*",
     "@agreeto/auth": "workspace:*",
     "@agreeto/calendar-core": "workspace:*",
-    "@agreeto/react": "workspace:*",
     "@agreeto/ui": "workspace:*",
     "@fullcalendar/daygrid": "^5.11.2",
     "@fullcalendar/interaction": "^5.11.2",

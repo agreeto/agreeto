@@ -1,4 +1,0 @@
-{
-  "extends": "@agreeto/tsconfig/test.json",
-  "include": ["src"]
-}

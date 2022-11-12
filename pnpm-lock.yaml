@@ -67,6 +67,7 @@ importers:
       trpc-chrome: ^0.1.0
       ts-to-zod: ^1.13.1
       typescript: ^4.8.4
+      webext-bridge: ^5.0.5
       zod: ^3.18.0
     dependencies:
       '@agreeto/api': link:../../packages/api
@@ -94,6 +95,7 @@ importers:
       react-icons: 4.6.0_react@18.2.0
       tozod: 3.0.0_zod@3.19.1
       trpc-chrome: 0.1.1_co3zj7olejucusbvjcnrdd5hea
+      webext-bridge: 5.0.5
       zod: 3.19.1
     devDependencies:
       '@agreeto/tailwind-config': link:../../packages/config/tailwind
@@ -305,7 +307,6 @@ importers:
       '@agreeto/api': workspace:*
       '@agreeto/auth': workspace:*
       '@agreeto/calendar-core': workspace:*
-      '@agreeto/react': workspace:*
       '@agreeto/tailwind-config': workspace:*
       '@agreeto/tsconfig': workspace:*
       '@agreeto/ui': workspace:*
@@ -351,7 +352,6 @@ importers:
       '@agreeto/api': link:../../api
       '@agreeto/auth': link:../../auth
       '@agreeto/calendar-core': link:../core
-      '@agreeto/react': link:../../react
       '@agreeto/ui': link:../../ui
       '@fullcalendar/daygrid': 5.11.3
       '@fullcalendar/interaction': 5.11.3
@@ -446,19 +446,6 @@ importers:
       '@agreeto/tsconfig': link:../config/tsconfig
       '@types/node': 18.11.7
       prisma: 4.5.0
-      typescript: 4.8.4
-
-  packages/react:
-    specifiers:
-      '@agreeto/tsconfig': workspace:*
-      '@tanstack/react-query': ^4.13.0
-      react: 18.2.0
-      typescript: ^4.8.4
-    dependencies:
-      '@tanstack/react-query': 4.13.4_react@18.2.0
-      react: 18.2.0
-    devDependencies:
-      '@agreeto/tsconfig': link:../config/tsconfig
       typescript: 4.8.4
 
   packages/ui:
@@ -4164,23 +4151,6 @@ packages:
       use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
-  /@tanstack/react-query/4.13.4_react@18.2.0:
-    resolution: {integrity: sha512-OHkUulPorHDiWNcUrcSUNxedeZ28z9kCKRG3JY+aJ8dFH/o4fixtac4ys0lwCP/n/VL1XMPnu+/CXEhbXHyJZA==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-      react-native: '*'
-    peerDependenciesMeta:
-      react-dom:
-        optional: true
-      react-native:
-        optional: true
-    dependencies:
-      '@tanstack/query-core': 4.13.4
-      react: 18.2.0
-      use-sync-external-store: 1.2.0_react@18.2.0
-    dev: false
-
   /@tootallnate/once/1.1.2:
     resolution: {integrity: sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==}
     engines: {node: '>= 6'}
@@ -4401,6 +4371,10 @@ packages:
     dependencies:
       '@types/node': 18.11.7
     dev: true
+
+  /@types/webextension-polyfill/0.8.3:
+    resolution: {integrity: sha512-GN+Hjzy9mXjWoXKmaicTegv3FJ0WFZ3aYz77Wk8TMp1IY3vEzvzj1vnsa0ggV7vMI1i+PUxe4qqnIJKCzf9aTg==}
+    dev: false
 
   /@typescript-eslint/eslint-plugin/5.41.0_huremdigmcnkianavgfk3x6iou:
     resolution: {integrity: sha512-DXUS22Y57/LAFSg3x7Vi6RNAuLpTXwxB9S2nIA7msBb/Zt8p7XqMwdpdc1IU7CkOQUPgAqR5fWvxuKCbneKGmA==}
@@ -9672,6 +9646,11 @@ packages:
     dev: true
     optional: true
 
+  /nanoevents/6.0.2:
+    resolution: {integrity: sha512-FRS2otuFcPPYDPYViNWQ42+1iZqbXydinkRHTHFxrF4a1CpBfmydR9zkI44WSXAXCyPrkcGtPk5CnpW6Y3lFKQ==}
+    engines: {node: ^12.0.0 || ^14.0.0 || >=16.0.0}
+    dev: false
+
   /nanoid/3.3.4:
     resolution: {integrity: sha512-MqBkQh/OHTS2egovRtLk45wEyNXwF+cokD+1YPf9u5VfJiRdAiRwB2froX5Co9Rh20xs4siNPm8naNotSD6RBw==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
@@ -11600,6 +11579,13 @@ packages:
       upper-case-first: 2.0.2
     dev: true
 
+  /serialize-error/9.1.1:
+    resolution: {integrity: sha512-6uZQLGyUkNA4N+Zii9fYukmNu9PEA1F5rqcwXzN/3LtBjwl2dFBbVZ1Zyn08/CGkB4H440PIemdOQBt1Wvjbrg==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    dependencies:
+      type-fest: 2.19.0
+    dev: false
+
   /serve-index/1.9.1:
     resolution: {integrity: sha512-pXHfKNP4qujrtteMrSBb0rc8HJ9Ms/GrXwcUtUtD5s4ewDJI8bT3Cz2zTVRMKtri49pLx2e0Ya8ziP5Ya2pZZw==}
     engines: {node: '>= 0.8.0'}
@@ -12298,6 +12284,10 @@ packages:
       globrex: 0.1.2
     dev: true
 
+  /tiny-uid/1.1.2:
+    resolution: {integrity: sha512-0beRFXR+fv4C40ND2PqgNjq6iyB1dKXciKJjslLw0kPYCcR82aNd2b+Tt2yy06LimIlvtoehgvrm/fUZCutSfg==}
+    dev: false
+
   /tiny-worker/2.3.0:
     resolution: {integrity: sha512-pJ70wq5EAqTAEl9IkGzA+fN0836rycEuz2Cn6yeZ6FRzlVS5IDOkFHpIoEsksPRQV34GDqXm65+OlnZqUSyK2g==}
     requiresBuild: true
@@ -12627,7 +12617,6 @@ packages:
   /type-fest/2.19.0:
     resolution: {integrity: sha512-RAH822pAdBgcNMAfWnCBU3CFZcfZ/i1eZjwFU/dsLKumyuuP3niueg2UAukXYF0E2AAoc82ZSSf9J0WQBinzHA==}
     engines: {node: '>=12.20'}
-    dev: true
 
   /type-is/1.6.18:
     resolution: {integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==}
@@ -12988,8 +12977,22 @@ packages:
     resolution: {integrity: sha512-DEAoo25RfSYMuTGc9vPJzZcZullwIqRDSI9LOy+fkCJPi6hykCnfKaXTuPBDuXAUcqHXyOgFtHNp/kB2FjYHbw==}
     dev: true
 
+  /webext-bridge/5.0.5:
+    resolution: {integrity: sha512-STCv6pLfQtUHmZQ96Tmov+CrdGjjc08xG6o/VH7TlDvchAPmXEG7faPdHfIzkcs0qp0sedDkq7oDzXAei19vtw==}
+    dependencies:
+      '@types/webextension-polyfill': 0.8.3
+      nanoevents: 6.0.2
+      serialize-error: 9.1.1
+      tiny-uid: 1.1.2
+      webextension-polyfill: 0.9.0
+    dev: false
+
   /webextension-polyfill/0.10.0:
     resolution: {integrity: sha512-c5s35LgVa5tFaHhrZDnr3FpQpjj1BB+RXhLTYUxGqBVN460HkbM8TBtEqdXWbpTKfzwCcjAZVF7zXCYSKtcp9g==}
+    dev: false
+
+  /webextension-polyfill/0.9.0:
+    resolution: {integrity: sha512-LTtHb0yR49xa9irkstDxba4GATDAcDw3ncnFH9RImoFwDlW47U95ME5sn5IiQX2ghfaECaf6xyXM8yvClIBkkw==}
     dev: false
 
   /webidl-conversions/3.0.1:

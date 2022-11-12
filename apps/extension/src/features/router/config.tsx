@@ -7,9 +7,7 @@ import {
 
 import { SignIn } from "~features/auth";
 import { trpcApi } from "~features/trpc/api/hooks";
-
-import { Calendar as CalendarLite } from "./routes/calendar";
-import { Settings } from "./routes/settings";
+import { Settings } from "~pages/settings";
 
 // Create a memory history
 export const reactLocationOptions: ReactLocationOptions = {
@@ -28,15 +26,6 @@ export const getRoutes: () => Route[] = () => {
       children: [
         {
           path: "calendar",
-          // loader: async () => {
-          //   const user = await utils.user.current.fetch()
-          //   const events = await utils.post.all.fetch()
-          //   return { user, events }
-          // },
-          element: <CalendarLite />,
-        },
-        {
-          path: "calendar-new",
           element: <Calendar />,
         },
         {

@@ -31,6 +31,7 @@ const Extension: NextPage<
       clientEnv.NEXT_PUBLIC_EXTENSION_ID,
       { accessToken: accessToken },
       (response) => {
+        console.log("response from signing in", response);
         setSuccessExtension(() => response);
         setIsLoadingExtension(() => false);
         if (response.success) {
@@ -43,15 +44,7 @@ const Extension: NextPage<
   }, [accessToken]);
 
   /**
-   * 1. Display UI while checking the session
-   */
-  // this shouldn't happen?
-  if (!accessToken) return <div>Error! Something went wrong.</div>;
-
-  // -- nextauth is now authenticated 👇 --
-
-  /**
-   * 2. Display UI while messaging extension
+   * 1. Display UI while messaging extension
    */
   // let's wait for our extension to respond successfully about our stored token
   if (isLoadingExtension) return <div>Updating your extension...</div>;
