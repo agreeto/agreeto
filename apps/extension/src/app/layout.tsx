@@ -44,17 +44,16 @@ export const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
               data-aria-orientation="vertical"
             />
             <Button
-              title="Add Account"
               onClick={() => {
                 window.open(
-                  `${
-                    process.env.PLASMO_PUBLIC_WEB_URL
-                  }/api/auth/signin?${new URLSearchParams({
+                  `http://localhost:3000/api/auth/signin?${new URLSearchParams({
                     callbackUrl: `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/extension`,
                   })}`,
                 );
               }}
-            />
+            >
+              Add Account
+            </Button>
             <SeparatorPrimitive.Root
               decorative
               orientation="vertical"
@@ -62,13 +61,14 @@ export const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
               data-aria-orientation="vertical"
             />
             <Button
-              title="Sign Out"
               onClick={() => {
                 window.open(
                   `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/signout`,
                 );
               }}
-            />
+            >
+              Sign Out
+            </Button>
             <h2>Signed in as {authentication.data}</h2>
           </>
         )}
