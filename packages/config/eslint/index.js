@@ -1,9 +1,11 @@
-module.exports = {
+/** @type {import("eslint").Linter.Config} */
+const config = {
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: "latest",
     sourceType: "module",
-    project: "tsconfig.eslint.json",
+    tsconfigRootDir: __dirname,
+    project: ["./apps/*/tsconfig.json", "./packages/*/tsconfig.json"],
   },
   plugins: ["@typescript-eslint"],
   extends: [
@@ -13,6 +15,11 @@ module.exports = {
     "plugin:@typescript-eslint/recommended",
     "prettier",
   ],
+  settings: {
+    next: {
+      rootDir: ["apps/*/", "packages/*/"],
+    },
+  },
   rules: {
     "@next/next/no-html-link-for-pages": "off",
     "react/jsx-key": "off",
@@ -28,3 +35,5 @@ module.exports = {
   },
   reportUnusedDisableDirectives: true,
 };
+
+module.exports = config;

@@ -1,0 +1,37 @@
+{
+  "name": "@agreeto/ui",
+  "private": true,
+  "version": "0.0.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "typings": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build:ui": "tsup",
+    "build:tw": "tailwind -i ./src/styles.css -o ./dist/styles.css --minify",
+    "build": "run-p build:*",
+    "dev:ui": "tsup --watch",
+    "dev:tw": "tailwind -i ./src/styles.css -o ./dist/styles.css --watch",
+    "dev": "run-p dev:*",
+    "lint": "eslint src"
+  },
+  "dependencies": {
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@agreeto/tailwind-config": "workspace:*",
+    "@agreeto/tsconfig": "workspace:*",
+    "@types/node": "^18.11.7",
+    "@types/react": "^18.0.24",
+    "@types/react-dom": "^18.0.8",
+    "eslint": "^8.26.0",
+    "eslint-config-agreeto": "workspace:*",
+    "npm-run-all": "^4.1.5",
+    "react": "18.2.0",
+    "tailwindcss": "^3.1.8",
+    "tsup": "^6.4.0",
+    "typescript": "^4.8.4"
+  }
+}

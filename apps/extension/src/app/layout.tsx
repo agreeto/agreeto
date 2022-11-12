@@ -1,3 +1,4 @@
+import { Button } from "@agreeto/ui"
 import { MinusCircleIcon } from "@heroicons/react/20/solid"
 import * as SeparatorPrimitive from "@radix-ui/react-separator"
 import type { FC, ReactNode } from "react"
@@ -41,9 +42,7 @@ export const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
               className="w-px mx-4 bg-indigo-600 h-inherit"
               data-aria-orientation="vertical"
             />
-            <button
-              type="button"
-              className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            <Button
               onClick={() => {
                 window.open(
                   `http://localhost:3000/api/auth/signin?${new URLSearchParams({
@@ -52,21 +51,19 @@ export const Layout: FC<{ children?: ReactNode }> = ({ children }) => {
                 )
               }}>
               Add Account
-            </button>
+            </Button>
             <SeparatorPrimitive.Root
               decorative
               orientation="vertical"
               className="w-px mx-4 bg-indigo-600 h-inherit"
               data-aria-orientation="vertical"
             />
-            <button
-              type="button"
-              className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            <Button
               onClick={() => {
                 window.open(`${process.env.PLASMO_PUBLIC_WEB_URL}/auth/signout`)
               }}>
               Sign Out
-            </button>
+            </Button>
             <h2>Signed in as {authentication.data}</h2>
           </>
         )}

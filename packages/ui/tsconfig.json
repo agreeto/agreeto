@@ -1,0 +1,8 @@
+{
+  "extends": "@agreeto/tsconfig/react-library.json",
+  "compilerOptions": {
+    "lib": ["dom", "es2015"]
+  },
+  "include": ["src", "tsup.config.ts"],
+  "exclude": ["dist", "node_modules"]
+}

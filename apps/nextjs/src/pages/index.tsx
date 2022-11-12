@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import { trpc } from "../utils/trpc";
+import { Button } from "@agreeto/ui";
 
 const Home: NextPage = () => {
   const currentUser = trpc.user.current.useQuery();
@@ -13,6 +14,8 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="container flex flex-col items-center justify-center min-h-screen p-4 mx-auto">
+        {/* SOME UI */}
+        <Button>Do not click</Button>
         {/* AUTHENTICATION STATUS */}
         {currentUser.data ? (
           <>
