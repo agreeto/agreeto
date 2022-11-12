@@ -14,7 +14,7 @@ import { trpc } from "../../utils/trpc";
 import { ConferenceElement } from "./conference-element.new";
 import { EventElement } from "./event-element.new";
 import { Title } from "./title.new";
-import { useStore } from "../../utils/store";
+import { useViewStore } from "../../utils/store";
 
 type Event = RouterOutputs["event"]["all"][number];
 type EventGroupEvent = RouterOutputs["eventGroup"]["byId"]["events"][number];
@@ -48,7 +48,7 @@ const ConfirmationPane: FC<Props> = ({
 }) => {
   const utils = trpc.useContext();
 
-  const changePane = useStore((s) => s.changePane);
+  const changePane = useViewStore((s) => s.changePane);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [addConference, setAddConference] = useState(false);

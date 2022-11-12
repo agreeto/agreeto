@@ -31,7 +31,7 @@ import TimeZoneSelect from "./time-zone-select";
 
 import { trpc } from "../../utils/trpc";
 import { type RouterOutputs } from "@agreeto/api";
-import { useStore } from "../../utils/store";
+import { useTZStore } from "../../utils/store";
 
 type EventGroupEvent = RouterOutputs["eventGroup"]["byId"]["events"][number];
 type Event = RouterOutputs["event"]["all"][number];
@@ -73,7 +73,7 @@ const CalendarItem: FC<Props> = ({
   const enableMock = false;
 
   // Redux
-  const timeZones = useStore((s) => s.timeZones);
+  const timeZones = useTZStore((s) => s.timeZones);
   const primaryTimeZone = getPrimaryTimeZone(timeZones);
 
   const { data: currentUser } = trpc.user.me.useQuery();

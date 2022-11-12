@@ -1,7 +1,7 @@
 import { type EventInput } from "@fullcalendar/react";
 import copy from "copy-to-clipboard";
 import { format } from "date-fns-tz";
-import { store } from "../store";
+import { tzStore } from "../store";
 import { convertToDate } from "./date";
 import { getCopyTitle, getDateLocale, getHourText } from "./locale";
 import { getTimeZoneAbv } from "./timezone";
@@ -48,7 +48,7 @@ export const copyToClipboard = (
 ) => {
   let text = getCopyTitle(preference);
   const locale = getDateLocale(preference);
-  const timeZone = store.getState().selectedTimeZone;
+  const timeZone = tzStore.getState().selectedTimeZone;
 
   // Group slots based on days
   const groupedSlots = getGroupedSlots(selectedSlots);

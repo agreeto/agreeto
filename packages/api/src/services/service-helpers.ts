@@ -19,7 +19,7 @@ export const getCalendarService = (account: Account, event?: Event) => {
           account.access_token,
           account.refresh_token,
         ),
-        eventId: event?.microsoftId,
+        eventId: event?.microsoftId ?? undefined,
       };
     default:
       throw new TRPCError({

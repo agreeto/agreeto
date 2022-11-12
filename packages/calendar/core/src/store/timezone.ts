@@ -1,13 +1,11 @@
+import create from "zustand/vanilla";
 import { type RouterOutputs } from "@agreeto/api";
-import { type StateCreator } from "zustand/vanilla";
-import { type MyState } from ".";
-
 import { LOCAL_STORAGE_KEYS, type PLATFORM } from "../constants";
 import { Membership, type Maybe } from "../types";
 
-type User = Maybe<RouterOutputs["user"]["me"]>;
+type MaybeUser = Maybe<RouterOutputs["user"]["me"]>;
 
-export interface TimeZoneSlice {
+export interface TimeZoneStore {
   // State
   platform: PLATFORM;
   timeZones: string[];
@@ -15,19 +13,14 @@ export interface TimeZoneSlice {
   recentlyUsedTimeZones: string[];
 
   // Actions
-  setTimeZoneDefaults: (user: User, platform: PLATFORM) => void;
+  setTimeZoneDefaults: (user: MaybeUser, platform: PLATFORM) => void;
   addTimeZone: (tz: string) => void;
   changeTimeZone: (tz: string, idx: number) => void;
   deleteTimeZone: (tz: string) => void;
   changeSelectedTimeZone: (tz: string) => void;
 }
 
-export const createTimeZoneSlice: StateCreator<
-  MyState,
-  [],
-  [],
-  TimeZoneSlice
-> = (set) => ({
+export const tzStore = create<TimeZoneStore>()((set, get) => ({
   // State
   platform: "web",
   timeZones: [],
@@ -35,134 +28,138 @@ export const createTimeZoneSlice: StateCreator<
   recentlyUsedTimeZones: [],
 
   // Actions
-  addTimeZone: (tz) =>
-    set((state) => {
-      const timeZones = [tz, ...state.timeZones].slice(0, 2);
+  addTimeZone(tz) {
+    const { timeZones, recentlyUsedTimeZones, platform } = get();
 
-      // Update recently used
-      const recentlyUsed = [
-        ...new Set([tz, ...state.recentlyUsedTimeZones]),
-      ].slice(0, 5);
+    const newTimeZones = [tz, ...timeZones].slice(0, 2);
 
-      // Update persistent storage
-      if (state.platform === "ext") {
-        chrome.storage.local.set({
-          [LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE]: tz,
-          [LOCAL_STORAGE_KEYS.RECENTLY_USED_TIME_ZONES]: recentlyUsed,
-        });
-      } else {
-        localStorage.setItem(LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE, tz);
-        localStorage.setItem(
-          LOCAL_STORAGE_KEYS.RECENTLY_USED_TIME_ZONES,
-          JSON.stringify(recentlyUsed),
-        );
-      }
+    // Update recently used
+    const newRecentlyUsedTimeZones = [
+      ...new Set([tz, ...recentlyUsedTimeZones]),
+    ].slice(0, 5);
 
-      return {
-        timeZones,
-        selectedTimeZone: tz,
-        recentlyUsedTimeZones: recentlyUsed,
-      };
-    }),
-
-  changeTimeZone: (tz, idx) =>
-    set((state) => {
-      const old = state.timeZones[idx];
-      if (!old) return {};
-      const isSelected = state.selectedTimeZone === old;
-
-      const timeZones = [...state.timeZones];
-      timeZones[idx] = tz;
-
-      // Update persistent storage
-      if (state.platform === "ext") {
-        chrome.storage.local.set(
-          isSelected
-            ? {
-                [LOCAL_STORAGE_KEYS.TIME_ZONES]: timeZones,
-                [LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE]: tz,
-              }
-            : {
-                [LOCAL_STORAGE_KEYS.TIME_ZONES]: timeZones,
-              },
-        );
-      } else {
-        localStorage.setItem(
-          LOCAL_STORAGE_KEYS.TIME_ZONES,
-          JSON.stringify(timeZones),
-        );
-        isSelected &&
-          localStorage.setItem(LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE, tz);
-      }
-
-      return {
-        timeZones,
-        selectedTimeZone: isSelected ? tz : state.selectedTimeZone,
-      };
-    }),
-
-  deleteTimeZone: (tz) =>
-    set((state) => {
-      let hasDeleted = false;
-      const timeZones = state.timeZones.filter((t) => {
-        if (hasDeleted) return true;
-
-        const shouldKeep = t !== tz;
-        if (!shouldKeep && !hasDeleted) {
-          hasDeleted = true;
-        }
-        return shouldKeep;
+    // Update persistent storage
+    if (platform === "ext") {
+      chrome.storage.local.set({
+        [LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE]: tz,
+        [LOCAL_STORAGE_KEYS.RECENTLY_USED_TIME_ZONES]: newRecentlyUsedTimeZones,
       });
+    } else {
+      localStorage.setItem(LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE, tz);
+      localStorage.setItem(
+        LOCAL_STORAGE_KEYS.RECENTLY_USED_TIME_ZONES,
+        JSON.stringify(newRecentlyUsedTimeZones),
+      );
+    }
 
-      if (state.platform === "ext") {
-        chrome.storage.local.set(
-          // This should always resolve to true (update both)
-          timeZones[0]
-            ? {
-                [LOCAL_STORAGE_KEYS.TIME_ZONES]: timeZones,
-                [LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE]: timeZones[0],
-              }
-            : {
-                [LOCAL_STORAGE_KEYS.TIME_ZONES]: timeZones,
-              },
-        );
-      } else {
-        localStorage.setItem(
-          LOCAL_STORAGE_KEYS.TIME_ZONES,
-          JSON.stringify(timeZones),
-        );
-        timeZones[0] &&
-          localStorage.setItem(
-            LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE,
-            timeZones[0],
-          );
-      }
+    set({
+      timeZones: newTimeZones,
+      selectedTimeZone: tz,
+      recentlyUsedTimeZones: newRecentlyUsedTimeZones,
+    });
+  },
 
-      return {
-        timeZones,
-        selectedTimeZone: timeZones[0] ?? state.selectedTimeZone,
-      };
-    }),
+  changeTimeZone(tz, idx) {
+    const { timeZones, platform, selectedTimeZone } = get();
 
-  changeSelectedTimeZone: (tz) =>
-    set((state) => {
-      const isValid = state.timeZones.includes(tz);
-      if (!isValid) return {};
+    const old = timeZones[idx];
+    if (!old) return {};
+    const isSelected = selectedTimeZone === old;
 
-      if (state.platform === "ext") {
-        chrome.storage.local.set({
-          [LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE]: tz,
-        });
-      } else {
+    const newTimeZones = [...timeZones];
+    newTimeZones[idx] = tz;
+
+    // Update persistent storage
+    if (platform === "ext") {
+      chrome.storage.local.set(
+        isSelected
+          ? {
+              [LOCAL_STORAGE_KEYS.TIME_ZONES]: newTimeZones,
+              [LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE]: tz,
+            }
+          : {
+              [LOCAL_STORAGE_KEYS.TIME_ZONES]: newTimeZones,
+            },
+      );
+    } else {
+      localStorage.setItem(
+        LOCAL_STORAGE_KEYS.TIME_ZONES,
+        JSON.stringify(newTimeZones),
+      );
+      isSelected &&
         localStorage.setItem(LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE, tz);
+    }
+
+    set({
+      timeZones: newTimeZones,
+      selectedTimeZone: isSelected ? tz : selectedTimeZone,
+    });
+  },
+
+  deleteTimeZone(tz) {
+    const { timeZones, platform, selectedTimeZone } = get();
+
+    let hasDeleted = false;
+    const newTimeZones = timeZones.filter((t) => {
+      if (hasDeleted) return true;
+
+      const shouldKeep = t !== tz;
+      if (!shouldKeep && !hasDeleted) {
+        hasDeleted = true;
       }
+      return shouldKeep;
+    });
 
-      return {
-        selectedTimeZone: tz,
-      };
-    }),
+    if (platform === "ext") {
+      chrome.storage.local.set(
+        // This should always resolve to true (update both)
+        newTimeZones[0]
+          ? {
+              [LOCAL_STORAGE_KEYS.TIME_ZONES]: newTimeZones,
+              [LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE]: newTimeZones[0],
+            }
+          : {
+              [LOCAL_STORAGE_KEYS.TIME_ZONES]: newTimeZones,
+            },
+      );
+    } else {
+      localStorage.setItem(
+        LOCAL_STORAGE_KEYS.TIME_ZONES,
+        JSON.stringify(newTimeZones),
+      );
+      newTimeZones[0] &&
+        localStorage.setItem(
+          LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE,
+          newTimeZones[0],
+        );
+    }
 
-  setTimeZoneDefaults: async (user, platform) => {
+    set({
+      timeZones: newTimeZones,
+      selectedTimeZone: newTimeZones[0] ?? selectedTimeZone,
+    });
+  },
+
+  changeSelectedTimeZone(tz) {
+    const { timeZones, platform } = get();
+
+    const isValid = timeZones.includes(tz);
+    if (!isValid) return {};
+
+    if (platform === "ext") {
+      chrome.storage.local.set({
+        [LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE]: tz,
+      });
+    } else {
+      localStorage.setItem(LOCAL_STORAGE_KEYS.SELECTED_TIME_ZONE, tz);
+    }
+
+    set({
+      selectedTimeZone: tz,
+    });
+  },
+
+  async setTimeZoneDefaults(user, platform) {
     const freeUser = user?.membership === Membership.FREE;
 
     if (platform === "ext") {
@@ -251,4 +248,4 @@ export const createTimeZoneSlice: StateCreator<
       }));
     }
   },
-});
+}));

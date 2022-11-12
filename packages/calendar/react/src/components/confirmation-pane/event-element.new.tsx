@@ -3,7 +3,7 @@ import { type RouterOutputs } from "@agreeto/api";
 import checkMark2Icon from "../../assets/check-mark-2.png";
 import { format } from "date-fns-tz";
 import { getPrimaryTimeZone, getTimeZoneAbv } from "@agreeto/calendar-core";
-import { useStore } from "../../utils/store";
+import { useTZStore } from "../../utils/store";
 
 type EventGroupEvent = RouterOutputs["eventGroup"]["byId"]["events"][number];
 
@@ -13,7 +13,7 @@ export const EventElement: React.FC<{
   isChecked: boolean;
   onCheck: (event: EventGroupEvent) => void;
 }> = ({ event, onHover, isChecked, onCheck }) => {
-  const timeZones = useStore((s) => s.timeZones);
+  const timeZones = useTZStore((s) => s.timeZones);
 
   return (
     <div

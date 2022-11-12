@@ -14,7 +14,7 @@ import { type PLATFORM } from "@agreeto/calendar-core";
 import { type PRIMARY_ACTION_TYPES } from "./utils/enums";
 import { trpc } from "./utils/trpc";
 import { type RouterOutputs } from "@agreeto/api";
-import { useStore } from "./utils/store";
+import { useTZStore, useViewStore } from "./utils/store";
 
 type Props = {
   onClose?: () => void;
@@ -36,9 +36,9 @@ const Calendar: React.FC<Props> = ({
 }) => {
   const utils = trpc.useContext();
 
-  const openPane = useStore((s) => s.openPane);
-  const setTzDefaults = useStore((s) => s.setTimeZoneDefaults);
-  const changePane = useStore((s) => s.changePane);
+  const openPane = useViewStore((s) => s.openPane);
+  const changePane = useViewStore((s) => s.changePane);
+  const setTzDefaults = useTZStore((s) => s.setTimeZoneDefaults);
 
   const [eventsQuery, setEventsQuery] = useState({
     startDate: startOfWeek(new Date()),

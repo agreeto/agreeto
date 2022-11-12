@@ -9,7 +9,7 @@ import uniq from "lodash/uniq";
 import { Membership, getTimeZoneAbv } from "@agreeto/calendar-core";
 import { Float } from "@headlessui-float/react";
 import { trpc } from "../../utils/trpc";
-import { useStore } from "../../utils/store";
+import { useTZStore } from "../../utils/store";
 
 type Props = {
   value: string;
@@ -30,11 +30,11 @@ const TimeZoneSelect: FC<Props> = ({
   const { data: user } = trpc.user.me.useQuery();
   const isFree = user?.membership === Membership.FREE;
 
-  const recentlyUsedTimeZones = useStore((s) => s.recentlyUsedTimeZones);
-  const timeZones = useStore((s) => s.timeZones);
-  const deleteTimeZone = useStore((s) => s.deleteTimeZone);
-  const addTimeZone = useStore((s) => s.addTimeZone);
-  const changeTimeZone = useStore((s) => s.changeTimeZone);
+  const recentlyUsedTimeZones = useTZStore((s) => s.recentlyUsedTimeZones);
+  const timeZones = useTZStore((s) => s.timeZones);
+  const deleteTimeZone = useTZStore((s) => s.deleteTimeZone);
+  const addTimeZone = useTZStore((s) => s.addTimeZone);
+  const changeTimeZone = useTZStore((s) => s.changeTimeZone);
 
   const [isOpen, setIsOpen] = useState(false);
   const [showProTooltip, setShowProTooltip] = useState(false);

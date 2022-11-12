@@ -23,7 +23,7 @@ import { ulid } from "ulid";
 import { Language, Membership } from "@agreeto/calendar-core";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { trpc } from "../../utils/trpc";
-import { useStore } from "../../utils/store";
+import { useTZStore } from "../../utils/store";
 
 type Props = {
   selectedSlots: EventInput[];
@@ -34,9 +34,9 @@ type Props = {
 const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
   const utils = trpc.useContext();
 
-  const timeZones = useStore((s) => s.timeZones);
-  const selectedTimeZone = useStore((s) => s.selectedTimeZone);
-  const changeSelectedTimeZone = useStore((s) => s.changeSelectedTimeZone);
+  const timeZones = useTZStore((s) => s.timeZones);
+  const selectedTimeZone = useTZStore((s) => s.selectedTimeZone);
+  const changeSelectedTimeZone = useTZStore((s) => s.changeSelectedTimeZone);
 
   const { data: user } = trpc.user.me.useQuery();
   const isFree = user?.membership === Membership.FREE;

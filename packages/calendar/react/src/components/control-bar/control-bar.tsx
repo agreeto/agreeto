@@ -6,7 +6,7 @@ import { addDays, getISOWeek } from "date-fns";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import arrowDownIcon from "../../assets/arrow-down.svg";
 import { getPrimaryTimeZone, getTimeZoneAbv } from "@agreeto/calendar-core";
-import { useStore } from "../../utils/store";
+import { useTZStore } from "../../utils/store";
 
 export type CalendarType = "5 days" | "7 days";
 
@@ -32,7 +32,7 @@ const ControlBar: FC<Props> = ({
   // Otherwise it will get the saturday of the previous week
   const weekNumber = getISOWeek(addDays(date, 2));
 
-  const timeZones = useStore((s) => s.timeZones);
+  const timeZones = useTZStore((s) => s.timeZones);
   const primaryTimeZone = getPrimaryTimeZone(timeZones);
 
   const [calendarType, setCalendarType] = useState<CalendarType>("5 days");
