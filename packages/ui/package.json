@@ -23,6 +23,7 @@
   "devDependencies": {
     "@agreeto/tailwind-config": "workspace:*",
     "@agreeto/tsconfig": "workspace:*",
+    "@types/node": "^18.11.7",
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",
     "eslint": "^8.26.0",
