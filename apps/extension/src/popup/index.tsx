@@ -3,6 +3,7 @@ import "@fullcalendar/common/main.css";
 import "@fullcalendar/timegrid/main.css";
 import "../style.css";
 
+import { Spinner } from "@agreeto/ui";
 import { Outlet, ReactLocation, Router } from "@tanstack/react-location";
 import React from "react";
 
@@ -37,7 +38,9 @@ const PopupContent: React.FC = () => {
       <div className="w-[800] h-[600]">
         {isAuthenticating ? (
           <div className="h-full w-full grid place-content-center">
-            <div className="h-12 w-12 rounded-full border-2 animate-pulse"></div>
+            <div className="h-12">
+              <Spinner />
+            </div>
           </div>
         ) : isAuthed ? (
           /** THE ACTUAL APP */

@@ -3,6 +3,7 @@ import { getToken } from "next-auth/jwt";
 import { env } from "../../env/client.mjs";
 
 const OutlookRedirect = () => {
+  // Should never be rendered
   return <div>Redirecting...</div>;
 };
 

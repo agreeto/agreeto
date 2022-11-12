@@ -5,7 +5,6 @@ import {
   createMemoryHistory,
 } from "@tanstack/react-location";
 
-import { SignIn } from "~features/auth";
 import { trpcApi } from "~features/trpc/api/hooks";
 import { Settings } from "~pages/settings";
 
@@ -21,26 +20,20 @@ export const getRoutes: () => Route[] = () => {
   const utils = trpcApi.useContext();
   return [
     {
-      path: "/",
-      element: <SignIn />,
-      children: [
-        {
-          path: "calendar",
-          element: <Calendar />,
-        },
-        {
-          path: "settings",
-          element: <Settings />,
-          // TODO: add account fetching to the settings route
-          async loader({ params }) {
-            console.log({ params });
-            // FIXME: Should prob not include all this information
-            utils.account.me.fetch();
-            return {};
-            // accounts: await utils.account.all.fetch()
-          },
-        },
-      ],
+      path: "calendar",
+      element: <Calendar />,
+    },
+    {
+      path: "settings",
+      element: <Settings />,
+      // TODO: add account fetching to the settings route
+      async loader({ params }) {
+        console.log({ params });
+        // FIXME: Should prob not include all this information
+        utils.account.me.fetch();
+        return {};
+        // accounts: await utils.account.all.fetch()
+      },
     },
   ];
 };
