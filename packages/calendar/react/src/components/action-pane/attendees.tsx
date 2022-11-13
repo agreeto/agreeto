@@ -3,16 +3,20 @@ import uniqBy from "lodash/uniqBy";
 import { type FC } from "react";
 import { useCallback, useEffect, useState } from "react";
 import OutsideClickHandler from "react-outside-click-handler";
-import { EventResponseStatus, Membership } from "@agreeto/calendar-core";
-import searchIcon from "../../assets/search.svg";
-import { getNextColor } from "@agreeto/calendar-core";
-import { Spinner } from "../spinner";
+import {
+  EventResponseStatus,
+  getNextColor,
+  Membership,
+} from "@agreeto/calendar-core";
+import { Spinner } from "@agreeto/ui";
+import { AiOutlineSearch } from "react-icons/ai";
 import { SelectedAttendeeCard } from "./selected-attendee-card";
 import { UnknownAttendeeCard } from "./unknown-attendee-card";
 import { Float } from "@headlessui-float/react";
 import { trpc } from "../../utils/trpc";
 import { type RouterInputs, type RouterOutputs } from "@agreeto/api";
 import { useEventStore } from "../../utils/store";
+import clsx from "clsx";
 
 type Props = {
   directoryUsersWithEvents: RouterOutputs["event"]["directoryUsers"];
@@ -244,14 +248,18 @@ export const Attendees: FC<Props> = ({
               className="cursor-auto"
             >
               <div>
-                <div
-                  className="input-icon-after"
+                <label
                   onClick={() => isFree && setShowProTooltip(true)}
+                  className="relative flex h-6 w-full items-center justify-end px-1"
                 >
                   <input
-                    className="input-outline w-full"
+                    className={clsx(
+                      "block h-full w-full appearance-none px-1 outline-none",
+                      {
+                        "bg-gray-100": isFree,
+                      },
+                    )}
                     disabled={isFree}
-                    style={{ backgroundColor: isFree ? "#F0F1F2" : "white" }}
                     placeholder="Search for people"
                     onFocus={() => setIsAttendeePopupOpen(true)}
                     // onKeyDown={(e) => {
@@ -265,14 +273,14 @@ export const Attendees: FC<Props> = ({
                     }}
                     value={attendeeText}
                   />
-                  <div className="input-icon-container">
+                  <div className="absolute mr-2 h-4 w-4">
                     {isLoadingUsers ? (
                       <Spinner />
                     ) : (
-                      <img src={searchIcon} alt="info" />
+                      <AiOutlineSearch className="h-4 w-4" />
                     )}
                   </div>
-                </div>
+                </label>
               </div>
               <div
                 className="mt-4 w-60 cursor-auto rounded border border-[#F9FAFA] bg-[#F9FAFA] p-4 text-left"

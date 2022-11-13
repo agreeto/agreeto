@@ -15,7 +15,7 @@ import sortDownGrayIcon from "../../assets/sort-down-gray.png";
 import checkmarkBlueIcon from "../../assets/check-mark-blue-2.svg";
 import { Float } from "@headlessui-float/react";
 import OutsideClickHandler from "react-outside-click-handler";
-import { Spinner } from "../spinner";
+import { Spinner } from "@agreeto/ui";
 import { trpc } from "../../utils/trpc";
 import { type RouterInputs, type RouterOutputs } from "@agreeto/api";
 import { useEventStore } from "../../utils/store";
@@ -51,7 +51,6 @@ const ActionPane: FC<Props> = ({
   >([]);
   const [showActionTypesPopup, setShowActionTypesPopup] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
   const [showCreatingSpinner, setShowCreatingSpinner] = useState(false);
 
   const [buttonType, setButtonType] = useState(
@@ -94,7 +93,6 @@ const ActionPane: FC<Props> = ({
   const handleSave = async () => {
     setIsCreating(true);
     setShowCreatingSpinner(true);
-    setShowTooltip(true);
 
     if (buttonType === PRIMARY_ACTION_TYPES.COPY_AND_CLOSE) {
       setTimeout(() => {
@@ -108,7 +106,6 @@ const ActionPane: FC<Props> = ({
         setShowCreatingSpinner(false);
 
         setTimeout(() => {
-          setShowTooltip(false);
           setIsCreating(false);
           resetTitle();
           clearSlots();
@@ -268,10 +265,8 @@ const ActionPane: FC<Props> = ({
     <div className="h-full bg-gray-100 px-10 py-8">
       {/* Loading container */}
       {isCreating && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#ffffff73]">
-          {showCreatingSpinner && (
-            <Spinner style={{ width: "70px", height: "70px" }} />
-          )}
+        <div className="absolute inset-0 z-10 flex h-5 items-center justify-center bg-[#ffffff73]">
+          {showCreatingSpinner && <Spinner />}
         </div>
       )}
 
@@ -339,7 +334,7 @@ const ActionPane: FC<Props> = ({
           </div>
         </div>
       </div>
-      {showTooltip && <ToastContainer containerId="toast-container-1" />}
+      <ToastContainer containerId="toast-container-1" />
     </div>
   );
 };

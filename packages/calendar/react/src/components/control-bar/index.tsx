@@ -1,4 +1,3 @@
-import type { FC } from "react";
 import leftArrowIcon from "../../assets/left-arrow.svg";
 import rightArrowIcon from "../../assets/right-arrow.svg";
 import { addDays, endOfWeek, getISOWeek, startOfWeek } from "date-fns";
@@ -8,12 +7,11 @@ import { getPrimaryTimeZone, getTimeZoneAbv } from "@agreeto/calendar-core";
 import { useCalendarStore, useEventStore, useTZStore } from "../../utils/store";
 import { type CalendarApi } from "@fullcalendar/react";
 
-type Props = {
+export const ControlBar: React.FC<{
   // FIXME: Is there no type for this?
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   calendarRef: any;
-};
-
-export const ControlBar: FC<Props> = ({ calendarRef }) => {
+}> = ({ calendarRef }) => {
   const setPeriod = useEventStore((s) => s.setPeriod);
 
   const focusedDate = useCalendarStore((s) => s.focusedDate);

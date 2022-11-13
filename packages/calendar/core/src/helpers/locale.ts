@@ -54,3 +54,18 @@ export const getDateLocale = (
       return enUS;
   }
 };
+
+export const getLanguageName = (lang?: Language | undefined) => {
+  switch (lang) {
+    case Language.DE:
+      return "Deutsch";
+    case Language.FR:
+      return "Français";
+    case Language.IT:
+      return "Italiano";
+    case Language.ES:
+      return "Español";
+    default:
+      return "English";
+  }
+};
