@@ -103,15 +103,8 @@ export const Attendees: FC<Props> = ({
     trpc.user.getFriends.useQuery(attendeeParams, {
       keepPreviousData: true,
       staleTime: 60 * 1000,
-      enabled: !isFree,
+      enabled: !isFree && attendeeParams.search.length > 0,
     });
-
-  // This callback is used not to trigger debounce on every attendeeText state changed
-  // And yes it works
-  const attendeeDebounceCallback = useCallback(
-    (value: string) => debouncedAttendeeSearch(value),
-    [],
-  );
 
   // Debounce the attendee search call to prevent multiple calls
   const debouncedAttendeeSearch = debounce((search) => {
@@ -120,6 +113,13 @@ export const Attendees: FC<Props> = ({
       search,
     }));
   }, 500);
+
+  // This callback is used not to trigger debounce on every attendeeText state changed
+  // And yes it works
+  const attendeeDebounceCallback = useCallback(
+    (value: string) => debouncedAttendeeSearch(value),
+    [],
+  );
 
   const attendeeOptionCard = (
     user: RouterOutputs["user"]["getFriends"][number],
