@@ -23,16 +23,17 @@ import { ulid } from "ulid";
 import { Language, Membership } from "@agreeto/calendar-core";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { trpc } from "../../utils/trpc";
-import { useTZStore } from "../../utils/store";
+import { useEventStore, useTZStore } from "../../utils/store";
 
 type Props = {
-  selectedSlots: EventInput[];
-  onDelete: (event: EventInput) => void;
   onPageChange?: (page: string) => void;
 };
 
-const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
+const Availability: FC<Props> = ({ onPageChange }) => {
   const utils = trpc.useContext();
+
+  const selectedSlots = useEventStore((s) => s.selectedSlots);
+  const deleteSlot = useEventStore((s) => s.deleteSlot);
 
   const timeZones = useTZStore((s) => s.timeZones);
   const selectedTimeZone = useTZStore((s) => s.selectedTimeZone);
@@ -323,7 +324,7 @@ const Availability: FC<Props> = ({ selectedSlots, onDelete, onPageChange }) => {
                             src={trashIcon}
                             alt="delete"
                             title="Delete"
-                            onClick={() => onDelete(event)}
+                            onClick={() => deleteSlot(event)}
                             width={10}
                             height={10}
                           />

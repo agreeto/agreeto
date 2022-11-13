@@ -3,23 +3,26 @@ import { type RouterOutputs } from "@agreeto/api";
 import checkMark2Icon from "../../assets/check-mark-2.png";
 import { format } from "date-fns-tz";
 import { getPrimaryTimeZone, getTimeZoneAbv } from "@agreeto/calendar-core";
-import { useTZStore } from "../../utils/store";
+import { useEventStore, useTZStore } from "../../utils/store";
 
 type EventGroupEvent = RouterOutputs["eventGroup"]["byId"]["events"][number];
 
 export const EventElement: React.FC<{
   event: EventGroupEvent;
-  onHover: (event: EventGroupEvent | undefined) => void;
-  isChecked: boolean;
-  onCheck: (event: EventGroupEvent) => void;
-}> = ({ event, onHover, isChecked, onCheck }) => {
+}> = ({ event }) => {
   const timeZones = useTZStore((s) => s.timeZones);
+
+  const checkedEvent = useEventStore((s) => s.checkedEvent);
+  const setHoveredEvent = useEventStore((s) => s.setHoveredEvent);
+  const setCheckedEvent = useEventStore((s) => s.setCheckedEvent);
+
+  const isChecked = event.id === checkedEvent?.id;
 
   return (
     <div
       key={event.id}
-      onMouseEnter={() => !event.isSelected && onHover(event)}
-      onMouseLeave={() => !event.isSelected && onHover(undefined)}
+      onMouseEnter={() => !event.isSelected && setHoveredEvent(event)}
+      onMouseLeave={() => !event.isSelected && setHoveredEvent(null)}
     >
       <label htmlFor={`selectEvent-${event.id}`}>
         <div
@@ -40,7 +43,7 @@ export const EventElement: React.FC<{
                   id={`selectEvent-${event.id}`}
                   className="h-4 w-4 cursor-pointer"
                   checked={isChecked}
-                  onChange={() => onCheck(event)}
+                  onChange={() => setCheckedEvent(event)}
                 />
               </div>
             )}

@@ -1,8 +1,7 @@
-import { type ChangeEventHandler, type FC } from "react";
+import { type FC } from "react";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import closeIcon from "../../assets/close.svg";
-import { type EventInput } from "@fullcalendar/react";
 import {
   convertToDate,
   EventResponseStatus,
@@ -19,19 +18,12 @@ import OutsideClickHandler from "react-outside-click-handler";
 import { Spinner } from "../spinner";
 import { trpc } from "../../utils/trpc";
 import { type RouterInputs, type RouterOutputs } from "@agreeto/api";
+import { useEventStore } from "../../utils/store";
 
-type CreatedEventGroup = RouterOutputs["eventGroup"]["create"];
 type DirectoryUsers = RouterOutputs["event"]["directoryUsers"];
 
 type Props = {
   onClose?: () => void;
-  selectedSlots: EventInput[];
-  onSelectedSlotDelete: (slot: EventInput) => void;
-  title: string;
-  onTitleChange: ChangeEventHandler<HTMLInputElement>;
-  onSave?: (events: CreatedEventGroup) => void;
-  onCopyAndClose?: () => void;
-  eventsQuery: RouterInputs["event"]["all"];
   directoryUsersWithEvents: DirectoryUsers;
   onDirectoryUsersWithEventsChange: (users: DirectoryUsers) => void;
   onPageChange?: (page: string) => void;
@@ -40,19 +32,20 @@ type Props = {
 
 const ActionPane: FC<Props> = ({
   onClose,
-  selectedSlots,
-  onSelectedSlotDelete,
-  title,
-  onTitleChange,
-  onSave,
-  onCopyAndClose,
-  eventsQuery,
   directoryUsersWithEvents,
   onDirectoryUsersWithEventsChange,
   onPageChange,
   onPrimaryActionClick,
 }) => {
   const utils = trpc.useContext();
+
+  const title = useEventStore((s) => s.title);
+  const resetTitle = useEventStore((s) => s.resetTitle);
+  const updateTitle = useEventStore((s) => s.updateTitle);
+
+  const selectedSlots = useEventStore((s) => s.selectedSlots);
+  const clearSlots = useEventStore((s) => s.clearSlots);
+
   const [unknownAttendees, setUnknownAttendees] = useState<
     RouterInputs["eventGroup"]["create"]["events"][number]["attendees"]
   >([]);
@@ -68,7 +61,7 @@ const ActionPane: FC<Props> = ({
   const { data: preference } = trpc.preference.byCurrentUser.useQuery();
   const { mutate: createEventGroup, isLoading: isCreatingEventGroup } =
     trpc.eventGroup.create.useMutation({
-      onSuccess(eventGroup) {
+      onSuccess() {
         setUnknownAttendees([]);
         utils.event.all.invalidate();
 
@@ -80,7 +73,8 @@ const ActionPane: FC<Props> = ({
           type: "success",
         });
         setIsCreating(false);
-        onSave?.(eventGroup);
+        clearSlots();
+        resetTitle();
       },
       onError() {
         toast("Failed to create events", {
@@ -116,7 +110,8 @@ const ActionPane: FC<Props> = ({
         setTimeout(() => {
           setShowTooltip(false);
           setIsCreating(false);
-          onCopyAndClose?.();
+          resetTitle();
+          clearSlots();
         }, 1000);
         onPrimaryActionClick?.(buttonType);
       }, 500);
@@ -301,14 +296,13 @@ const ActionPane: FC<Props> = ({
               className="input input-big w-full"
               placeholder="Add a title"
               value={title}
-              onChange={onTitleChange}
+              onChange={(e) => updateTitle(e.target.value)}
             />
           </div>
 
           {/* Attendees */}
           <div className="pt-8">
             <Attendees
-              eventsQuery={eventsQuery}
               unknownAttendees={unknownAttendees}
               onUnknownAttendeesChange={setUnknownAttendees}
               directoryUsersWithEvents={directoryUsersWithEvents}
@@ -321,11 +315,7 @@ const ActionPane: FC<Props> = ({
 
           {/* Availability */}
           <div className="pt-8">
-            <Availability
-              selectedSlots={selectedSlots}
-              onDelete={(event) => onSelectedSlotDelete(event)}
-              onPageChange={onPageChange}
-            />
+            <Availability onPageChange={onPageChange} />
           </div>
         </div>
 

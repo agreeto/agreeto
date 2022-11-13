@@ -12,9 +12,9 @@ import { UnknownAttendeeCard } from "./unknown-attendee-card";
 import { Float } from "@headlessui-float/react";
 import { trpc } from "../../utils/trpc";
 import { type RouterInputs, type RouterOutputs } from "@agreeto/api";
+import { useEventStore } from "../../utils/store";
 
 type Props = {
-  eventsQuery: RouterInputs["event"]["all"];
   directoryUsersWithEvents: RouterOutputs["event"]["directoryUsers"];
 
   onDirectoryUsersWithEventsChange: (
@@ -31,7 +31,6 @@ type Props = {
 };
 
 export const Attendees: FC<Props> = ({
-  eventsQuery,
   directoryUsersWithEvents,
   onDirectoryUsersWithEventsChange,
   unknownAttendees,
@@ -50,6 +49,8 @@ export const Attendees: FC<Props> = ({
     search: "",
   });
 
+  const period = useEventStore((s) => s.period);
+
   const { data: user } = trpc.user.me.useQuery();
   const isFree = user?.membership === Membership.FREE;
   // This params is used to get events of selected directory users
@@ -58,17 +59,17 @@ export const Attendees: FC<Props> = ({
     RouterInputs["event"]["directoryUsers"]
   >({
     users: [],
-    startDate: eventsQuery.startDate,
-    endDate: eventsQuery.endDate,
+    startDate: period.startDate,
+    endDate: period.endDate,
   });
 
   useEffect(() => {
     setDirectoryUserEventParams((p) => ({
       ...p,
-      startDate: eventsQuery.startDate,
-      endDate: eventsQuery.endDate,
+      startDate: period.startDate,
+      endDate: period.endDate,
     }));
-  }, [eventsQuery]);
+  }, [period]);
 
   useEffect(() => {
     if (!eventGroup || !eventGroup.events?.[0]) return;

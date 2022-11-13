@@ -2,13 +2,12 @@ import "@agreeto/tailwind-config";
 import "react-toastify/dist/ReactToastify.css";
 import { add, endOfWeek, startOfWeek } from "date-fns";
 import ActionPane from "./components/action-pane";
-import { type ChangeEventHandler, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ControlBar } from "./components/control-bar";
 
 import CalendarItem from "./components/calendar-item";
-import { type CalendarApi, type EventInput } from "@fullcalendar/react";
+import { type CalendarApi } from "@fullcalendar/react";
 import ConfirmationPane from "./components/confirmation-pane";
-import { ulid } from "ulid";
 
 import { type PLATFORM } from "@agreeto/calendar-core";
 import { type PRIMARY_ACTION_TYPES } from "./utils/enums";
@@ -29,7 +28,6 @@ type Props = {
   onPrimaryActionClick?: (type: PRIMARY_ACTION_TYPES) => void;
 };
 
-type EventGroupEvent = RouterOutputs["eventGroup"]["byId"]["events"][number];
 type DirectoryUser = RouterOutputs["event"]["directoryUsers"][number];
 
 const Calendar: React.FC<Props> = ({
@@ -44,19 +42,17 @@ const Calendar: React.FC<Props> = ({
   const setFocusedDate = useCalendarStore((s) => s.setFocusedDate);
 
   const period = useEventStore((s) => s.period);
+  const selectedSlots = useEventStore((s) => s.selectedSlots);
+  const selectedEventGroupId = useEventStore((s) => s.selectedEventGroupId);
+  const selectEventGroup = useEventStore((s) => s.selectEventGroup);
 
   const openPane = useViewStore((s) => s.openPane);
   const changePane = useViewStore((s) => s.changePane);
 
   const setTzDefaults = useTZStore((s) => s.setTimeZoneDefaults);
 
-  const [title, setTitle] = useState("Blocker: ");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [calendarRef, setCalendarRef] = useState<any>();
-  const [selectedSlots, setSelectedSlots] = useState([] as EventInput[]);
-  const [checkedEvent, setCheckedEvent] = useState<EventGroupEvent>();
-  const [selectedEventGroupId, setSelectedEventGroupId] = useState<string>();
-  const [hoveredEvent, setHoveredEvent] = useState<EventGroupEvent>();
   const [directoryUsersWithEvents, setDirectoryUsersWithEvents] = useState<
     DirectoryUser[]
   >([]);
@@ -96,7 +92,7 @@ const Calendar: React.FC<Props> = ({
       const calendarApi: CalendarApi = calendarRef.current.getApi();
       setFocusedDate(new Date(calendarApi.view.currentStart));
     }
-  }, [calendarRef]);
+  }, [calendarRef, setFocusedDate]);
 
   useEffect(() => {
     if (selectedSlots.length > 0) {
@@ -107,9 +103,9 @@ const Calendar: React.FC<Props> = ({
   // Unselect the eventGroupId when the confirmation pane is closed
   useEffect(() => {
     if (openPane !== "confirmation") {
-      setSelectedEventGroupId(undefined);
+      selectEventGroup(null);
     }
-  }, [openPane]);
+  }, [openPane, selectEventGroup]);
 
   // Sometimes, resizing of calendar breaks in the page. For this
   // situations we are updating size on every visibility change
@@ -121,42 +117,6 @@ const Calendar: React.FC<Props> = ({
       }, 10);
     }
   }, [renderKey, calendarRef]);
-
-  const handleSelectedSlotDelete = (slot: EventInput) => {
-    setSelectedSlots(selectedSlots.filter((sd) => sd.id !== slot.id));
-  };
-
-  const handleSlotSelect = (slot: EventInput) => {
-    setSelectedSlots([...selectedSlots, slot]);
-  };
-
-  const handleTitleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const text = e.target.value;
-    setTitle(text);
-
-    setSelectedSlots(
-      [...selectedSlots].map((slot) => ({
-        ...slot,
-        title: text,
-      })),
-    );
-  };
-
-  const handleSlotUpdate = (event: EventInput) => {
-    if (event.extendedProps?.new) {
-      const newSlots = [...selectedSlots].map((slot) =>
-        slot.id !== event.id
-          ? slot
-          : {
-              ...slot,
-              start: event.start,
-              end: event.end,
-              id: ulid(),
-            },
-      );
-      setSelectedSlots(newSlots);
-    }
-  };
 
   return (
     <div className="flex h-full">
@@ -174,22 +134,8 @@ const Calendar: React.FC<Props> = ({
           <CalendarItem
             events={events}
             onRefSettled={setCalendarRef}
-            selectedSlots={selectedSlots}
-            onSelect={handleSlotSelect}
-            onSelectedSlotDelete={handleSelectedSlotDelete}
-            title={title}
-            hoveredEvent={hoveredEvent}
-            onSlotUpdate={handleSlotUpdate}
             directoryUsersWithEvents={directoryUsersWithEvents}
-            selectedEventGroupId={selectedEventGroupId}
             onPageChange={onPageChange}
-            onEventClick={({ event }) => {
-              if (event.extendedProps.isAgreeToEvent) {
-                setSelectedEventGroupId(event.extendedProps?.eventGroupId);
-                setCheckedEvent(event.extendedProps?.event);
-                changePane("confirmation");
-              }
-            }}
           />
         </div>
       </div>
@@ -202,24 +148,11 @@ const Calendar: React.FC<Props> = ({
       >
         {openPane === "action" ? (
           <ActionPane
-            selectedSlots={selectedSlots}
             onClose={onClose}
-            eventsQuery={period}
-            onSelectedSlotDelete={handleSelectedSlotDelete}
-            onTitleChange={handleTitleChange}
-            title={title}
             directoryUsersWithEvents={directoryUsersWithEvents}
             onDirectoryUsersWithEventsChange={setDirectoryUsersWithEvents}
             onPageChange={onPageChange}
             onPrimaryActionClick={onPrimaryActionClick}
-            onSave={() => {
-              setSelectedSlots([]);
-              setTitle("Blocker: ");
-            }}
-            onCopyAndClose={() => {
-              setSelectedSlots([]);
-              setTitle("Blocker: ");
-            }}
           />
         ) : (
           openPane === "confirmation" &&
@@ -227,10 +160,6 @@ const Calendar: React.FC<Props> = ({
             <ConfirmationPane
               eventGroupId={selectedEventGroupId}
               onClose={onClose}
-              onHoverEvent={setHoveredEvent}
-              checkedEvent={checkedEvent as any}
-              onEventCheck={setCheckedEvent}
-              eventsQuery={period}
               directoryUsersWithEvents={directoryUsersWithEvents}
               onDirectoryUsersWithEventsChange={setDirectoryUsersWithEvents}
             />

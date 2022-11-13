@@ -20,12 +20,16 @@ export interface EventStore {
   directoryUsersWithEvents: DirectoryUser[];
 
   // Actions
-  setTitle: (title: string) => void;
+  updateTitle: (title: string) => void;
+  resetTitle: () => void;
   setPeriod: (start: Date, end: Date) => void;
   selectSlot: (slot: EventInput) => void;
+  deleteSlot: (slot: EventInput) => void;
+  updateSlots: (slot: EventInput) => void;
+  clearSlots: () => void;
   setCheckedEvent: (event: EventGroupEvent | null) => void;
   setHoveredEvent: (event: EventGroupEvent | null) => void;
-  setSelectedEventGroupId: (id: string | null) => void;
+  selectEventGroup: (id: string | null) => void;
   setDirectoryUsersWithEvents: (users: DirectoryUser[]) => void;
 }
 
@@ -43,8 +47,20 @@ export const eventStore = create<EventStore>()((set) => ({
   directoryUsersWithEvents: [],
 
   // Actions
-  setTitle(title) {
-    set({ title });
+  updateTitle(title) {
+    set((state) => ({
+      title,
+      // update on all selected slots
+      selectedSlots: state.selectedSlots.map((slot) => ({
+        ...slot,
+        title,
+      })),
+    }));
+  },
+  resetTitle() {
+    set({
+      title: "Hold: ",
+    });
   },
   setPeriod(startDate, endDate) {
     set({
@@ -56,6 +72,32 @@ export const eventStore = create<EventStore>()((set) => ({
       selectedSlots: [...state.selectedSlots, slot],
     }));
   },
+  deleteSlot(slot) {
+    set((state) => ({
+      selectedSlots: state.selectedSlots.filter((s) => s.id !== slot.id),
+    }));
+  },
+  updateSlots(event) {
+    if (event.extendedProps?.new) {
+      set((state) => ({
+        selectedSlots: state.selectedSlots.map((slot) =>
+          slot.id !== event.id
+            ? slot
+            : {
+                ...slot,
+                // id: ulid(),
+                start: event.start,
+                end: event.end,
+              },
+        ),
+      }));
+    }
+  },
+  clearSlots() {
+    set({
+      selectedSlots: [],
+    });
+  },
   setCheckedEvent(event) {
     set({
       checkedEvent: event,
@@ -64,7 +106,7 @@ export const eventStore = create<EventStore>()((set) => ({
   setHoveredEvent(event) {
     set({ hoveredEvent: event });
   },
-  setSelectedEventGroupId(id) {
+  selectEventGroup(id) {
     set({ selectedEventGroupId: id });
   },
   setDirectoryUsersWithEvents(users) {
