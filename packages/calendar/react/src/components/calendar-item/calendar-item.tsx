@@ -31,15 +31,13 @@ import TimeZoneSelect from "./time-zone-select";
 
 import { trpc } from "../../utils/trpc";
 import { type RouterOutputs } from "@agreeto/api";
-import { useTZStore } from "../../utils/store";
+import { useCalendarStore, useTZStore } from "../../utils/store";
 
 type EventGroupEvent = RouterOutputs["eventGroup"]["byId"]["events"][number];
 type Event = RouterOutputs["event"]["all"][number];
 
 type Props = {
-  referenceDate: Date;
   events?: Event[];
-  weekends: boolean;
   title: string;
   selectedSlots: EventInput[];
   onEventClick?: (event: EventClickArg) => void;
@@ -54,9 +52,7 @@ type Props = {
 };
 
 const CalendarItem: FC<Props> = ({
-  referenceDate,
   events,
-  weekends,
   selectedSlots,
   title,
   onEventClick,
@@ -72,7 +68,9 @@ const CalendarItem: FC<Props> = ({
   const ref = useRef<any>(null);
   const enableMock = false;
 
-  // Redux
+  const referenceDate = useCalendarStore((s) => s.focusedDate);
+  const showWeekends = useCalendarStore((s) => s.showWeekends);
+
   const timeZones = useTZStore((s) => s.timeZones);
   const primaryTimeZone = getPrimaryTimeZone(timeZones);
 
@@ -300,7 +298,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
         select={handleSelect}
         events={getEvents()}
         headerToolbar={false}
-        weekends={weekends}
+        weekends={showWeekends}
         eventClick={onEventClick}
         slotLabelInterval={{ hours: 1 }}
         slotDuration="00:15:00"

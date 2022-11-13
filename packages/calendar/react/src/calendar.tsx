@@ -3,7 +3,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { add, endOfWeek, startOfWeek } from "date-fns";
 import ActionPane from "./components/action-pane";
 import { type ChangeEventHandler, useEffect, useState } from "react";
-import ControlBar, { type CalendarType } from "./components/control-bar";
+import { ControlBar } from "./components/control-bar";
 
 import CalendarItem from "./components/calendar-item";
 import { type CalendarApi, type EventInput } from "@fullcalendar/react";
@@ -14,7 +14,12 @@ import { type PLATFORM } from "@agreeto/calendar-core";
 import { type PRIMARY_ACTION_TYPES } from "./utils/enums";
 import { trpc } from "./utils/trpc";
 import { type RouterOutputs } from "@agreeto/api";
-import { useTZStore, useViewStore } from "./utils/store";
+import {
+  useCalendarStore,
+  useEventStore,
+  useTZStore,
+  useViewStore,
+} from "./utils/store";
 
 type Props = {
   onClose?: () => void;
@@ -36,16 +41,15 @@ const Calendar: React.FC<Props> = ({
 }) => {
   const utils = trpc.useContext();
 
+  const setFocusedDate = useCalendarStore((s) => s.setFocusedDate);
+
+  const period = useEventStore((s) => s.period);
+
   const openPane = useViewStore((s) => s.openPane);
   const changePane = useViewStore((s) => s.changePane);
+
   const setTzDefaults = useTZStore((s) => s.setTimeZoneDefaults);
 
-  const [eventsQuery, setEventsQuery] = useState({
-    startDate: startOfWeek(new Date()),
-    endDate: endOfWeek(new Date()),
-  });
-  const [focusedDate, setFocusedDate] = useState(new Date());
-  const [weekends, setWeekends] = useState(false);
   const [title, setTitle] = useState("Blocker: ");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [calendarRef, setCalendarRef] = useState<any>();
@@ -58,7 +62,7 @@ const Calendar: React.FC<Props> = ({
   >([]);
 
   const { data: events, isFetching: isFetchingEvents } =
-    trpc.event.all.useQuery(eventsQuery, { staleTime: 30 * 1000 });
+    trpc.event.all.useQuery(period, { staleTime: 30 * 1000 });
 
   useEffect(() => {
     // get user from the query cache
@@ -118,21 +122,6 @@ const Calendar: React.FC<Props> = ({
     }
   }, [renderKey, calendarRef]);
 
-  const handleDateChange = (action: "prev" | "next" | "today") => {
-    const calendarApi: CalendarApi = calendarRef.current.getApi();
-    calendarApi[action]();
-    const date = calendarApi.getDate();
-    setFocusedDate(new Date(calendarApi.view.currentStart));
-    setEventsQuery({
-      startDate: startOfWeek(date),
-      endDate: endOfWeek(date),
-    });
-  };
-
-  const handleCalendarTypeChange = (type: CalendarType) => {
-    setWeekends(type == "7 days");
-  };
-
   const handleSelectedSlotDelete = (slot: EventInput) => {
     setSelectedSlots(selectedSlots.filter((sd) => sd.id !== slot.id));
   };
@@ -178,20 +167,12 @@ const Calendar: React.FC<Props> = ({
         }}
       >
         <div className="w-full pb-4">
-          <ControlBar
-            date={focusedDate}
-            onPrevious={() => handleDateChange("prev")}
-            onNext={() => handleDateChange("next")}
-            onToday={() => handleDateChange("today")}
-            onCalendarTypeChange={handleCalendarTypeChange}
-          />
+          <ControlBar calendarRef={calendarRef} />
         </div>
 
         <div className={`w-full ${isFetchingEvents ? "animate-pulse" : ""}`}>
           <CalendarItem
-            referenceDate={focusedDate}
             events={events}
-            weekends={weekends}
             onRefSettled={setCalendarRef}
             selectedSlots={selectedSlots}
             onSelect={handleSlotSelect}
@@ -223,7 +204,7 @@ const Calendar: React.FC<Props> = ({
           <ActionPane
             selectedSlots={selectedSlots}
             onClose={onClose}
-            eventsQuery={eventsQuery}
+            eventsQuery={period}
             onSelectedSlotDelete={handleSelectedSlotDelete}
             onTitleChange={handleTitleChange}
             title={title}
@@ -249,7 +230,7 @@ const Calendar: React.FC<Props> = ({
               onHoverEvent={setHoveredEvent}
               checkedEvent={checkedEvent as any}
               onEventCheck={setCheckedEvent}
-              eventsQuery={eventsQuery}
+              eventsQuery={period}
               directoryUsersWithEvents={directoryUsersWithEvents}
               onDirectoryUsersWithEventsChange={setDirectoryUsersWithEvents}
             />
