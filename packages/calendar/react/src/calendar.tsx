@@ -20,6 +20,7 @@ import {
   useTZStore,
   useViewStore,
 } from "./utils/store";
+import { Language, Membership } from "@agreeto/api/types";
 
 type Props = {
   onClose?: () => void;
@@ -118,6 +119,23 @@ const Calendar: React.FC<Props> = ({
       }, 10);
     }
   }, [renderKey, calendarRef]);
+
+  // FIXME: Maybe we should do this on server - check back when payment stuff is done
+  // Verify locale when membership changes
+  const { data: user } = trpc.user.me.useQuery();
+  const { mutate: updatePreference } = trpc.preference.update.useMutation({
+    onSettled() {
+      utils.user.me.invalidate();
+      utils.preference.byCurrentUser.invalidate();
+    },
+  });
+  useEffect(() => {
+    if (user && user.membership === Membership.FREE) {
+      updatePreference({
+        formatLanguage: Language.EN,
+      });
+    }
+  }, [user, updatePreference]);
 
   return (
     <div className="flex h-full">
