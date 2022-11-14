@@ -32,7 +32,12 @@ const formatUser = (user: admin_directory_v1.Schema$User) => {
     email: z.string().email(),
   });
 
-  const parsed = validator.safeParse(user);
+  const parsed = validator.safeParse({
+    id: user.id,
+    name: user.name?.givenName,
+    surname: user.name?.familyName,
+    email: user.primaryEmail,
+  });
   if (!parsed.success) {
     return null;
   }
@@ -57,6 +62,7 @@ export const getGoogleUsers = async ({
     accessToken,
     refreshToken,
   });
+
   const response = await google.users.list({
     customer: "my_customer",
     maxResults: 5,
@@ -68,5 +74,6 @@ export const getGoogleUsers = async ({
   const formatted = (response.data.users ?? [])
     .map((u) => formatUser(u))
     .filter((u): u is FormattedUser => !!u);
+
   return formatted;
 };

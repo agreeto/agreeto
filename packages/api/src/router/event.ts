@@ -2,7 +2,6 @@ import { router, privateProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { GoogleCalendarService } from "../services/google.calendar";
-import { EventValidator } from "../validators/event";
 import { EventResponseStatus, type Event } from "@agreeto/db";
 import { getCalendarService } from "../services/service-helpers";
 
@@ -238,12 +237,12 @@ export const eventRouter = router({
         users: z
           .object({
             id: z.string(),
-            color: z.string().nullish(),
+            color: z.string(),
             name: z.string(),
             surname: z.string(),
             email: z.string(),
             provider: z.string(),
-            events: z.array(EventValidator.partial()).optional(),
+            // events: z.array(EventValidator.partial()).optional(),
           })
           .array(),
       }),
@@ -285,6 +284,7 @@ export const eventRouter = router({
                   if (foundUser) {
                     foundUser.events = events.map((e) => ({
                       ...e,
+                      color: user.color,
                       account,
                     }));
                     // FIXME: Assign random?

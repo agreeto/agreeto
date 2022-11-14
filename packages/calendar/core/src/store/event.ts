@@ -1,28 +1,26 @@
 import { type RouterOutputs } from "@agreeto/api";
 import { type EventInput } from "@fullcalendar/react";
-import { endOfWeek, startOfWeek } from "date-fns";
 import create from "zustand/vanilla";
 
 type EventGroupEvent = RouterOutputs["eventGroup"]["byId"]["events"][number];
 type DirectoryUser = RouterOutputs["event"]["directoryUsers"][number];
+type Attendee = RouterOutputs["user"]["getFriends"][number];
 
+// Contains the state of the current "booking" process
 export interface EventStore {
   // State
   title: string;
-  period: {
-    startDate: Date;
-    endDate: Date;
-  };
+
   selectedSlots: EventInput[];
   checkedEvent: EventGroupEvent | null;
   hoveredEvent: EventGroupEvent | null;
   selectedEventGroupId: string | null;
+  attendees: Attendee[];
   directoryUsersWithEvents: DirectoryUser[];
 
   // Actions
   updateTitle: (title: string) => void;
   resetTitle: () => void;
-  setPeriod: (start: Date, end: Date) => void;
   selectSlot: (slot: EventInput) => void;
   deleteSlot: (slot: EventInput) => void;
   updateSlots: (slot: EventInput) => void;
@@ -30,20 +28,20 @@ export interface EventStore {
   setCheckedEvent: (event: EventGroupEvent | null) => void;
   setHoveredEvent: (event: EventGroupEvent | null) => void;
   selectEventGroup: (id: string | null) => void;
+  addAttendee: (attendee: Attendee) => void;
+  removeAttendee: (id: string) => void;
   setDirectoryUsersWithEvents: (users: DirectoryUser[]) => void;
 }
 
 export const eventStore = create<EventStore>()((set) => ({
   // State
   title: "Hold: ",
-  period: {
-    startDate: startOfWeek(new Date()),
-    endDate: endOfWeek(new Date()),
-  },
+
   selectedSlots: [],
   checkedEvent: null,
   hoveredEvent: null,
   selectedEventGroupId: null,
+  attendees: [],
   directoryUsersWithEvents: [],
 
   // Actions
@@ -62,11 +60,7 @@ export const eventStore = create<EventStore>()((set) => ({
       title: "Hold: ",
     });
   },
-  setPeriod(startDate, endDate) {
-    set({
-      period: { startDate, endDate },
-    });
-  },
+
   selectSlot(slot) {
     set((state) => ({
       selectedSlots: [...state.selectedSlots, slot],
@@ -108,6 +102,16 @@ export const eventStore = create<EventStore>()((set) => ({
   },
   selectEventGroup(id) {
     set({ selectedEventGroupId: id });
+  },
+  addAttendee(attendee) {
+    set((state) => ({
+      attendees: [...state.attendees, attendee],
+    }));
+  },
+  removeAttendee(id) {
+    set((state) => ({
+      attendees: state.attendees.filter((a) => a.id !== id),
+    }));
   },
   setDirectoryUsersWithEvents(users) {
     set({ directoryUsersWithEvents: users });

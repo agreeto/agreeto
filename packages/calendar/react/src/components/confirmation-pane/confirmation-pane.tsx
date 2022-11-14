@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import closeIcon from "../../assets/close.svg";
-import backIcon from "../../assets/double-arrow-left.svg";
 
 import { Attendees } from "./../action-pane/attendees";
 import { EventResponseStatus } from "@agreeto/api/types";
@@ -9,10 +7,11 @@ import { Modal } from "@agreeto/ui";
 
 import { type RouterInputs } from "@agreeto/api";
 import { trpc } from "../../utils/trpc";
-import { ConferenceElement } from "./conference-element.new";
-import { EventElement } from "./event-element.new";
-import { Title } from "./title.new";
+import { ConferenceElement } from "./conference-element";
+import { EventElement } from "./event-element";
+import { Title } from "./title";
 import { useEventStore, useViewStore } from "../../utils/store";
+import { IoClose, IoChevronBackOutline } from "react-icons/io5";
 
 const ConfirmationPane: React.FC<{
   onClose?: () => void;
@@ -52,6 +51,8 @@ const ConfirmationPane: React.FC<{
         },
       },
     );
+
+  // console.log(eventGroup);
 
   const { mutate: confirmEvent, isLoading: isConfirming } =
     trpc.event.confirm.useMutation({
@@ -136,27 +137,23 @@ const ConfirmationPane: React.FC<{
       <div className="flex h-full flex-col justify-between">
         {/* Top */}
         <div>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-1 justify-between">
             {/* Back icon */}
-            <div>
-              <img
-                src={backIcon}
-                alt="back"
-                className="h-8 w-8 cursor-pointer"
-                onClick={() => changePane("action")}
-              />
-            </div>
+            <button
+              className="cursor-pointer rounded p-1 hover:bg-gray-200"
+              onClick={() => changePane("action")}
+            >
+              <IoChevronBackOutline className="text-neutral h-6 w-6" />
+            </button>
 
             {/* Close icon */}
-            {onClose && (
-              <div>
-                <img
-                  src={closeIcon}
-                  alt="close"
-                  className="h-8 w-8 cursor-pointer"
-                  onClick={() => onClose?.()}
-                />
-              </div>
+            {(onClose || true) && (
+              <button
+                className="cursor-pointer rounded bg-red-500 p-1 hover:bg-red-600"
+                onClick={() => onClose?.()}
+              >
+                <IoClose className="h-6 w-6 text-white" />
+              </button>
             )}
           </div>
 

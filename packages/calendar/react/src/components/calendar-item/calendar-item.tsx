@@ -18,7 +18,7 @@ import { getTimezoneOffset } from "date-fns-tz";
 import "./calendar-item.scss";
 import type { FC } from "react";
 import { useEffect, useRef } from "react";
-import { EventResponseStatus } from "@agreeto/api/types";
+import { EventResponseStatus, Membership } from "@agreeto/api/types";
 import { eventMocks } from "./mock";
 import { ulid } from "ulid";
 import {
@@ -51,6 +51,7 @@ const CalendarItem: FC<Props> = ({ events, onRefSettled, onPageChange }) => {
 
   const referenceDate = useCalendarStore((s) => s.focusedDate);
   const showWeekends = useCalendarStore((s) => s.showWeekends);
+  const period = useCalendarStore((s) => s.period);
 
   const selectedSlots = useEventStore((s) => s.selectedSlots);
   const deleteSlot = useEventStore((s) => s.deleteSlot);
@@ -59,11 +60,9 @@ const CalendarItem: FC<Props> = ({ events, onRefSettled, onPageChange }) => {
   const selectSlot = useEventStore((s) => s.selectSlot);
   const selectEventGroup = useEventStore((s) => s.selectEventGroup);
   const setCheckedEvent = useEventStore((s) => s.setCheckedEvent);
+  const attendees = useEventStore((s) => s.attendees);
   const hoveredEvent = useEventStore((s) => s.hoveredEvent);
   const eventGroupId = useEventStore((s) => s.selectedEventGroupId);
-  const directoryUsersWithEvents = useEventStore(
-    (s) => s.directoryUsersWithEvents,
-  );
 
   const timeZones = useTZStore((s) => s.timeZones);
   const primaryTimeZone = getPrimaryTimeZone(timeZones);
@@ -71,8 +70,21 @@ const CalendarItem: FC<Props> = ({ events, onRefSettled, onPageChange }) => {
   const changePane = useViewStore((s) => s.changePane);
 
   const { data: currentUser } = trpc.user.me.useQuery();
+  const isFree = currentUser?.membership === Membership.FREE;
   const { data: preference } = trpc.preference.byCurrentUser.useQuery();
   const locale = getDateLocale(preference);
+
+  const { data: directoryUsersWithEvents } = trpc.event.directoryUsers.useQuery(
+    {
+      startDate: period.startDate,
+      endDate: period.endDate,
+      users: attendees,
+    },
+    {
+      keepPreviousData: true,
+      enabled: !isFree,
+    },
+  );
 
   useEffect(() => {
     if (ref) onRefSettled(ref);
@@ -240,9 +252,9 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
     });
 
     // Add events of directory users
-    directoryUsersWithEvents.forEach(({ events: directoryEvents }) => {
+    directoryUsersWithEvents?.forEach(({ events: directoryEvents }) => {
       directoryEvents?.forEach((event) => {
-        const { id, title, startDate, endDate } = event;
+        const { id, title, startDate, endDate, color } = event;
 
         newEvents.push({
           id,
@@ -250,7 +262,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
           start: startDate,
           end: endDate,
           // FIXME: Color
-          backgroundColor: "cyan", // color,
+          backgroundColor: color,
           textColor: "white",
           borderColor: "transparent",
           extendedProps: {

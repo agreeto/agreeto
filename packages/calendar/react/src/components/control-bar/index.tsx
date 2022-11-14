@@ -4,7 +4,7 @@ import { addDays, endOfWeek, getISOWeek, startOfWeek } from "date-fns";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import arrowDownIcon from "../../assets/arrow-down.svg";
 import { getPrimaryTimeZone, getTimeZoneAbv } from "@agreeto/calendar-core";
-import { useCalendarStore, useEventStore, useTZStore } from "../../utils/store";
+import { useCalendarStore, useTZStore } from "../../utils/store";
 import { type CalendarApi } from "@fullcalendar/react";
 
 export const ControlBar: React.FC<{
@@ -12,8 +12,7 @@ export const ControlBar: React.FC<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   calendarRef: any;
 }> = ({ calendarRef }) => {
-  const setPeriod = useEventStore((s) => s.setPeriod);
-
+  const setPeriod = useCalendarStore((s) => s.setPeriod);
   const focusedDate = useCalendarStore((s) => s.focusedDate);
   const setFocusedDate = useCalendarStore((s) => s.setFocusedDate);
   const calendarType = useCalendarStore((s) => s.calendarType);

@@ -41,8 +41,8 @@ const Calendar: React.FC<Props> = ({
 
   // Zustand
   const setFocusedDate = useCalendarStore((s) => s.setFocusedDate);
+  const period = useCalendarStore((s) => s.period);
 
-  const period = useEventStore((s) => s.period);
   const selectedSlots = useEventStore((s) => s.selectedSlots);
   const selectedEventGroupId = useEventStore((s) => s.selectedEventGroupId);
   const selectEventGroup = useEventStore((s) => s.selectEventGroup);

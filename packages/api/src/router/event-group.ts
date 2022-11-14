@@ -100,7 +100,7 @@ export const eventGroupRouter = router({
               startDate: event.startDate,
               endDate: event.endDate,
               title: event.title,
-              attendees: event.attendees,
+              attendees: event.attendees.length ? event.attendees : undefined,
               deletedAt: null,
             })),
           },
