@@ -6,7 +6,6 @@ import type {
   DateSelectArg,
   DayHeaderContentArg,
   EventApi,
-  EventClickArg,
   EventContentArg,
   EventInput,
   SlotLabelContentArg,
@@ -31,50 +30,48 @@ import TimeZoneSelect from "./time-zone-select";
 
 import { trpc } from "../../utils/trpc";
 import { type RouterOutputs } from "@agreeto/api";
-import { useTZStore } from "../../utils/store";
+import {
+  useCalendarStore,
+  useEventStore,
+  useTZStore,
+  useViewStore,
+} from "../../utils/store";
 
-type EventGroupEvent = RouterOutputs["eventGroup"]["byId"]["events"][number];
 type Event = RouterOutputs["event"]["all"][number];
 
 type Props = {
-  referenceDate: Date;
   events?: Event[];
-  weekends: boolean;
-  title: string;
-  selectedSlots: EventInput[];
-  onEventClick?: (event: EventClickArg) => void;
   onRefSettled: (ref: any) => void;
-  onSelect: (slot: EventInput) => void;
-  onSelectedSlotDelete: (slot: EventInput) => void;
-  onSlotUpdate: (slot: EventInput) => void;
-  hoveredEvent?: EventGroupEvent;
   directoryUsersWithEvents: RouterOutputs["event"]["directoryUsers"];
-  selectedEventGroupId?: string;
   onPageChange?: (page: string) => void;
 };
 
 const CalendarItem: FC<Props> = ({
-  referenceDate,
   events,
-  weekends,
-  selectedSlots,
-  title,
-  onEventClick,
   onRefSettled,
-  onSelect,
-  onSelectedSlotDelete,
-  onSlotUpdate,
-  hoveredEvent,
   directoryUsersWithEvents,
-  selectedEventGroupId,
   onPageChange,
 }) => {
   const ref = useRef<any>(null);
   const enableMock = false;
 
-  // Redux
+  const referenceDate = useCalendarStore((s) => s.focusedDate);
+  const showWeekends = useCalendarStore((s) => s.showWeekends);
+
+  const selectedSlots = useEventStore((s) => s.selectedSlots);
+  const deleteSlot = useEventStore((s) => s.deleteSlot);
+  const updateSlots = useEventStore((s) => s.updateSlots);
+  const title = useEventStore((s) => s.title);
+  const selectSlot = useEventStore((s) => s.selectSlot);
+  const selectEventGroup = useEventStore((s) => s.selectEventGroup);
+  const setCheckedEvent = useEventStore((s) => s.setCheckedEvent);
+  const hoveredEvent = useEventStore((s) => s.hoveredEvent);
+  const eventGroupId = useEventStore((s) => s.selectedEventGroupId);
+
   const timeZones = useTZStore((s) => s.timeZones);
   const primaryTimeZone = getPrimaryTimeZone(timeZones);
+
+  const changePane = useViewStore((s) => s.changePane);
 
   const { data: currentUser } = trpc.user.me.useQuery();
   const { data: preference } = trpc.preference.byCurrentUser.useQuery();
@@ -155,7 +152,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
               right: extendedProps?.new ? "-8px" : "-6px",
             }}
             onClick={() => {
-              onSelectedSlotDelete(event.toJSON());
+              deleteSlot(event.toJSON());
             }}
           >
             X
@@ -284,7 +281,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
         new: true,
       },
     };
-    onSelect(slot);
+    selectSlot(slot);
     ref.current.getApi().unselect();
   };
 
@@ -300,14 +297,20 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
         select={handleSelect}
         events={getEvents()}
         headerToolbar={false}
-        weekends={weekends}
-        eventClick={onEventClick}
+        weekends={showWeekends}
+        eventClick={({ event }) => {
+          if (event.extendedProps.isAgreeToEvent) {
+            selectEventGroup(event.extendedProps?.eventGroupId);
+            setCheckedEvent(event.extendedProps?.event);
+            changePane("confirmation");
+          }
+        }}
         slotLabelInterval={{ hours: 1 }}
         slotDuration="00:15:00"
         height={600}
         allDaySlot={false}
         slotLabelContent={renderSlotLabels}
-        eventChange={({ event }) => onSlotUpdate(event.toJSON())}
+        eventChange={({ event }) => updateSlots(event.toJSON())}
         scrollTime="08:00:00"
         nowIndicator
         timeZone={primaryTimeZone}
@@ -327,8 +330,8 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
             el.style.borderColor = "#E57373";
             el.style.borderWidth = "3px";
           } else if (
-            selectedEventGroupId &&
-            selectedEventGroupId === event.extendedProps.eventGroupId
+            eventGroupId &&
+            eventGroupId === event.extendedProps.eventGroupId
           ) {
             el.style.borderStyle = "dashed";
             el.style.borderColor = "#E57373";

@@ -1,45 +1,45 @@
-import type { FC } from "react";
-import { useState } from "react";
 import leftArrowIcon from "../../assets/left-arrow.svg";
 import rightArrowIcon from "../../assets/right-arrow.svg";
-import { addDays, getISOWeek } from "date-fns";
+import { addDays, endOfWeek, getISOWeek, startOfWeek } from "date-fns";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import arrowDownIcon from "../../assets/arrow-down.svg";
 import { getPrimaryTimeZone, getTimeZoneAbv } from "@agreeto/calendar-core";
-import { useTZStore } from "../../utils/store";
+import { useCalendarStore, useEventStore, useTZStore } from "../../utils/store";
+import { type CalendarApi } from "@fullcalendar/react";
 
-export type CalendarType = "5 days" | "7 days";
+export const ControlBar: React.FC<{
+  // FIXME: Is there no type for this?
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  calendarRef: any;
+}> = ({ calendarRef }) => {
+  const setPeriod = useEventStore((s) => s.setPeriod);
 
-type Props = {
-  date: Date;
-  onPrevious?: () => void;
-  onNext?: () => void;
-  onToday?: () => void;
+  const focusedDate = useCalendarStore((s) => s.focusedDate);
+  const setFocusedDate = useCalendarStore((s) => s.setFocusedDate);
+  const calendarType = useCalendarStore((s) => s.calendarType);
+  const setCalendarType = useCalendarStore((s) => s.setCalendarType);
+  const setShowWeekends = useCalendarStore((s) => s.setShowWeekends);
 
-  onCalendarTypeChange?: (type: CalendarType) => void;
-};
-
-const ControlBar: FC<Props> = ({
-  date,
-  onPrevious,
-  onNext,
-  onToday,
-  onCalendarTypeChange,
-}) => {
-  const month = date.toLocaleString(undefined, { month: "long" });
-  const year = date.toLocaleString(undefined, { year: "numeric" });
+  const month = focusedDate.toLocaleString(undefined, { month: "long" });
+  const year = focusedDate.toLocaleString(undefined, { year: "numeric" });
   // 2 days added to get the start of the week.
   // Otherwise it will get the saturday of the previous week
-  const weekNumber = getISOWeek(addDays(date, 2));
+  const weekNumber = getISOWeek(addDays(focusedDate, 2));
 
   const timeZones = useTZStore((s) => s.timeZones);
   const primaryTimeZone = getPrimaryTimeZone(timeZones);
 
-  const [calendarType, setCalendarType] = useState<CalendarType>("5 days");
-
   // const handleFeedback = () => {
   //   console.log('Show feedback page here')
   // }
+
+  const handleDateChange = (action: "prev" | "next" | "today") => {
+    const calendarApi: CalendarApi = calendarRef.current.getApi();
+    calendarApi[action]();
+    const date = calendarApi.getDate();
+    setFocusedDate(new Date(calendarApi.view.currentStart));
+    setPeriod(startOfWeek(date), endOfWeek(date));
+  };
 
   return (
     <>
@@ -54,18 +54,27 @@ const ControlBar: FC<Props> = ({
 
             {/* Arrows and today button */}
             <div>
-              <button className="icon-button" onClick={onPrevious}>
+              <button
+                className="icon-button"
+                onClick={() => handleDateChange("prev")}
+              >
                 <img src={leftArrowIcon} alt="previous" />
               </button>
             </div>
             <div>
-              <button className="icon-button" onClick={onNext}>
+              <button
+                className="icon-button"
+                onClick={() => handleDateChange("next")}
+              >
                 <img src={rightArrowIcon} alt="next" />
               </button>
             </div>
 
             <div>
-              <button className="button-outline" onClick={onToday}>
+              <button
+                className="button-outline"
+                onClick={() => handleDateChange("today")}
+              >
                 Today
               </button>
             </div>
@@ -107,7 +116,7 @@ const ControlBar: FC<Props> = ({
                   <DropdownMenu.Item
                     onSelect={() => {
                       setCalendarType("5 days");
-                      onCalendarTypeChange?.("5 days");
+                      setShowWeekends(false);
                     }}
                   >
                     <div className="flex w-40 cursor-pointer items-center py-3 pl-4">
@@ -121,7 +130,7 @@ const ControlBar: FC<Props> = ({
                   <DropdownMenu.Item
                     onSelect={() => {
                       setCalendarType("7 days");
-                      onCalendarTypeChange?.("7 days");
+                      setShowWeekends(true);
                     }}
                   >
                     <div className="flex w-40 cursor-pointer items-center py-3 pl-4">
@@ -142,5 +151,3 @@ const ControlBar: FC<Props> = ({
     </>
   );
 };
-
-export default ControlBar;

@@ -3,18 +3,22 @@ import uniqBy from "lodash/uniqBy";
 import { type FC } from "react";
 import { useCallback, useEffect, useState } from "react";
 import OutsideClickHandler from "react-outside-click-handler";
-import { EventResponseStatus, Membership } from "@agreeto/calendar-core";
-import searchIcon from "../../assets/search.svg";
-import { getNextColor } from "@agreeto/calendar-core";
-import { Spinner } from "../spinner";
+import {
+  EventResponseStatus,
+  getNextColor,
+  Membership,
+} from "@agreeto/calendar-core";
+import { Spinner } from "@agreeto/ui";
+import { AiOutlineSearch } from "react-icons/ai";
 import { SelectedAttendeeCard } from "./selected-attendee-card";
 import { UnknownAttendeeCard } from "./unknown-attendee-card";
 import { Float } from "@headlessui-float/react";
 import { trpc } from "../../utils/trpc";
 import { type RouterInputs, type RouterOutputs } from "@agreeto/api";
+import { useEventStore } from "../../utils/store";
+import clsx from "clsx";
 
 type Props = {
-  eventsQuery: RouterInputs["event"]["all"];
   directoryUsersWithEvents: RouterOutputs["event"]["directoryUsers"];
 
   onDirectoryUsersWithEventsChange: (
@@ -31,7 +35,6 @@ type Props = {
 };
 
 export const Attendees: FC<Props> = ({
-  eventsQuery,
   directoryUsersWithEvents,
   onDirectoryUsersWithEventsChange,
   unknownAttendees,
@@ -50,6 +53,8 @@ export const Attendees: FC<Props> = ({
     search: "",
   });
 
+  const period = useEventStore((s) => s.period);
+
   const { data: user } = trpc.user.me.useQuery();
   const isFree = user?.membership === Membership.FREE;
   // This params is used to get events of selected directory users
@@ -58,17 +63,17 @@ export const Attendees: FC<Props> = ({
     RouterInputs["event"]["directoryUsers"]
   >({
     users: [],
-    startDate: eventsQuery.startDate,
-    endDate: eventsQuery.endDate,
+    startDate: period.startDate,
+    endDate: period.endDate,
   });
 
   useEffect(() => {
     setDirectoryUserEventParams((p) => ({
       ...p,
-      startDate: eventsQuery.startDate,
-      endDate: eventsQuery.endDate,
+      startDate: period.startDate,
+      endDate: period.endDate,
     }));
-  }, [eventsQuery]);
+  }, [period]);
 
   useEffect(() => {
     if (!eventGroup || !eventGroup.events?.[0]) return;
@@ -98,15 +103,8 @@ export const Attendees: FC<Props> = ({
     trpc.user.getFriends.useQuery(attendeeParams, {
       keepPreviousData: true,
       staleTime: 60 * 1000,
-      enabled: !isFree,
+      enabled: !isFree && attendeeParams.search.length > 0,
     });
-
-  // This callback is used not to trigger debounce on every attendeeText state changed
-  // And yes it works
-  const attendeeDebounceCallback = useCallback(
-    (value: string) => debouncedAttendeeSearch(value),
-    [],
-  );
 
   // Debounce the attendee search call to prevent multiple calls
   const debouncedAttendeeSearch = debounce((search) => {
@@ -115,6 +113,13 @@ export const Attendees: FC<Props> = ({
       search,
     }));
   }, 500);
+
+  // This callback is used not to trigger debounce on every attendeeText state changed
+  // And yes it works
+  const attendeeDebounceCallback = useCallback(
+    (value: string) => debouncedAttendeeSearch(value),
+    [],
+  );
 
   const attendeeOptionCard = (
     user: RouterOutputs["user"]["getFriends"][number],
@@ -243,14 +248,18 @@ export const Attendees: FC<Props> = ({
               className="cursor-auto"
             >
               <div>
-                <div
-                  className="input-icon-after"
+                <label
                   onClick={() => isFree && setShowProTooltip(true)}
+                  className="relative flex h-8 w-full items-center justify-end rounded-sm px-1"
                 >
                   <input
-                    className="input-outline w-full"
+                    className={clsx(
+                      "box-border h-full w-full appearance-none rounded border border-transparent px-1 outline-none hover:border-primary",
+                      {
+                        "bg-gray-100": isFree,
+                      },
+                    )}
                     disabled={isFree}
-                    style={{ backgroundColor: isFree ? "#F0F1F2" : "white" }}
                     placeholder="Search for people"
                     onFocus={() => setIsAttendeePopupOpen(true)}
                     // onKeyDown={(e) => {
@@ -264,14 +273,14 @@ export const Attendees: FC<Props> = ({
                     }}
                     value={attendeeText}
                   />
-                  <div className="input-icon-container">
+                  <div className="absolute mr-2 h-4 w-4">
                     {isLoadingUsers ? (
                       <Spinner />
                     ) : (
-                      <img src={searchIcon} alt="info" />
+                      <AiOutlineSearch className="h-4 w-4" />
                     )}
                   </div>
-                </div>
+                </label>
               </div>
               <div
                 className="mt-4 w-60 cursor-auto rounded border border-[#F9FAFA] bg-[#F9FAFA] p-4 text-left"
@@ -284,7 +293,7 @@ export const Attendees: FC<Props> = ({
                   This feature is part of the Pro Plan
                 </div>
                 <div
-                  className="border-primary color-primary mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border"
+                  className="color-primary mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border border-primary"
                   onClick={() => onPageChange?.("settings")}
                 >
                   Upgrade

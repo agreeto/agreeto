@@ -14,39 +14,27 @@ import { trpc } from "../../utils/trpc";
 import { ConferenceElement } from "./conference-element.new";
 import { EventElement } from "./event-element.new";
 import { Title } from "./title.new";
-import { useViewStore } from "../../utils/store";
+import { useEventStore, useViewStore } from "../../utils/store";
 
-type Event = RouterOutputs["event"]["all"][number];
-type EventGroupEvent = RouterOutputs["eventGroup"]["byId"]["events"][number];
 type DirectoryUser = RouterOutputs["event"]["directoryUsers"][number];
 
 type Props = {
   onClose?: () => void;
+
   eventGroupId: string;
-  onSave?: () => void;
-
-  onHoverEvent: (event: EventGroupEvent | undefined) => void;
-  checkedEvent?: Event;
-
-  onEventCheck: (event: EventGroupEvent | undefined) => void;
-  eventsQuery: RouterInputs["event"]["all"];
   directoryUsersWithEvents: DirectoryUser[];
-
   onDirectoryUsersWithEventsChange: (users: DirectoryUser[]) => void;
 };
 
 const ConfirmationPane: FC<Props> = ({
   onClose,
   eventGroupId,
-  onSave,
-  onHoverEvent,
-  checkedEvent,
-  onEventCheck,
-  eventsQuery,
   directoryUsersWithEvents,
   onDirectoryUsersWithEventsChange,
 }) => {
   const utils = trpc.useContext();
+
+  const checkedEvent = useEventStore((s) => s.checkedEvent);
 
   const changePane = useViewStore((s) => s.changePane);
 
@@ -85,7 +73,6 @@ const ConfirmationPane: FC<Props> = ({
           autoClose: 1000,
           type: "success",
         });
-        onSave?.();
       },
       onError() {
         toast("Failed to create events", {
@@ -201,15 +188,7 @@ const ConfirmationPane: FC<Props> = ({
             {eventGroup?.events
               ?.sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
               .map((event) => (
-                <EventElement
-                  {...{
-                    key: event.id,
-                    event,
-                    onHover: onHoverEvent,
-                    isChecked: checkedEvent?.id === event.id,
-                    onCheck: onEventCheck,
-                  }}
-                />
+                <EventElement key={event.id} event={event} />
               ))}
           </div>
 
@@ -238,7 +217,6 @@ const ConfirmationPane: FC<Props> = ({
           {/* Attendees */}
           <div className="pt-4">
             <Attendees
-              eventsQuery={eventsQuery}
               unknownAttendees={unknownAttendees}
               onUnknownAttendeesChange={setUnknownAttendees}
               directoryUsersWithEvents={directoryUsersWithEvents}

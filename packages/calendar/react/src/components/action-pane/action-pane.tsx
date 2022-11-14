@@ -1,8 +1,6 @@
-import { type ChangeEventHandler, type FC } from "react";
+import { type FC } from "react";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import closeIcon from "../../assets/close.svg";
-import { type EventInput } from "@fullcalendar/react";
 import {
   convertToDate,
   EventResponseStatus,
@@ -10,65 +8,63 @@ import {
 } from "@agreeto/calendar-core";
 import Availability from "./availability";
 import { Attendees } from "./attendees";
-import { PRIMARY_ACTION_TYPES } from "../../utils/enums";
-import sortDownIcon from "../../assets/sort-down.png";
-import sortDownGrayIcon from "../../assets/sort-down-gray.png";
-import checkmarkBlueIcon from "../../assets/check-mark-blue-2.svg";
+import { IoClose, IoCheckmarkCircle } from "react-icons/io5";
+import { TiArrowSortedDown } from "react-icons/ti";
 import { Float } from "@headlessui-float/react";
 import OutsideClickHandler from "react-outside-click-handler";
-import { Spinner } from "../spinner";
+import { Spinner } from "@agreeto/ui";
 import { trpc } from "../../utils/trpc";
 import { type RouterInputs, type RouterOutputs } from "@agreeto/api";
+import { useEventStore } from "../../utils/store";
+import clsx from "clsx";
 
-type CreatedEventGroup = RouterOutputs["eventGroup"]["create"];
 type DirectoryUsers = RouterOutputs["event"]["directoryUsers"];
+
+const actionTypes = {
+  "Copy and Close":
+    "Copies the selected time slots to your clipboard, then closes the application.",
+  "Create Hold and Copy":
+    "Creates unconfirmed events in the calendar of each attendee, then copies the selected time slots.",
+};
+type ActionType = keyof typeof actionTypes;
 
 type Props = {
   onClose?: () => void;
-  selectedSlots: EventInput[];
-  onSelectedSlotDelete: (slot: EventInput) => void;
-  title: string;
-  onTitleChange: ChangeEventHandler<HTMLInputElement>;
-  onSave?: (events: CreatedEventGroup) => void;
-  onCopyAndClose?: () => void;
-  eventsQuery: RouterInputs["event"]["all"];
   directoryUsersWithEvents: DirectoryUsers;
   onDirectoryUsersWithEventsChange: (users: DirectoryUsers) => void;
   onPageChange?: (page: string) => void;
-  onPrimaryActionClick?: (type: PRIMARY_ACTION_TYPES) => void;
+  onPrimaryActionClick?: (type: ActionType) => void;
 };
 
 const ActionPane: FC<Props> = ({
   onClose,
-  selectedSlots,
-  onSelectedSlotDelete,
-  title,
-  onTitleChange,
-  onSave,
-  onCopyAndClose,
-  eventsQuery,
   directoryUsersWithEvents,
   onDirectoryUsersWithEventsChange,
   onPageChange,
   onPrimaryActionClick,
 }) => {
   const utils = trpc.useContext();
+
+  const title = useEventStore((s) => s.title);
+  const resetTitle = useEventStore((s) => s.resetTitle);
+  const updateTitle = useEventStore((s) => s.updateTitle);
+
+  const selectedSlots = useEventStore((s) => s.selectedSlots);
+  const clearSlots = useEventStore((s) => s.clearSlots);
+
   const [unknownAttendees, setUnknownAttendees] = useState<
     RouterInputs["eventGroup"]["create"]["events"][number]["attendees"]
   >([]);
   const [showActionTypesPopup, setShowActionTypesPopup] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
   const [showCreatingSpinner, setShowCreatingSpinner] = useState(false);
 
-  const [buttonType, setButtonType] = useState(
-    PRIMARY_ACTION_TYPES.COPY_AND_CLOSE,
-  );
+  const [buttonType, setButtonType] = useState<ActionType>("Copy and Close");
 
   const { data: preference } = trpc.preference.byCurrentUser.useQuery();
   const { mutate: createEventGroup, isLoading: isCreatingEventGroup } =
     trpc.eventGroup.create.useMutation({
-      onSuccess(eventGroup) {
+      onSuccess() {
         setUnknownAttendees([]);
         utils.event.all.invalidate();
 
@@ -80,7 +76,8 @@ const ActionPane: FC<Props> = ({
           type: "success",
         });
         setIsCreating(false);
-        onSave?.(eventGroup);
+        clearSlots();
+        resetTitle();
       },
       onError() {
         toast("Failed to create events", {
@@ -93,6 +90,9 @@ const ActionPane: FC<Props> = ({
       },
     });
 
+  const isDisabled =
+    isCreating || isCreatingEventGroup || selectedSlots.length === 0;
+
   const handleClose = () => {
     onClose?.();
   };
@@ -100,9 +100,8 @@ const ActionPane: FC<Props> = ({
   const handleSave = async () => {
     setIsCreating(true);
     setShowCreatingSpinner(true);
-    setShowTooltip(true);
 
-    if (buttonType === PRIMARY_ACTION_TYPES.COPY_AND_CLOSE) {
+    if (buttonType === "Copy and Close") {
       setTimeout(() => {
         copyToClipboard(selectedSlots, preference);
         toast("Saved and copied to clipboard!", {
@@ -114,9 +113,9 @@ const ActionPane: FC<Props> = ({
         setShowCreatingSpinner(false);
 
         setTimeout(() => {
-          setShowTooltip(false);
           setIsCreating(false);
-          onCopyAndClose?.();
+          resetTitle();
+          clearSlots();
         }, 1000);
         onPrimaryActionClick?.(buttonType);
       }, 500);
@@ -173,15 +172,17 @@ const ActionPane: FC<Props> = ({
         show={showActionTypesPopup}
         placement="top-end"
       >
-        <div
+        <button
           id="primaryActionPopupContainerButton"
-          className={`flex w-10 items-stretch justify-center rounded-r ${
-            selectedSlots.length === 0 || isCreatingEventGroup
-              ? "cursor-not-allowed bg-[#C0C0C0]"
-              : "bg-primary cursor-pointer"
-          }`}
+          className={clsx(
+            "flex w-10 items-stretch justify-center rounded-r bg-primary hover:bg-primary/80",
+            {
+              "bg-[#C0C0C0] hover:bg-[#C0C0C0]": isDisabled,
+              "cursor-pointer": !isDisabled,
+            },
+          )}
+          disabled={isDisabled}
           onClick={() => {
-            if (selectedSlots.length === 0 || isCreatingEventGroup) return;
             setShowActionTypesPopup(!showActionTypesPopup);
           }}
         >
@@ -189,81 +190,43 @@ const ActionPane: FC<Props> = ({
             className="flex w-full items-center justify-center border-l border-white"
             style={{ marginTop: "2px", marginBottom: "2px" }}
           >
-            <img
-              src={
-                selectedSlots.length === 0 || isCreatingEventGroup
-                  ? sortDownGrayIcon
-                  : sortDownIcon
-              }
-              width={15}
-              height={15}
-              alt="sort down"
+            <TiArrowSortedDown
+              className={clsx("h-6 w-6 text-white", {
+                "text-gray-700": isDisabled,
+              })}
             />
           </div>
-        </div>
+        </button>
         <div
           id="primaryActionPopupContainerContent"
           className="mb-2 rounded border border-[#E3E5E8] bg-white text-left"
           style={{ width: "340px" }}
         >
-          {/* Copy and Close */}
-          <div
-            className="flex cursor-pointer border-b border-[#C2C7CD] py-2 px-4 hover:bg-[#D9D9D9]"
-            onClick={() => {
-              setButtonType(PRIMARY_ACTION_TYPES.COPY_AND_CLOSE);
-              setShowActionTypesPopup(false);
-            }}
-          >
-            <div className="w-8 shrink-0">
-              {buttonType === PRIMARY_ACTION_TYPES.COPY_AND_CLOSE && (
-                <img src={checkmarkBlueIcon} width={20} alt="" />
-              )}
-            </div>
-            <div>
-              <div
-                className={`text-sm font-semibold ${
-                  buttonType === PRIMARY_ACTION_TYPES.COPY_AND_CLOSE
-                    ? "color-primary"
-                    : "color-[#3A3F46]"
-                }`}
-              >
-                Copy and Close
+          {Object.entries(actionTypes).map(([action, description]) => (
+            <div
+              className="flex cursor-pointer border-b border-[#C2C7CD] py-2 px-4 hover:bg-[#D9D9D9]"
+              onClick={() => {
+                setButtonType(action as ActionType);
+                setShowActionTypesPopup(false);
+              }}
+            >
+              <div className="w-8 shrink-0">
+                {buttonType === action && (
+                  <IoCheckmarkCircle className="h-6 w-6 text-primary" />
+                )}
               </div>
-              <div className="pt-1 text-xs text-[#767676]">
-                Copies the selected time slots to your clipboard, then closes
-                the application.
+              <div>
+                <div
+                  className={clsx("text-sm font-semibold text-primary", {
+                    "text-gray-700": buttonType !== action,
+                  })}
+                >
+                  {action}
+                </div>
+                <div className="pt-1 text-xs text-[#767676]">{description}</div>
               </div>
             </div>
-          </div>
-          {/* Create Hold and Copy */}
-          <div
-            className="flex cursor-pointer py-2 px-4 hover:bg-[#D9D9D9]"
-            onClick={() => {
-              setButtonType(PRIMARY_ACTION_TYPES.CREATE_HOLD_AND_COPY);
-              setShowActionTypesPopup(false);
-            }}
-          >
-            <div className="w-8 shrink-0">
-              {buttonType === PRIMARY_ACTION_TYPES.CREATE_HOLD_AND_COPY && (
-                <img src={checkmarkBlueIcon} width={20} alt="" />
-              )}
-            </div>
-            <div>
-              <div
-                className={`text-sm font-semibold ${
-                  buttonType === PRIMARY_ACTION_TYPES.CREATE_HOLD_AND_COPY
-                    ? "color-primary"
-                    : "color-[#3A3F46]"
-                }`}
-              >
-                Create Hold and Copy
-              </div>
-              <div className="pt-1 text-xs text-[#767676]">
-                Creates unconfirmed events in the calendar of each attendee,
-                then copies the selected time slots.
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </Float>
     </OutsideClickHandler>
@@ -275,40 +238,38 @@ const ActionPane: FC<Props> = ({
       {isCreating && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-[#ffffff73]">
           {showCreatingSpinner && (
-            <Spinner style={{ width: "70px", height: "70px" }} />
+            <div className="h-16 w-16">
+              <Spinner />
+            </div>
           )}
         </div>
       )}
-
       <div className="flex h-full flex-col justify-between">
         {/* Top */}
         <div>
           {/* Close icon */}
-          {onClose && (
-            <div className="flex justify-end">
-              <img
-                src={closeIcon}
-                alt="close"
-                className="h-8 w-8 cursor-pointer"
+          {(onClose || true) && (
+            <div className="flex flex-1 justify-end">
+              <button
+                className="cursor-pointer rounded bg-red-500 p-1 hover:bg-red-600"
                 onClick={handleClose}
-              />
+              >
+                <IoClose className="h-6 w-6 text-white" />
+              </button>
             </div>
           )}
 
           {/* Title input */}
-          <div className="flex justify-end pt-8">
-            <input
-              className="input input-big w-full"
-              placeholder="Add a title"
-              value={title}
-              onChange={onTitleChange}
-            />
-          </div>
+          <input
+            className="mt-6 w-full border-b-2 border-gray-400 bg-transparent px-2 text-xl outline-none hover:border-primary focus:border-primary"
+            placeholder="Add a title"
+            value={title}
+            onChange={(e) => updateTitle(e.target.value)}
+          />
 
           {/* Attendees */}
           <div className="pt-8">
             <Attendees
-              eventsQuery={eventsQuery}
               unknownAttendees={unknownAttendees}
               onUnknownAttendeesChange={setUnknownAttendees}
               directoryUsersWithEvents={directoryUsersWithEvents}
@@ -321,11 +282,7 @@ const ActionPane: FC<Props> = ({
 
           {/* Availability */}
           <div className="pt-8">
-            <Availability
-              selectedSlots={selectedSlots}
-              onDelete={(event) => onSelectedSlotDelete(event)}
-              onPageChange={onPageChange}
-            />
+            <Availability onPageChange={onPageChange} />
           </div>
         </div>
 
@@ -333,23 +290,23 @@ const ActionPane: FC<Props> = ({
         <div className="pt-4">
           <div className="flex items-stretch">
             <button
-              className="button w-full"
-              disabled={selectedSlots.length === 0 || isCreatingEventGroup}
+              className={clsx(
+                "w-full rounded-l bg-primary py-4 text-base font-bold text-white hover:bg-primary/80",
+                {
+                  "bg-[#C0C0C0] text-gray-700 hover:bg-[#C0C0C0]": isDisabled,
+                  "cursor-pointer": !isDisabled,
+                },
+              )}
+              disabled={isDisabled}
               onClick={handleSave}
-              style={{
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-              }}
             >
-              {buttonType === PRIMARY_ACTION_TYPES.CREATE_HOLD_AND_COPY
-                ? "Create Hold and Copy"
-                : "Copy and Close"}
+              {buttonType}
             </button>
             {actionTypesPopup}
           </div>
         </div>
       </div>
-      {showTooltip && <ToastContainer containerId="toast-container-1" />}
+      <ToastContainer containerId="toast-container-1" />
     </div>
   );
 };
