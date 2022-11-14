@@ -250,11 +250,11 @@ export const Attendees: FC<Props> = ({
               <div>
                 <label
                   onClick={() => isFree && setShowProTooltip(true)}
-                  className="relative flex h-6 w-full items-center justify-end px-1"
+                  className="relative flex h-8 w-full items-center justify-end rounded-sm px-1"
                 >
                   <input
                     className={clsx(
-                      "block h-full w-full appearance-none px-1 outline-none",
+                      "box-border h-full w-full appearance-none rounded border border-transparent px-1 outline-none hover:border-primary",
                       {
                         "bg-gray-100": isFree,
                       },
@@ -293,7 +293,7 @@ export const Attendees: FC<Props> = ({
                   This feature is part of the Pro Plan
                 </div>
                 <div
-                  className="border-primary color-primary mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border"
+                  className="color-primary mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border border-primary"
                   onClick={() => onPageChange?.("settings")}
                 >
                   Upgrade

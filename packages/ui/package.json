@@ -4,14 +4,11 @@
   "version": "0.0.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
-  "typings": "./dist/index.d.ts",
-  "files": [
-    "dist/**"
-  ],
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build:ui": "tsup",
     "build:tw": "tailwind -i ./src/styles.css -o ./dist/styles.css --minify",
-    "build": "run-p build:*",
+    "build": "run-s build:ui build:tw",
     "dev:ui": "tsup --watch",
     "dev:tw": "tailwind -i ./src/styles.css -o ./dist/styles.css --watch",
     "dev": "run-p dev:*",

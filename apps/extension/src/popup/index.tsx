@@ -3,6 +3,7 @@ import "@fullcalendar/common/main.css";
 import "@fullcalendar/timegrid/main.css";
 import "../style.css";
 
+// import "@agreeto/ui/dist/styles.css";
 import { Spinner } from "@agreeto/ui";
 import { Outlet, ReactLocation, Router } from "@tanstack/react-location";
 import React from "react";

@@ -82,25 +82,34 @@ const Availability: React.FC<{
           .slice(0, isFree ? 2 : Object.values(Language).length)
           .map((lang, idx) => {
             return (
-              <DropdownMenu.Item
-                key={lang}
-                disabled={isFree && idx > 0}
-                onSelect={() => {
-                  updatePreference({ formatLanguage: lang });
-                }}
-              >
-                <div
-                  className={clsx(
-                    "flex w-40 cursor-pointer items-center py-3 pl-4",
-                    {
-                      "cursor-not-allowed": isFree && idx > 0,
-                    },
-                  )}
+              <>
+                <DropdownMenu.Item
+                  key={lang}
+                  disabled={isFree && idx > 0}
+                  onSelect={() => {
+                    updatePreference({ formatLanguage: lang });
+                  }}
                 >
-                  <Flag country={lang === "EN" ? "US" : lang} size={20} />
-                  <div className="pl-4 text-sm">{getLanguageName(lang)}</div>
-                </div>
-              </DropdownMenu.Item>
+                  <div
+                    style={{ opacity: isFree && idx > 0 ? 0.5 : 1 }}
+                    className={clsx(
+                      "flex w-40 cursor-pointer items-center py-3 pl-4",
+                      {
+                        "cursor-not-allowed": isFree && idx > 0,
+                      },
+                    )}
+                  >
+                    <Flag country={lang === "EN" ? "US" : lang} size={20} />
+                    <div className="pl-4 text-sm">{getLanguageName(lang)}</div>
+                  </div>
+                </DropdownMenu.Item>
+                {idx < Object.values(Language).length - 1 && (
+                  <DropdownMenu.Separator
+                    className="mx-3 h-px bg-gray-100"
+                    style={{ height: "1px" }}
+                  />
+                )}
+              </>
             );
           })}
         {isFree && (
@@ -112,7 +121,7 @@ const Availability: React.FC<{
               This feature is part of the Pro Plan
             </div>
             <div
-              className="border-primary text-primary mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border"
+              className="mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border border-primary text-primary"
               onClick={() => onPageChange?.("settings")}
             >
               Upgrade
@@ -171,12 +180,12 @@ const Availability: React.FC<{
                 : "Selected slots will appear here"}
             </span>
             <button
-              className="h-7 w-7 pl-1 text-blue-500"
+              className="h-7 w-7 pl-1"
               title="copy"
               disabled={selectedSlots.length === 0}
               onClick={() => {
                 setCopied(true);
-                setTimeout(() => setCopied(false), 1000);
+                setTimeout(() => setCopied(false), 2000);
                 copyToClipboard(selectedSlots, preference);
                 toast("Saved to clipboard!", {
                   position: "bottom-center",

@@ -3,7 +3,7 @@ import { execSync } from "child_process";
 
 // `opts` are brought in from CLI args
 export default defineConfig((opts) => ({
-  clean: true,
+  clean: !opts.watch,
   entry: ["src/index.tsx"],
   format: ["esm", "cjs"],
   dts: true,
