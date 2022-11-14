@@ -41,7 +41,7 @@ const Availability: React.FC<{
   const { data: user } = trpc.user.me.useQuery();
   const isFree = user?.membership === Membership.FREE;
 
-  const { data: preference, isFetching: isFetchingPreference } =
+  const { data: preference, isLoading: isLoadingPreference } =
     trpc.preference.byCurrentUser.useQuery();
   const locale = getDateLocale(preference);
 
@@ -57,10 +57,10 @@ const Availability: React.FC<{
   const languageDropdown = (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
-        disabled={isFetchingPreference || isUpdatingPreference}
+        disabled={isLoadingPreference || isUpdatingPreference}
       >
         <div className="flex h-6 w-14 items-center space-x-3 rounded border border-gray-300 bg-white px-2 text-gray-700">
-          {isFetchingPreference ? (
+          {isLoadingPreference ? (
             <Spinner />
           ) : (
             <Flag
