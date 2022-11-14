@@ -13,4 +13,9 @@ const config = {
   swcMinify: true,
 };
 
-export default withTM(["@agreeto/api", "@agreeto/auth", "@agreeto/db"])(config);
+export default withTM([
+  "@agreeto/api",
+  "@agreeto/auth",
+  "@agreeto/db",
+  "@agreeto/ui",
+])(config);
