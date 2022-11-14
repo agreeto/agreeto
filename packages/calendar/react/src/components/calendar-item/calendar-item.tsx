@@ -299,6 +299,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
         headerToolbar={false}
         weekends={showWeekends}
         eventClick={({ event }) => {
+          console.log("eventClick", event);
           if (event.extendedProps.isAgreeToEvent) {
             selectEventGroup(event.extendedProps?.eventGroupId);
             setCheckedEvent(event.extendedProps?.event);
