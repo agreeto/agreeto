@@ -151,6 +151,14 @@ const ActionPane: FC<Props> = ({
     });
   };
 
+  // TESTING PURPOSES TO QUICKLY SWITCH BETWEEN PAYMENT TIERS
+  const { data: user } = trpc.user.me.useQuery();
+  const { mutate: updateUserTier } = trpc.user.updateTier.useMutation({
+    onSettled() {
+      utils.user.me.invalidate();
+    },
+  });
+
   const actionTypesPopup = (
     <OutsideClickHandler
       onOutsideClick={(e: any) => {
@@ -250,6 +258,19 @@ const ActionPane: FC<Props> = ({
           {/* Close icon */}
           {(onClose || true) && (
             <div className="flex flex-1 justify-end">
+              {/* TODO: (Remove) Testing Tier Button */}
+              {user?.membership && (
+                <button
+                  className="mr-2 rounded border-2 border-primary text-sm font-semibold text-primary hover:bg-primary hover:text-white"
+                  onClick={() => {
+                    updateUserTier({
+                      tier: user?.membership === "FREE" ? "PRO" : "FREE",
+                    });
+                  }}
+                >
+                  {user?.membership}
+                </button>
+              )}
               <button
                 className="cursor-pointer rounded bg-red-500 p-1 hover:bg-red-600"
                 onClick={handleClose}

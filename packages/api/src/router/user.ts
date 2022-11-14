@@ -2,8 +2,23 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { router, publicProcedure, privateProcedure } from "../trpc";
 import { getGoogleUsers } from "../external/google";
+import { Membership } from "@agreeto/db";
 
 export const userRouter = router({
+  // TESTING PROCEDURE
+  updateTier: privateProcedure
+    .input(
+      z.object({
+        tier: z.nativeEnum(Membership),
+      }),
+    )
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.user.update({
+        where: { id: ctx.user.id },
+        data: { membership: input.tier },
+      });
+    }),
+
   // Get the current user
   me: privateProcedure.query(async ({ ctx }) => {
     const user = await ctx.prisma.user.findUnique({
