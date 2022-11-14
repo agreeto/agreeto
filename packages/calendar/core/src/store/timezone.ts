@@ -1,7 +1,8 @@
 import create from "zustand/vanilla";
 import { type RouterOutputs } from "@agreeto/api";
 import { LOCAL_STORAGE_KEYS, type PLATFORM } from "../constants";
-import { Membership, type Maybe } from "../types";
+import { type Maybe } from "../types";
+import { Membership } from "@agreeto/api/types";
 
 type MaybeUser = Maybe<RouterOutputs["user"]["me"]>;
 

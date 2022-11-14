@@ -1,4 +1,5 @@
 import create from "zustand/vanilla";
+
 export interface ViewStore {
   // State
   openPane: "action" | "confirmation";

@@ -15,7 +15,7 @@ import {
   getLanguageName,
 } from "@agreeto/calendar-core";
 import { ulid } from "ulid";
-import { Language, Membership } from "@agreeto/calendar-core";
+import { Language, Membership } from "@agreeto/api/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { trpc } from "../../utils/trpc";
 import { useEventStore, useTZStore } from "../../utils/store";

@@ -36,7 +36,7 @@ const Calendar: React.FC<Props> = ({
   renderKey,
   platform = "web",
   onPageChange,
-  onPrimaryActionClick,
+  onPrimaryActionClick: _primaryActionClick,
 }) => {
   const utils = trpc.useContext();
 
@@ -153,14 +153,13 @@ const Calendar: React.FC<Props> = ({
             directoryUsersWithEvents={directoryUsersWithEvents}
             onDirectoryUsersWithEventsChange={setDirectoryUsersWithEvents}
             onPageChange={onPageChange}
-            onPrimaryActionClick={onPrimaryActionClick}
           />
         ) : (
           openPane === "confirmation" &&
           !!selectedEventGroupId && (
             <ConfirmationPane
-              eventGroupId={selectedEventGroupId}
               onClose={onClose}
+              eventGroupId={selectedEventGroupId}
               directoryUsersWithEvents={directoryUsersWithEvents}
               onDirectoryUsersWithEventsChange={setDirectoryUsersWithEvents}
             />

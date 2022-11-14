@@ -6,7 +6,8 @@ import { Popover } from "@headlessui/react";
 import OutsideClickHandler from "react-outside-click-handler";
 import searchIcon from "../../assets/search.svg";
 import uniq from "lodash/uniq";
-import { Membership, getTimeZoneAbv } from "@agreeto/calendar-core";
+import { getTimeZoneAbv } from "@agreeto/calendar-core";
+import { Membership } from "@agreeto/api/types";
 import { Float } from "@headlessui-float/react";
 import { trpc } from "../../utils/trpc";
 import { useTZStore } from "../../utils/store";
@@ -129,7 +130,7 @@ const TimeZoneSelect: FC<Props> = ({
               This feature is part of the Pro Plan
             </div>
             <div
-              className="border-primary color-primary mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border"
+              className="color-primary mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border border-primary"
               onClick={() => onPageChange?.("settings")}
             >
               Upgrade

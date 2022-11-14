@@ -1,11 +1,8 @@
 import { type FC } from "react";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import {
-  convertToDate,
-  EventResponseStatus,
-  copyToClipboard,
-} from "@agreeto/calendar-core";
+import { convertToDate, copyToClipboard } from "@agreeto/calendar-core";
+import { EventResponseStatus } from "@agreeto/api/types";
 import Availability from "./availability";
 import { Attendees } from "./attendees";
 import { IoClose, IoCheckmarkCircle } from "react-icons/io5";

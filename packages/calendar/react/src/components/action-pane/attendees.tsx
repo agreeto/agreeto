@@ -3,11 +3,7 @@ import uniqBy from "lodash/uniqBy";
 import { type FC } from "react";
 import { useCallback, useEffect, useState } from "react";
 import OutsideClickHandler from "react-outside-click-handler";
-import {
-  EventResponseStatus,
-  getNextColor,
-  Membership,
-} from "@agreeto/calendar-core";
+import { getNextColor } from "@agreeto/calendar-core";
 import { Spinner } from "@agreeto/ui";
 import { AiOutlineSearch } from "react-icons/ai";
 import { SelectedAttendeeCard } from "./selected-attendee-card";
@@ -15,6 +11,7 @@ import { UnknownAttendeeCard } from "./unknown-attendee-card";
 import { Float } from "@headlessui-float/react";
 import { trpc } from "../../utils/trpc";
 import { type RouterInputs, type RouterOutputs } from "@agreeto/api";
+import { EventResponseStatus, Membership } from "@agreeto/api/types";
 import { useEventStore } from "../../utils/store";
 import clsx from "clsx";
 

@@ -18,7 +18,7 @@ import { getTimezoneOffset } from "date-fns-tz";
 import "./calendar-item.scss";
 import type { FC } from "react";
 import { useEffect, useRef } from "react";
-import { EventResponseStatus } from "@agreeto/calendar-core";
+import { EventResponseStatus } from "@agreeto/api/types";
 import { eventMocks } from "./mock";
 import { ulid } from "ulid";
 import {

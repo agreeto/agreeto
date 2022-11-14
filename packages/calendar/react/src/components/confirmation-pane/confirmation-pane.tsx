@@ -4,7 +4,7 @@ import closeIcon from "../../assets/close.svg";
 import backIcon from "../../assets/double-arrow-left.svg";
 
 import { Attendees } from "./../action-pane/attendees";
-import { EventResponseStatus } from "@agreeto/calendar-core";
+import { EventResponseStatus } from "@agreeto/api/types";
 // TODO: This modal should come from `ui` package. I disabled it because we are having trouble with tailwindcss
 // on `ext` app when we import the modal from the `ui` package
 import { Modal } from "../modal";
