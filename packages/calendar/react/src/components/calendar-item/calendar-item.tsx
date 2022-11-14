@@ -42,16 +42,10 @@ type Event = RouterOutputs["event"]["all"][number];
 type Props = {
   events?: Event[];
   onRefSettled: (ref: any) => void;
-  directoryUsersWithEvents: RouterOutputs["event"]["directoryUsers"];
   onPageChange?: (page: string) => void;
 };
 
-const CalendarItem: FC<Props> = ({
-  events,
-  onRefSettled,
-  directoryUsersWithEvents,
-  onPageChange,
-}) => {
+const CalendarItem: FC<Props> = ({ events, onRefSettled, onPageChange }) => {
   const ref = useRef<any>(null);
   const enableMock = false;
 
@@ -67,6 +61,9 @@ const CalendarItem: FC<Props> = ({
   const setCheckedEvent = useEventStore((s) => s.setCheckedEvent);
   const hoveredEvent = useEventStore((s) => s.hoveredEvent);
   const eventGroupId = useEventStore((s) => s.selectedEventGroupId);
+  const directoryUsersWithEvents = useEventStore(
+    (s) => s.directoryUsersWithEvents,
+  );
 
   const timeZones = useTZStore((s) => s.timeZones);
   const primaryTimeZone = getPrimaryTimeZone(timeZones);
@@ -299,9 +296,8 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
         headerToolbar={false}
         weekends={showWeekends}
         eventClick={({ event }) => {
-          console.log("eventClick", event);
           if (event.extendedProps.isAgreeToEvent) {
-            selectEventGroup(event.extendedProps?.eventGroupId);
+            selectEventGroup(event.extendedProps?.id);
             setCheckedEvent(event.extendedProps?.event);
             changePane("confirmation");
           }
@@ -316,6 +312,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
         nowIndicator
         timeZone={primaryTimeZone}
         eventOrder={(e1: any, e2: any) => {
+          // TODO: Why doesn't FullCalendar's type match here?
           if (e1?.extendedProps?.new) {
             return 1;
           }

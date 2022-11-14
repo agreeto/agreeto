@@ -27,7 +27,6 @@ export const useIsAuthed = () => {
   // Validate the token on server
   React.useEffect(() => {
     storage.get("accessToken").then((token) => {
-      console.log(token);
       validateToken.mutate({ token });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,40 +1,31 @@
-import { type FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import closeIcon from "../../assets/close.svg";
 import backIcon from "../../assets/double-arrow-left.svg";
 
 import { Attendees } from "./../action-pane/attendees";
 import { EventResponseStatus } from "@agreeto/api/types";
-// TODO: This modal should come from `ui` package. I disabled it because we are having trouble with tailwindcss
-// on `ext` app when we import the modal from the `ui` package
-import { Modal } from "../modal";
+import { Modal } from "@agreeto/ui";
 
-import { type RouterInputs, type RouterOutputs } from "@agreeto/api";
+import { type RouterInputs } from "@agreeto/api";
 import { trpc } from "../../utils/trpc";
 import { ConferenceElement } from "./conference-element.new";
 import { EventElement } from "./event-element.new";
 import { Title } from "./title.new";
 import { useEventStore, useViewStore } from "../../utils/store";
 
-type DirectoryUser = RouterOutputs["event"]["directoryUsers"][number];
-
-type Props = {
+const ConfirmationPane: React.FC<{
   onClose?: () => void;
-
+  // Passed as props here instead of grabbing it from store
+  // since we need it to be non-nullable
   eventGroupId: string;
-  directoryUsersWithEvents: DirectoryUser[];
-  onDirectoryUsersWithEventsChange: (users: DirectoryUser[]) => void;
-};
-
-const ConfirmationPane: FC<Props> = ({
-  onClose,
-  eventGroupId,
-  directoryUsersWithEvents,
-  onDirectoryUsersWithEventsChange,
-}) => {
+}> = ({ onClose, eventGroupId }) => {
   const utils = trpc.useContext();
 
   const checkedEvent = useEventStore((s) => s.checkedEvent);
+  const directoryUsersWithEvents = useEventStore(
+    (s) => s.directoryUsersWithEvents,
+  );
 
   const changePane = useViewStore((s) => s.changePane);
 
@@ -219,10 +210,6 @@ const ConfirmationPane: FC<Props> = ({
             <Attendees
               unknownAttendees={unknownAttendees}
               onUnknownAttendeesChange={setUnknownAttendees}
-              directoryUsersWithEvents={directoryUsersWithEvents}
-              onDirectoryUsersWithEventsChange={
-                onDirectoryUsersWithEventsChange
-              }
               eventGroup={eventGroup}
             />
           </div>

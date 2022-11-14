@@ -3,7 +3,6 @@ import uniqBy from "lodash/uniqBy";
 import { type FC } from "react";
 import { useCallback, useEffect, useState } from "react";
 import OutsideClickHandler from "react-outside-click-handler";
-import { getNextColor } from "@agreeto/calendar-core";
 import { Spinner } from "@agreeto/ui";
 import { AiOutlineSearch } from "react-icons/ai";
 import { SelectedAttendeeCard } from "./selected-attendee-card";
@@ -16,24 +15,17 @@ import { useEventStore } from "../../utils/store";
 import clsx from "clsx";
 
 type Props = {
-  directoryUsersWithEvents: RouterOutputs["event"]["directoryUsers"];
-
-  onDirectoryUsersWithEventsChange: (
-    users: RouterOutputs["event"]["directoryUsers"],
-  ) => void;
   unknownAttendees: RouterInputs["eventGroup"]["create"]["events"][number]["attendees"];
-
   onUnknownAttendeesChange: (
     attendees: RouterInputs["eventGroup"]["create"]["events"][number]["attendees"],
   ) => void;
+
   eventGroup?: RouterOutputs["eventGroup"]["byId"];
 
   onPageChange?: (page: string) => void;
 };
 
 export const Attendees: FC<Props> = ({
-  directoryUsersWithEvents,
-  onDirectoryUsersWithEventsChange,
   unknownAttendees,
   onUnknownAttendeesChange,
   eventGroup,
@@ -50,6 +42,9 @@ export const Attendees: FC<Props> = ({
     search: "",
   });
 
+  const setDirectoryUsersWithEvents = useEventStore(
+    (s) => s.setDirectoryUsersWithEvents,
+  );
   const period = useEventStore((s) => s.period);
 
   const { data: user } = trpc.user.me.useQuery();
@@ -84,17 +79,20 @@ export const Attendees: FC<Props> = ({
   }, [eventGroup]);
 
   // Get directory users with events and then assign color to each
-  trpc.event.directoryUsers.useQuery(directoryUserEventParams, {
-    keepPreviousData: true,
-    enabled: !isFree,
-    onSuccess: (data) => {
-      const userEventsWithColors = data.map((u, idx) => ({
-        ...u,
-        color: getNextColor(idx),
-      }));
-      onDirectoryUsersWithEventsChange(userEventsWithColors);
+  const { data: directoryUsersWithEvents } = trpc.event.directoryUsers.useQuery(
+    directoryUserEventParams,
+    {
+      keepPreviousData: true,
+      enabled: !isFree,
+      onSuccess(data) {
+        // set query result to global store
+        // kinda hacky to share the state between two state managers
+        // like this, can everyone which needs this data get it by querying it?
+        setDirectoryUsersWithEvents(data);
+      },
     },
-  });
+  );
+
   // Fetch directory users from providers
   const { data: directoryUsers, isFetching: isLoadingUsers } =
     trpc.user.getFriends.useQuery(attendeeParams, {
@@ -185,12 +183,13 @@ export const Attendees: FC<Props> = ({
 
       <div className="max-h-36 space-y-1 overflow-auto py-1">
         {/* Selected attendees */}
-        {directoryUsersWithEvents.map((attendee) => (
+        {directoryUsersWithEvents?.map((attendee) => (
           <SelectedAttendeeCard
             {...{
               key: attendee.id,
               id: attendee.id,
-              color: "red", // FIXME: Where does this come from?
+              // FIXME: Check optional color
+              color: attendee.color ?? "#0165FF",
               email: attendee.email,
               hideDeleteButton: !!eventGroup?.isSelectionDone,
               onDelete(id) {

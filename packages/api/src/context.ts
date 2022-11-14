@@ -27,8 +27,6 @@ export const createContextInner = async (opts: CreateContextOptions) => {
  **/
 export const createContext = async ({ req, res }: CreateNextContextOptions) => {
   const session = await getServerSession({ req, res });
-  console.log("session from trpc context");
-  console.dir({ session }, { depth: 2 });
 
   return await createContextInner({
     session: session,

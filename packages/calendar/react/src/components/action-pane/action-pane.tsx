@@ -11,11 +11,9 @@ import { Float } from "@headlessui-float/react";
 import OutsideClickHandler from "react-outside-click-handler";
 import { Spinner } from "@agreeto/ui";
 import { trpc } from "../../utils/trpc";
-import { type RouterInputs, type RouterOutputs } from "@agreeto/api";
+import { type RouterInputs } from "@agreeto/api";
 import { useEventStore } from "../../utils/store";
 import clsx from "clsx";
-
-type DirectoryUsers = RouterOutputs["event"]["directoryUsers"];
 
 const actionTypes = {
   "Copy and Close":
@@ -27,16 +25,12 @@ type ActionType = keyof typeof actionTypes;
 
 type Props = {
   onClose?: () => void;
-  directoryUsersWithEvents: DirectoryUsers;
-  onDirectoryUsersWithEventsChange: (users: DirectoryUsers) => void;
   onPageChange?: (page: string) => void;
   onPrimaryActionClick?: (type: ActionType) => void;
 };
 
 const ActionPane: FC<Props> = ({
   onClose,
-  directoryUsersWithEvents,
-  onDirectoryUsersWithEventsChange,
   onPageChange,
   onPrimaryActionClick,
 }) => {
@@ -45,6 +39,9 @@ const ActionPane: FC<Props> = ({
   const title = useEventStore((s) => s.title);
   const resetTitle = useEventStore((s) => s.resetTitle);
   const updateTitle = useEventStore((s) => s.updateTitle);
+  const directoryUsersWithEvents = useEventStore(
+    (s) => s.directoryUsersWithEvents,
+  );
 
   const selectedSlots = useEventStore((s) => s.selectedSlots);
   const clearSlots = useEventStore((s) => s.clearSlots);
@@ -290,10 +287,6 @@ const ActionPane: FC<Props> = ({
             <Attendees
               unknownAttendees={unknownAttendees}
               onUnknownAttendeesChange={setUnknownAttendees}
-              directoryUsersWithEvents={directoryUsersWithEvents}
-              onDirectoryUsersWithEventsChange={
-                onDirectoryUsersWithEventsChange
-              }
               onPageChange={onPageChange}
             />
           </div>

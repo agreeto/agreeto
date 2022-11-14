@@ -13,7 +13,6 @@ import ConfirmationPane from "./components/confirmation-pane";
 import { type PLATFORM } from "@agreeto/calendar-core";
 import { type PRIMARY_ACTION_TYPES } from "./utils/enums";
 import { trpc } from "./utils/trpc";
-import { type RouterOutputs } from "@agreeto/api";
 import {
   useCalendarStore,
   useEventStore,
@@ -30,8 +29,6 @@ type Props = {
   onPrimaryActionClick?: (type: PRIMARY_ACTION_TYPES) => void;
 };
 
-type DirectoryUser = RouterOutputs["event"]["directoryUsers"][number];
-
 const Calendar: React.FC<Props> = ({
   onClose,
   renderKey,
@@ -39,8 +36,10 @@ const Calendar: React.FC<Props> = ({
   onPageChange,
   onPrimaryActionClick: _primaryActionClick,
 }) => {
-  const utils = trpc.useContext();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [calendarRef, setCalendarRef] = useState<any>();
 
+  // Zustand
   const setFocusedDate = useCalendarStore((s) => s.setFocusedDate);
 
   const period = useEventStore((s) => s.period);
@@ -53,11 +52,8 @@ const Calendar: React.FC<Props> = ({
 
   const setTzDefaults = useTZStore((s) => s.setTimeZoneDefaults);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [calendarRef, setCalendarRef] = useState<any>();
-  const [directoryUsersWithEvents, setDirectoryUsersWithEvents] = useState<
-    DirectoryUser[]
-  >([]);
+  // trpc
+  const utils = trpc.useContext();
 
   const { data: events, isFetching: isFetchingEvents } =
     trpc.event.all.useQuery(period, { staleTime: 30 * 1000 });
@@ -156,7 +152,6 @@ const Calendar: React.FC<Props> = ({
           <CalendarItem
             events={events}
             onRefSettled={setCalendarRef}
-            directoryUsersWithEvents={directoryUsersWithEvents}
             onPageChange={onPageChange}
           />
         </div>
@@ -169,20 +164,13 @@ const Calendar: React.FC<Props> = ({
         }}
       >
         {openPane === "action" ? (
-          <ActionPane
-            onClose={onClose}
-            directoryUsersWithEvents={directoryUsersWithEvents}
-            onDirectoryUsersWithEventsChange={setDirectoryUsersWithEvents}
-            onPageChange={onPageChange}
-          />
+          <ActionPane onClose={onClose} onPageChange={onPageChange} />
         ) : (
           openPane === "confirmation" &&
           !!selectedEventGroupId && (
             <ConfirmationPane
               onClose={onClose}
               eventGroupId={selectedEventGroupId}
-              directoryUsersWithEvents={directoryUsersWithEvents}
-              onDirectoryUsersWithEventsChange={setDirectoryUsersWithEvents}
             />
           )
         )}

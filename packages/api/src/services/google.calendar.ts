@@ -87,8 +87,8 @@ export class GoogleCalendarService {
     // Fetch events
     const response = await this.calendarClient.events.list(params);
 
-    console.log("FROM GOOGLE");
-    console.dir(response.data.items, { depth: 4 });
+    // console.log("FROM GOOGLE");
+    // console.dir(response.data.items, { depth: 4 });
 
     return {
       rawData: response.data,

@@ -47,7 +47,6 @@ export const eventRouter = router({
           .map(async (account) => {
             const { service } = getCalendarService(account);
             const { events } = await service.getEvents(input);
-            console.log("events", events);
             return events.map((e) => ({ ...e, account }));
           }),
       );
@@ -239,6 +238,7 @@ export const eventRouter = router({
         users: z
           .object({
             id: z.string(),
+            color: z.string().nullish(),
             name: z.string(),
             surname: z.string(),
             email: z.string(),
@@ -287,6 +287,8 @@ export const eventRouter = router({
                       ...e,
                       account,
                     }));
+                    // FIXME: Assign random?
+                    foundUser.color = "#0165FF";
                   }
                 })
                 .catch((e) => console.error("Could not fetch user events", e)),

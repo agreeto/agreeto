@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal } from "../modal";
+import { Modal } from "@agreeto/ui";
 
 export const CreateEventModal: React.FC<{
   isOpen: boolean;

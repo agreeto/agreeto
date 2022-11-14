@@ -18,8 +18,6 @@ const location = new ReactLocation({
 export const App = () => {
   const { isAuthed, isAuthenticating } = useIsAuthed();
 
-  console.log("isAuthed", isAuthed);
-
   return (
     <Router routes={getRoutes()} location={location}>
       {isAuthenticating ? (

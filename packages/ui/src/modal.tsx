@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import React from "react";
 
 type Props = {
@@ -105,12 +106,20 @@ export const Modal: React.FC<Props> = ({
             {Boolean(primaryButton || cancelButton) && (
               <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                 {primaryButton && (
+                  // TODO: use button from ui lib
                   <button
                     onClick={primaryButton.onClick}
                     disabled={primaryButton.disabled}
-                    className={`button ml-3 ${
-                      primaryButton.type === "danger" ? "bg-red-600" : ""
-                    } ${primaryButton.className || ""}`}
+                    className={clsx(
+                      "mt-3 ml-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm",
+                      {
+                        "bg-red-600 hover:bg-red-500":
+                          primaryButton.type === "danger",
+                        "bg-primary hover:bg-primary/80":
+                          primaryButton.type === "primary",
+                      },
+                      primaryButton.className,
+                    )}
                   >
                     {primaryButton.text}
                   </button>
