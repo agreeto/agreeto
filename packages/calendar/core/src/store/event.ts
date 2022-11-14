@@ -1,6 +1,7 @@
+import create from "zustand/vanilla";
+import uniqBy from "lodash/uniqBy";
 import { type RouterOutputs } from "@agreeto/api";
 import { type EventInput } from "@fullcalendar/react";
-import create from "zustand/vanilla";
 
 type EventGroupEvent = RouterOutputs["eventGroup"]["byId"]["events"][number];
 type DirectoryUser = RouterOutputs["event"]["directoryUsers"][number];
@@ -16,6 +17,7 @@ export interface EventStore {
   hoveredEvent: EventGroupEvent | null;
   selectedEventGroupId: string | null;
   attendees: Attendee[];
+  unknownAttendees: Attendee[];
   directoryUsersWithEvents: DirectoryUser[];
 
   // Actions
@@ -29,7 +31,10 @@ export interface EventStore {
   setHoveredEvent: (event: EventGroupEvent | null) => void;
   selectEventGroup: (id: string | null) => void;
   addAttendee: (attendee: Attendee) => void;
+  addUnknownAttendee: (attendee: Attendee) => void;
   removeAttendee: (id: string) => void;
+  removeUnknownAttendee: (email: string) => void;
+  clearAttendees: () => void;
   setDirectoryUsersWithEvents: (users: DirectoryUser[]) => void;
 }
 
@@ -42,6 +47,7 @@ export const eventStore = create<EventStore>()((set) => ({
   hoveredEvent: null,
   selectedEventGroupId: null,
   attendees: [],
+  unknownAttendees: [],
   directoryUsersWithEvents: [],
 
   // Actions
@@ -112,6 +118,22 @@ export const eventStore = create<EventStore>()((set) => ({
     set((state) => ({
       attendees: state.attendees.filter((a) => a.id !== id),
     }));
+  },
+  addUnknownAttendee(attendee) {
+    set((state) => ({
+      unknownAttendees: uniqBy([...state.unknownAttendees, attendee], "email"),
+    }));
+  },
+  removeUnknownAttendee(email) {
+    set((state) => ({
+      unknownAttendees: state.unknownAttendees.filter((a) => a.email !== email),
+    }));
+  },
+  clearAttendees() {
+    set({
+      attendees: [],
+      unknownAttendees: [],
+    });
   },
   setDirectoryUsersWithEvents(users) {
     set({ directoryUsersWithEvents: users });

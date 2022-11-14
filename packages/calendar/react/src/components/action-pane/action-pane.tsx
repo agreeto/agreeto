@@ -2,7 +2,6 @@ import { type FC } from "react";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { convertToDate, copyToClipboard } from "@agreeto/calendar-core";
-import { EventResponseStatus } from "@agreeto/api/types";
 import Availability from "./availability";
 import { Attendees } from "./attendees";
 import { IoClose, IoCheckmarkCircle } from "react-icons/io5";
@@ -11,7 +10,6 @@ import { Float } from "@headlessui-float/react";
 import OutsideClickHandler from "react-outside-click-handler";
 import { Spinner } from "@agreeto/ui";
 import { trpc } from "../../utils/trpc";
-import { type RouterInputs } from "@agreeto/api";
 import { useEventStore } from "../../utils/store";
 import clsx from "clsx";
 
@@ -39,16 +37,13 @@ const ActionPane: FC<Props> = ({
   const title = useEventStore((s) => s.title);
   const resetTitle = useEventStore((s) => s.resetTitle);
   const updateTitle = useEventStore((s) => s.updateTitle);
-  const directoryUsersWithEvents = useEventStore(
-    (s) => s.directoryUsersWithEvents,
-  );
+  const attendees = useEventStore((s) => s.attendees);
+  const unknownAttendees = useEventStore((s) => s.unknownAttendees);
+  const clearAttendees = useEventStore((s) => s.clearAttendees);
 
   const selectedSlots = useEventStore((s) => s.selectedSlots);
   const clearSlots = useEventStore((s) => s.clearSlots);
 
-  const [unknownAttendees, setUnknownAttendees] = useState<
-    RouterInputs["eventGroup"]["create"]["events"][number]["attendees"]
-  >([]);
   const [showActionTypesPopup, setShowActionTypesPopup] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [showCreatingSpinner, setShowCreatingSpinner] = useState(false);
@@ -59,7 +54,7 @@ const ActionPane: FC<Props> = ({
   const { mutate: createEventGroup, isLoading: isCreatingEventGroup } =
     trpc.eventGroup.create.useMutation({
       onSuccess() {
-        setUnknownAttendees([]);
+        clearAttendees();
         utils.event.all.invalidate();
 
         copyToClipboard(selectedSlots, preference);
@@ -130,16 +125,7 @@ const ActionPane: FC<Props> = ({
           title: slot.title || "",
           startDate: convertToDate(slot.start),
           endDate: convertToDate(slot.end),
-          attendees: unknownAttendees.concat(
-            directoryUsersWithEvents.map((u) => ({
-              id: u.id,
-              name: u.name,
-              surname: u.surname,
-              email: u.email,
-              provider: u.provider,
-              responseStatus: EventResponseStatus.NEEDS_ACTION,
-            })),
-          ),
+          attendees: [...attendees, ...unknownAttendees],
         };
       }),
     });
@@ -284,11 +270,7 @@ const ActionPane: FC<Props> = ({
 
           {/* Attendees */}
           <div className="pt-8">
-            <Attendees
-              unknownAttendees={unknownAttendees}
-              onUnknownAttendeesChange={setUnknownAttendees}
-              onPageChange={onPageChange}
-            />
+            <Attendees onPageChange={onPageChange} />
           </div>
 
           {/* Availability */}

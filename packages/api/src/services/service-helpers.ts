@@ -28,3 +28,18 @@ export const getCalendarService = (account: Account, event?: Event) => {
       });
   }
 };
+
+/**
+ * These two are used when we query the google calendar API since it screams
+ * when there are `-` in the query string.
+ * - When we query google we remove the `-` and replace them with ``
+ * - When we get events from google we add the `-` back (if event is an AgreeTo event)
+ */
+export const removeDashSeparator = (id: string) => id.replace(/-/g, "");
+export const addDashSeparator = (id: string, isAgreeTo: boolean) => {
+  if (!isAgreeTo) return id;
+  return `${id.slice(0, 8)}-${id.slice(8, 12)}-${id.slice(12, 16)}-${id.slice(
+    16,
+    20,
+  )}-${id.slice(20)}`;
+};

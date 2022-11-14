@@ -1,5 +1,3 @@
-import uniqBy from "lodash/uniqBy";
-import React, { type FC } from "react";
 import { useState } from "react";
 import OutsideClickHandler from "react-outside-click-handler";
 import { Spinner } from "@agreeto/ui";
@@ -8,7 +6,7 @@ import { SelectedAttendeeCard } from "./selected-attendee-card";
 import { UnknownAttendeeCard } from "./unknown-attendee-card";
 import { Float } from "@headlessui-float/react";
 import { trpc } from "../../utils/trpc";
-import { type RouterInputs, type RouterOutputs } from "@agreeto/api";
+import { type RouterOutputs } from "@agreeto/api";
 import { EventResponseStatus, Membership } from "@agreeto/api/types";
 import clsx from "clsx";
 import { DebouncedInput } from "./debounced-input";
@@ -16,29 +14,21 @@ import { z } from "zod";
 import { toast } from "react-toastify";
 import { useEventStore } from "../../utils/store";
 
-type Props = {
-  unknownAttendees: RouterInputs["eventGroup"]["create"]["events"][number]["attendees"];
-  onUnknownAttendeesChange: (
-    attendees: RouterInputs["eventGroup"]["create"]["events"][number]["attendees"],
-  ) => void;
-
+export const Attendees: React.FC<{
   eventGroup?: RouterOutputs["eventGroup"]["byId"];
 
   onPageChange?: (page: string) => void;
-};
-
-export const Attendees: FC<Props> = ({
-  unknownAttendees,
-  onUnknownAttendeesChange,
-  eventGroup,
-  onPageChange,
-}) => {
+}> = ({ eventGroup, onPageChange }) => {
   const [showProTooltip, setShowProTooltip] = useState(false);
   const [isAttendeePopupOpen, setIsAttendeePopupOpen] = useState(false);
   const [attendeeText, setAttendeeText] = useState("");
+
   const attendees = useEventStore((s) => s.attendees);
+  const unknownAttendees = useEventStore((s) => s.unknownAttendees);
   const addAttendee = useEventStore((s) => s.addAttendee);
+  const addUnknownAttendee = useEventStore((s) => s.addUnknownAttendee);
   const removeAttendee = useEventStore((s) => s.removeAttendee);
+  const removeUnknownAttendee = useEventStore((s) => s.removeUnknownAttendee);
 
   const { data: user } = trpc.user.me.useQuery();
   const isFree = user?.membership === Membership.FREE;
@@ -95,17 +85,15 @@ export const Attendees: FC<Props> = ({
           return;
         }
         // Add attendee to unknown attendees
-        const newAttendee = {
+        addUnknownAttendee({
           id: attendeeText,
           name: attendeeText,
           surname: "",
           email: attendeeText,
+          color: "#C4C4C4",
           provider: "google",
           responseStatus: EventResponseStatus.NEEDS_ACTION,
-        };
-        onUnknownAttendeesChange(
-          uniqBy([...unknownAttendees, newAttendee], "email"),
-        );
+        });
         setAttendeeText("");
       }}
     >
@@ -144,11 +132,7 @@ export const Attendees: FC<Props> = ({
           <UnknownAttendeeCard
             key={email}
             email={email}
-            onDelete={(email) => {
-              onUnknownAttendeesChange([
-                ...unknownAttendees.filter((e) => e.email !== email),
-              ]);
-            }}
+            onDelete={(email) => removeUnknownAttendee(email)}
           />
         ))}
       </div>

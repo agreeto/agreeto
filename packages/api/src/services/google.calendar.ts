@@ -2,6 +2,8 @@ import { type Event, EventResponseStatus, type Attendee } from "@agreeto/db";
 import { type calendar_v3, google } from "googleapis";
 import { type ICreateEvent, type IGetEvents, type IUpdateEvent } from "./types";
 
+import { addDashSeparator, removeDashSeparator } from "./service-helpers";
+
 export class GoogleCalendarService {
   private accessToken: string;
   private refreshToken: string;
@@ -44,15 +46,16 @@ export class GoogleCalendarService {
         : EventResponseStatus.NEEDS_ACTION;
     };
 
+    const isAgreeToEvent =
+      extendedProperties?.private?.isAgreeToEvent === "true";
+
     return {
-      id: id!,
+      id: addDashSeparator(id!, isAgreeToEvent),
       title: summary || "-",
       description: description || "",
       startDate: new Date(start!.dateTime!),
       endDate: new Date(end!.dateTime!),
-      isAgreeToEvent: Boolean(
-        extendedProperties?.private?.isAgreeToEvent === "true",
-      ),
+      isAgreeToEvent,
       attendees: !attendees
         ? []
         : attendees.map((a) => ({
@@ -87,9 +90,6 @@ export class GoogleCalendarService {
     // Fetch events
     const response = await this.calendarClient.events.list(params);
 
-    // console.log("FROM GOOGLE");
-    // console.dir(response.data.items, { depth: 4 });
-
     return {
       rawData: response.data,
       events: this.toEvents(response.data.items || []),
@@ -109,7 +109,8 @@ export class GoogleCalendarService {
       sendNotifications: true,
       sendUpdates: "all",
       requestBody: {
-        id,
+        // REVIEW: Google Calendar API complains when the `-` is present
+        id: removeDashSeparator(id!),
         summary: title,
         start: {
           dateTime: startDate.toISOString(),
@@ -141,7 +142,7 @@ export class GoogleCalendarService {
   ) {
     const params: calendar_v3.Params$Resource$Events$Patch = {
       calendarId: "primary",
-      eventId: id,
+      eventId: addDashSeparator(id, true),
       sendNotifications: true,
       sendUpdates: "all",
       requestBody: {},
@@ -204,7 +205,7 @@ export class GoogleCalendarService {
     // Generate the query params
     const params: calendar_v3.Params$Resource$Events$Delete = {
       calendarId: "primary",
-      eventId: id,
+      eventId: addDashSeparator(id, true),
     };
 
     // Fetch events

@@ -14,7 +14,7 @@ datasource db {
 // Start Mostly Next-Auth.js
 // ======================================
 model Account {
-    id                String       @id @default(cuid())
+    id                String       @id @default(uuid())
     userId            String
     colorId           String
     // Email is optional cause it's not set at login, but with a custom event
@@ -44,7 +44,7 @@ model Account {
 }
 
 model AccountColor {
-    id        String @id @default(cuid())
+    id        String @id @default(uuid())
     color     String
     darkColor String
     order     Int
@@ -55,7 +55,7 @@ model AccountColor {
 }
 
 model Session {
-    id           String   @id @default(cuid())
+    id           String   @id @default(uuid())
     sessionToken String   @unique
     userId       String
     expires      DateTime
@@ -63,7 +63,7 @@ model Session {
 }
 
 model User {
-    id                       String      @id @default(cuid())
+    id                       String      @id @default(uuid())
     name                     String?
     email                    String?     @unique
     emailVerified            DateTime?
@@ -133,7 +133,7 @@ enum Membership {
 // ======================================
 
 model Preference {
-    id             String   @id @default(cuid())
+    id             String   @id @default(uuid())
     userId         String   @unique
     formatLanguage Language @default(EN)
 
@@ -144,7 +144,7 @@ model Preference {
 }
 
 model EventGroup {
-    id              String  @id @default(cuid())
+    id              String  @id @default(uuid())
     userId          String
     accountId       String
     title           String
@@ -161,7 +161,7 @@ model EventGroup {
 }
 
 model Event {
-    id             String            @id @default(cuid())
+    id             String            @id @default(uuid())
     userId         String
     microsoftId    String?
     eventGroupId   String
@@ -188,7 +188,7 @@ model Event {
 }
 
 model Attendee {
-    id             String              @id @default(cuid())
+    id             String              @id @default(uuid())
     eventId        String?
     email          String
     name           String
@@ -201,7 +201,7 @@ model Attendee {
 }
 
 model Payment {
-    id                  String     @id @default(cuid())
+    id                  String     @id @default(uuid())
     email               String
     userId              String
     eventId             String

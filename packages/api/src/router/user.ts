@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { router, publicProcedure, privateProcedure } from "../trpc";
 import { getGoogleUsers } from "../external/google";
-import { Membership } from "@agreeto/db";
+import { EventResponseStatus, Membership } from "@agreeto/db";
 
 export const userRouter = router({
   // TESTING PROCEDURE
@@ -107,6 +107,7 @@ export const userRouter = router({
         .map((u) => ({
           ...u,
           color: getAvailableColor(),
+          responseStatus: EventResponseStatus.TENTATIVE as EventResponseStatus,
         }))
         .filter((u) => !!u);
 

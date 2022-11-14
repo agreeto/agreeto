@@ -100,12 +100,21 @@ export const eventGroupRouter = router({
               startDate: event.startDate,
               endDate: event.endDate,
               title: event.title,
-              attendees: event.attendees.length ? event.attendees : undefined,
+              attendees: {
+                createMany: {
+                  data: event.attendees.map((a) => ({
+                    ...a,
+                    id: undefined,
+                  })),
+                },
+              },
               deletedAt: null,
             })),
           },
         },
       });
+
+      console.log("created group", group.id);
 
       if (input.createBlocker) {
         // Create actual events in calendars if createBlocer is true

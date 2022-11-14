@@ -46,12 +46,18 @@ export const eventRouter = router({
           .map(async (account) => {
             const { service } = getCalendarService(account);
             const { events } = await service.getEvents(input);
-            return events.map((e) => ({ ...e, account }));
+            return events.map((e) => ({
+              ...e,
+              account,
+              color: account.color.color,
+            }));
           }),
       );
 
       // Merge events
-      const allEvents = [...userEvents, ...calendarEvents.flat()];
+      const allEvents = [...userEvents, ...calendarEvents.flat()].map((e) => ({
+        ...e,
+      }));
 
       // Remove duplicate events
       const addedEvents = new Map<string | undefined, boolean>();
@@ -83,6 +89,7 @@ export const eventRouter = router({
         attendees: z.array(
           z.object({
             id: z.string(),
+            color: z.string(),
             name: z.string(),
             surname: z.string(),
             email: z.string(),
@@ -90,7 +97,6 @@ export const eventRouter = router({
             responseStatus: z.nativeEnum(EventResponseStatus),
           }),
         ),
-        // .optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -122,6 +128,16 @@ export const eventRouter = router({
         });
       }
 
+      // Disconnect all attendees so that we can add the new/updated ones
+      await ctx.prisma.event.update({
+        where: { id: event.id },
+        data: {
+          attendees: {
+            set: [],
+          },
+        },
+      });
+
       const [updatedEvent, _, eventGroup] = await Promise.all([
         // Update event
         ctx.prisma.event.update({
@@ -130,7 +146,16 @@ export const eventRouter = router({
             isSelected: true,
             title: input.title,
             hasConference: input.addConference,
-            // attendees: input.attendees,
+            attendees: {
+              connectOrCreate: input.attendees.map((a) => ({
+                where: {
+                  id: a.id,
+                },
+                create: {
+                  ...a,
+                },
+              })),
+            },
           },
         }),
         // Delete all other events in the group
@@ -144,7 +169,6 @@ export const eventRouter = router({
           data: {
             deletedAt: new Date(),
             title: input.title,
-            // attendees: input.attendees,
           },
         }),
         // Update event group

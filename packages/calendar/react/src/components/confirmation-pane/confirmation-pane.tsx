@@ -5,7 +5,6 @@ import { Attendees } from "./../action-pane/attendees";
 import { EventResponseStatus } from "@agreeto/api/types";
 import { Modal } from "@agreeto/ui";
 
-import { type RouterInputs } from "@agreeto/api";
 import { trpc } from "../../utils/trpc";
 import { ConferenceElement } from "./conference-element";
 import { EventElement } from "./event-element";
@@ -25,15 +24,13 @@ const ConfirmationPane: React.FC<{
   const directoryUsersWithEvents = useEventStore(
     (s) => s.directoryUsersWithEvents,
   );
+  const unknownAttendees = useEventStore((s) => s.unknownAttendees);
 
   const changePane = useViewStore((s) => s.changePane);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [addConference, setAddConference] = useState(false);
   const [title, setTitle] = useState("");
-  const [unknownAttendees, setUnknownAttendees] = useState<
-    RouterInputs["eventGroup"]["create"]["events"][number]["attendees"]
-  >([]);
 
   useEffect(() => {
     setAddConference(false);
@@ -117,6 +114,7 @@ const ConfirmationPane: React.FC<{
       attendees: unknownAttendees.concat(
         directoryUsersWithEvents.map((u) => ({
           id: u.id,
+          color: u.color,
           name: u.name,
           surname: u.surname,
           email: u.email,
@@ -204,11 +202,7 @@ const ConfirmationPane: React.FC<{
 
           {/* Attendees */}
           <div className="pt-4">
-            <Attendees
-              unknownAttendees={unknownAttendees}
-              onUnknownAttendeesChange={setUnknownAttendees}
-              eventGroup={eventGroup}
-            />
+            <Attendees eventGroup={eventGroup} />
           </div>
         </div>
 

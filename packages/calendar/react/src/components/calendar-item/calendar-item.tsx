@@ -86,6 +86,8 @@ const CalendarItem: FC<Props> = ({ events, onRefSettled, onPageChange }) => {
     },
   );
 
+  console.log(selectedSlots);
+
   useEffect(() => {
     if (ref) onRefSettled(ref);
   }, [ref]);
@@ -154,7 +156,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
         {extendedProps?.new && (
           <div
             className={
-              "text-3xs-05 bg-event-block absolute flex h-4 w-4 cursor-pointer items-center justify-center rounded-full text-white"
+              "absolute flex h-4 w-4 cursor-pointer items-center justify-center rounded-full bg-primary text-white"
             }
             style={{
               top: extendedProps?.new ? "-10px" : "-8px",
@@ -164,7 +166,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
               deleteSlot(event.toJSON());
             }}
           >
-            X
+            ✕
           </div>
         )}
       </div>
@@ -241,7 +243,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
         start: startDate,
         end: endDate,
         backgroundColor: isDeclined ? "white" : backgroundColor,
-        textColor: textColor,
+        textColor: "#000" ?? textColor,
         borderColor: isDeclined ? textColor : "transparent",
         extendedProps: {
           isDeclined,
@@ -261,7 +263,6 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
           title: title,
           start: startDate,
           end: endDate,
-          // FIXME: Color
           backgroundColor: color,
           textColor: "white",
           borderColor: "transparent",
@@ -309,7 +310,8 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
         weekends={showWeekends}
         eventClick={({ event }) => {
           if (event.extendedProps.isAgreeToEvent) {
-            selectEventGroup(event.extendedProps?.id);
+            console.log("selected event", event);
+            selectEventGroup(event.extendedProps?.eventGroupId);
             setCheckedEvent(event.extendedProps?.event);
             changePane("confirmation");
           }
