@@ -17,14 +17,16 @@ export const signOut = async () => {
   // })
 
   // finally, log the browser session out as well
-  window.open(`http://localhost:3000/auth/signout`);
+  window.open(`${process.env.PLASMO_PUBLIC_WEB_URL}/auth/signout`);
 };
 
 const signIn = () => {
   window.open(
-    `http://localhost:3000/api/auth/signin?${new URLSearchParams({
-      callbackUrl: `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/extension`,
-    })}`,
+    `${process.env.PLASMO_PUBLIC_WEB_URL}/api/auth/signin?${new URLSearchParams(
+      {
+        callbackUrl: `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/extension`,
+      },
+    )}`,
   );
 };
 
