@@ -8,7 +8,7 @@ import {
 } from "@agreeto/calendar-core";
 import Availability from "./availability";
 import { Attendees } from "./attendees";
-import { IoCloseCircle, IoCheckmarkCircle } from "react-icons/io5";
+import { IoClose, IoCheckmarkCircle } from "react-icons/io5";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { Float } from "@headlessui-float/react";
 import OutsideClickHandler from "react-outside-click-handler";
@@ -249,20 +249,23 @@ const ActionPane: FC<Props> = ({
         <div>
           {/* Close icon */}
           {(onClose || true) && (
-            <button className="flex justify-end" onClick={handleClose}>
-              <IoCloseCircle className="h-8 w-8 cursor-pointer text-red-600" />
-            </button>
+            <div className="flex flex-1 justify-end">
+              <button
+                className="cursor-pointer rounded bg-red-500 p-1 hover:bg-red-600"
+                onClick={handleClose}
+              >
+                <IoClose className="h-6 w-6 text-white" />
+              </button>
+            </div>
           )}
 
           {/* Title input */}
-          <div className="flex justify-end pt-8">
-            <input
-              className="input input-big w-full"
-              placeholder="Add a title"
-              value={title}
-              onChange={(e) => updateTitle(e.target.value)}
-            />
-          </div>
+          <input
+            className="mt-6 w-full border-b-2 border-gray-400 bg-transparent px-2 text-xl outline-none hover:border-primary focus:border-primary"
+            placeholder="Add a title"
+            value={title}
+            onChange={(e) => updateTitle(e.target.value)}
+          />
 
           {/* Attendees */}
           <div className="pt-8">
