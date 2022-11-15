@@ -2,8 +2,6 @@ import { useState } from "react";
 import OutsideClickHandler from "react-outside-click-handler";
 import { Spinner } from "@agreeto/ui";
 import { AiOutlineSearch } from "react-icons/ai";
-import { SelectedAttendeeCard } from "./selected-attendee-card";
-import { UnknownAttendeeCard } from "./unknown-attendee-card";
 import { Float } from "@headlessui-float/react";
 import { trpc } from "../../utils/trpc";
 import { type RouterOutputs } from "@agreeto/api";
@@ -13,6 +11,105 @@ import { DebouncedInput } from "./debounced-input";
 import { z } from "zod";
 import { toast } from "react-toastify";
 import { useEventStore } from "../../utils/store";
+import { BiTrash } from "react-icons/bi";
+
+const SelectedAttendeeCard: React.FC<{
+  color: string;
+  email: string;
+  deleteAttendee: () => void;
+  hideDeleteButton: boolean;
+}> = ({ color, email, deleteAttendee, hideDeleteButton }) => {
+  return (
+    <div className="group flex rounded px-2 py-1 text-sm text-gray-900 hover:bg-gray-200">
+      <div className="flex w-full items-center justify-between space-x-2">
+        {/* Color and email */}
+        <div className="flex items-center space-x-2">
+          <div
+            className="h-3 w-3 rounded-full"
+            style={{ backgroundColor: color }}
+          />
+          <div className="text-xs">{email}</div>
+        </div>
+
+        {/* Delete button */}
+        {!hideDeleteButton && (
+          <button
+            onClick={deleteAttendee}
+            className="w-3 cursor-pointer opacity-0 group-hover:opacity-100"
+          >
+            <BiTrash className="h-full text-gray-900 hover:text-gray-600" />
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const AddUnknownAttendee: React.FC<{ text: string; clearText: () => void }> = ({
+  text,
+  clearText,
+}) => {
+  const addUnknownAttendee = useEventStore((s) => s.addUnknownAttendee);
+  return (
+    <div
+      className="cursor-pointer px-3 py-1 text-xs text-gray-600 hover:bg-gray-200"
+      onClick={() => {
+        // Check if email is valid, else show error-toast
+        if (!z.string().email().safeParse(text).success) {
+          toast("Enter a valid email", {
+            position: "bottom-center",
+            hideProgressBar: true,
+            autoClose: 2000,
+            type: "error",
+          });
+          return;
+        }
+        // Add attendee to unknown attendees
+        addUnknownAttendee({
+          id: text,
+          name: text,
+          surname: "",
+          email: text,
+          color: "#C4C4C4",
+          provider: "google",
+          responseStatus: EventResponseStatus.NEEDS_ACTION,
+        });
+
+        clearText();
+      }}
+    >
+      + Add {text}
+    </div>
+  );
+};
+
+/** Card rendered for each response from the search query */
+const AttendeeOptionCard: React.FC<{
+  user?: RouterOutputs["user"]["getFriends"][number];
+  onSelect: () => void;
+}> = ({ user, onSelect }) => {
+  const attendees = useEventStore((s) => s.attendees);
+  const addAttendee = useEventStore((s) => s.addAttendee);
+
+  if (!user) return null;
+
+  const alreadySelected = attendees.some((a) => a.id === user.id);
+  // Do not render if already selected
+  if (alreadySelected) return null;
+
+  return (
+    <div
+      className="cursor-pointer px-3 py-1 text-xs text-gray-600 hover:bg-gray-200"
+      key={user.id}
+      onClick={() => {
+        addAttendee(user);
+        onSelect();
+      }}
+    >
+      {user.email}
+    </div>
+  );
+};
 
 export const Attendees: React.FC<{
   eventGroup?: RouterOutputs["eventGroup"]["byId"];
@@ -25,8 +122,6 @@ export const Attendees: React.FC<{
 
   const attendees = useEventStore((s) => s.attendees);
   const unknownAttendees = useEventStore((s) => s.unknownAttendees);
-  const addAttendee = useEventStore((s) => s.addAttendee);
-  const addUnknownAttendee = useEventStore((s) => s.addUnknownAttendee);
   const removeAttendee = useEventStore((s) => s.removeAttendee);
   const removeUnknownAttendee = useEventStore((s) => s.removeUnknownAttendee);
 
@@ -44,63 +139,6 @@ export const Attendees: React.FC<{
       },
     );
 
-  /** Card rendered for each response from the search query */
-  const AttendeeOptionCard: React.FC<{
-    user?: RouterOutputs["user"]["getFriends"][number];
-  }> = ({ user }) => {
-    if (!user) return null;
-
-    const alreadySelected = attendees.some((a) => a.id === user.id);
-    // Do not render if already selected
-    if (alreadySelected) return null;
-
-    return (
-      <div
-        className="cursor-pointer px-3 py-1 text-xs text-gray-600 hover:bg-gray-200"
-        key={user.id}
-        onClick={() => {
-          addAttendee(user);
-          setIsAttendeePopupOpen(false);
-          setAttendeeText("");
-        }}
-      >
-        {user.email}
-      </div>
-    );
-  };
-
-  // Add unknown attendee to the users list by email
-  const AddUnknownAttendee: React.FC = () => (
-    <div
-      className="cursor-pointer px-3 py-1 text-xs text-gray-600 hover:bg-gray-200"
-      onClick={() => {
-        // Check if email is valid, else show error-toast
-        if (!z.string().email().safeParse(attendeeText).success) {
-          toast("Enter a valid email", {
-            position: "bottom-center",
-            hideProgressBar: true,
-            autoClose: 2000,
-            type: "error",
-          });
-          return;
-        }
-        // Add attendee to unknown attendees
-        addUnknownAttendee({
-          id: attendeeText,
-          name: attendeeText,
-          surname: "",
-          email: attendeeText,
-          color: "#C4C4C4",
-          provider: "google",
-          responseStatus: EventResponseStatus.NEEDS_ACTION,
-        });
-        setAttendeeText("");
-      }}
-    >
-      + Add {attendeeText}
-    </div>
-  );
-
   return (
     <div className="relative">
       {/* Title */}
@@ -116,23 +154,24 @@ export const Attendees: React.FC<{
           <SelectedAttendeeCard
             {...{
               key: attendee.id,
-              id: attendee.id,
               color: attendee.color,
               email: attendee.email,
               hideDeleteButton: !!eventGroup?.isSelectionDone,
-              onDelete(id) {
-                removeAttendee(id);
-              },
+              deleteAttendee: () => removeAttendee(attendee.id),
             }}
           />
         ))}
 
         {/* Unknown attendees */}
-        {unknownAttendees.map(({ email }) => (
-          <UnknownAttendeeCard
-            key={email}
-            email={email}
-            onDelete={(email) => removeUnknownAttendee(email)}
+        {unknownAttendees.map(({ email, color }) => (
+          <SelectedAttendeeCard
+            {...{
+              key: email,
+              color,
+              email,
+              hideDeleteButton: false,
+              deleteAttendee: () => removeUnknownAttendee(email),
+            }}
           />
         ))}
       </div>
@@ -221,12 +260,26 @@ export const Attendees: React.FC<{
               id="attendeePopup"
               className="absolute z-10 mt-1 w-full rounded bg-white py-1 shadow-xl"
             >
-              <>
-                {attendeeText && <AddUnknownAttendee />}
-                {directoryUsers?.map((user) => (
-                  <AttendeeOptionCard key={user.id} user={user} />
-                ))}
-              </>
+              {attendeeText && (
+                <AddUnknownAttendee
+                  {...{
+                    text: attendeeText,
+                    clearText: () => setAttendeeText(""),
+                  }}
+                />
+              )}
+              {directoryUsers?.map((user) => (
+                <AttendeeOptionCard
+                  {...{
+                    key: user.id,
+                    user,
+                    onSelect: () => {
+                      setAttendeeText("");
+                      setIsAttendeePopupOpen(false);
+                    },
+                  }}
+                />
+              ))}
             </div>
           )}
         </div>

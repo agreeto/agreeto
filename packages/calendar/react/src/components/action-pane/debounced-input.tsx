@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 
+/**
+ * Input Component that debounces the onChange event.
+ */
 export const DebouncedInput: React.FC<
   {
     value: string;
@@ -18,6 +21,7 @@ export const DebouncedInput: React.FC<
       onChange(value);
     }, debounce);
     return () => clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   return (
