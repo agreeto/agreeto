@@ -55,9 +55,7 @@ export const eventRouter = router({
       );
 
       // Merge events
-      const allEvents = [...userEvents, ...calendarEvents.flat()].map((e) => ({
-        ...e,
-      }));
+      const allEvents = [...userEvents, ...calendarEvents.flat()];
 
       // Remove duplicate events
       const addedEvents = new Map<string | undefined, boolean>();
