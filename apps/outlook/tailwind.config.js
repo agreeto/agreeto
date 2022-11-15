@@ -1,1 +1,3 @@
-module.exports = require("@agreeto/tailwind-config");
+module.exports = {
+  presets: [require("@agreeto/tailwind-config")],
+};
