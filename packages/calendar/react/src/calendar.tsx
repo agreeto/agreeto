@@ -111,21 +111,17 @@ const Calendar: React.FC<Props> = ({
   return (
     <div className="flex h-full">
       <div
-        className="p-8"
+        className="space-y-4 p-8"
         style={{
           width: openPane ? "calc(100% - 325px)" : "100%",
         }}
       >
-        <div className="w-full pb-4">
-          <ControlBar calendarRef={calendarRef} />
-        </div>
+        <ControlBar calendarRef={calendarRef} />
 
-        <div className="w-full">
-          <CalendarItem
-            onRefSettled={setCalendarRef}
-            onPageChange={onPageChange}
-          />
-        </div>
+        <CalendarItem
+          onRefSettled={setCalendarRef}
+          onPageChange={onPageChange}
+        />
       </div>
 
       <div

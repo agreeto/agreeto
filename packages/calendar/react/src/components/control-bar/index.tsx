@@ -40,7 +40,7 @@ export const ControlBar: React.FC<{
   };
 
   return (
-    <>
+    <div>
       <div className="flex justify-between">
         {/* Left part */}
         <div>
@@ -142,6 +142,6 @@ export const ControlBar: React.FC<{
       <div className="text-xs text-gray-600">
         {`(${getTimeZoneAbv(primaryTimeZone)}) ${primaryTimeZone}`}
       </div>
-    </>
+    </div>
   );
 };
