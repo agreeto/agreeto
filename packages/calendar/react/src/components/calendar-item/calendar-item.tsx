@@ -36,6 +36,9 @@ import {
   useTZStore,
   useViewStore,
 } from "../../utils/store";
+import resolveConfig from "tailwindcss/resolveConfig";
+
+import tailwindConfig from "../../../tailwind.config.js";
 
 type Event = RouterOutputs["event"]["all"][number];
 
@@ -126,9 +129,9 @@ const CalendarItem: FC<Props> = ({
       <div
         className={`h-full overflow-hidden ${
           extendedProps?.isDeclined ? "line-through" : ""
-        } ${shrinkFont ? "" : "p-1"} ${diff <= 15 ? "flex space-x-1" : ""}`}
+        } ${shrinkFont ? "" : "p-1"} ${diff <= 15 ? "flex space-x-1" : ""} `}
         style={{
-          color: event.textColor,
+          // color: event.textColor,
           lineHeight: shrinkFont ? 1 : undefined,
         }}
         title={`${event.title} 
@@ -217,23 +220,54 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
     events.forEach((event) => {
       const { id, title, startDate, endDate, account, attendees } = event;
 
-      const backgroundColor = account?.color.color;
-      const textColor = account?.color.darkColor;
+      // style the events
+      const fullConfig = resolveConfig({
+        ...tailwindConfig,
+        content: ["./src/**/*.{html,js,ts,tsx}"],
+      });
 
-      const isDeclined = attendees?.some(
-        (a) =>
+      // FIXME: make typesafe
+      const eventColor = fullConfig.theme?.colors[account?.eventColor];
+      const textColorTw = fullConfig.theme?.textColor;
+
+      // FIXME: isDeclined doesn't work for the WooSender API demo event
+      const isDeclined = attendees?.some((a) => {
+        console.log(a);
+        return (
           a.email === currentUser?.email &&
-          a.responseStatus === EventResponseStatus.DECLINED,
+          a.responseStatus === EventResponseStatus.DECLINED
+        );
+      });
+
+      // NEEDS_ACTION style
+      console.log(event);
+      const attendeeMe = attendees?.find(
+        (attendee) => attendee.email === account.email,
       );
+
+      const backgroundColor =
+        attendeeMe?.responseStatus !== EventResponseStatus.ACCEPTED
+          ? eventColor[3]
+          : eventColor[9];
+
+      const borderColor =
+        attendeeMe?.responseStatus !== EventResponseStatus.ACCEPTED
+          ? eventColor[9]
+          : eventColor[1];
+
+      const textColor =
+        attendeeMe?.responseStatus !== EventResponseStatus.ACCEPTED
+          ? eventColor[9]
+          : textColorTw.whiteA;
 
       newEvents.push({
         id,
         title: title,
         start: startDate,
         end: endDate,
-        backgroundColor: isDeclined ? "white" : backgroundColor,
-        textColor: textColor,
-        borderColor: isDeclined ? textColor : "transparent",
+        backgroundColor,
+        textColor,
+        borderColor,
         extendedProps: {
           isDeclined,
           event,

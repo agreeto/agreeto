@@ -22,14 +22,6 @@ module.exports = {
     require("@tailwindcss/forms"),
     require("@tailwindcss/typography"),
     require("@tailwindcss/line-clamp"),
-    // eslint-disable-next-line
-    require("windy-radix-palette")({
-      colors: {
-        mauveA: radixColors.mauveA,
-        mauveDarkA: radixColors.mauveDarkA,
-        red: radixColors.red,
-        redDark: radixColors.redDark,
-      },
-    }),
+    require("windy-radix-palette"),
   ],
 };
