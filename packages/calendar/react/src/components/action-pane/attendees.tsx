@@ -1,7 +1,7 @@
 import { useState } from "react";
 import OutsideClickHandler from "react-outside-click-handler";
 import { Spinner } from "@agreeto/ui";
-import { AiOutlineSearch } from "react-icons/ai";
+import { BiSearch } from "react-icons/bi";
 import { Float } from "@headlessui-float/react";
 import { trpc } from "../../utils/trpc";
 import { type RouterOutputs } from "@agreeto/api";
@@ -225,7 +225,7 @@ export const Attendees: React.FC<{
                     {isLoadingUsers ? (
                       <Spinner />
                     ) : (
-                      <AiOutlineSearch className="h-4 w-4" />
+                      <BiSearch className="h-4 w-4" />
                     )}
                   </div>
                 </label>
