@@ -36,11 +36,22 @@ model Account {
     eventGroups       EventGroup[]
     events            Event[]
     color             AccountColor @relation(fields: [colorId], references: [id])
+    eventColor        RadixColor   @default(value: violet)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
 
     @@unique([provider, providerAccountId])
+}
+
+enum RadixColor {
+    tomato
+    red
+    crimson
+    pink
+    plum
+    purple
+    violet
 }
 
 model AccountColor {
