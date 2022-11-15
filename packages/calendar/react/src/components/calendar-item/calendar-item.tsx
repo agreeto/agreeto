@@ -112,10 +112,10 @@ const CalendarItem: FC<Props> = ({ events, onRefSettled, onPageChange }) => {
 
     return (
       <div>
-        <div className="color-gray-600 font-normal">{day}</div>
+        <div className="font-normal text-gray-600">{day}</div>
         <div
           className={`my-1 flex h-10 w-10 items-center justify-center rounded-full text-xl font-semibold ${
-            isToday ? "bg-primary text-white" : "color-gray-600"
+            isToday ? "bg-primary text-white" : "text-gray-600"
           }`}
         >
           {date.getDate()}
@@ -176,7 +176,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
   const renderSlotLabels = ({ time }: SlotLabelContentArg) => {
     return (
       <div
-        className={`text-ceter color-gray-300 flex text-xs ${
+        className={`text-ceter flex text-xs text-gray-300 ${
           timeZones.length === 1
             ? "w-14 justify-center"
             : "w-24 justify-between pr-2"
@@ -256,14 +256,14 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
     // Add events of directory users
     directoryUsersWithEvents?.forEach(({ events: directoryEvents }) => {
       directoryEvents?.forEach((event) => {
-        const { id, title, startDate, endDate, color } = event;
+        const { id, title, startDate, endDate } = event;
 
         newEvents.push({
           id,
           title: title,
           start: startDate,
           end: endDate,
-          backgroundColor: color,
+          backgroundColor: directoryUsersWithEvents?.color,
           textColor: "white",
           borderColor: "transparent",
           extendedProps: {

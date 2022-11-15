@@ -1,38 +1,35 @@
 <!DOCTYPE html>
 <html lang="en" data-framework="typescript">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AgreeTo Microsoft Authentication</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <script>
-    const params = new Proxy(new URLSearchParams(window.location.search), {
-      get: (searchParams, prop) => searchParams.get(prop),
-    });
-    const token = params.t;
-    localStorage.setItem('onLoginId', Math.random())
-    setTimeout(() => {
-      window.close()
-    }, 1000)
-  </script>
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AgreeTo Microsoft Authentication</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 
-<body>
-  <div class="font-semibold text-xl text-center pt-16 h-screen">
-    <div class="flex justify-center items-center my-16">
-      <img class="w-20 h-20" src="./assets/icon512.png" alt="AgreeTo" />
-      <h1
-        class="color-primary ml-2 text-4xl font-semibold"
-        style="color: #2e81ff;"
-      >
-        AgreeTo
-      </h1>
+    <script>
+      const params = new Proxy(new URLSearchParams(window.location.search), {
+        get: (searchParams, prop) => searchParams.get(prop),
+      });
+      const token = params.t;
+      localStorage.setItem("onLoginId", Math.random());
+      setTimeout(() => {
+        window.close();
+      }, 1000);
+    </script>
+  </head>
+
+  <body>
+    <div class="h-screen pt-16 text-center text-xl font-semibold">
+      <div class="my-16 flex items-center justify-center">
+        <img class="h-20 w-20" src="./assets/icon512.png" alt="AgreeTo" />
+        <h1 class="ml-2 text-4xl font-semibold text-primary">AgreeTo</h1>
+      </div>
+      <p class="text-2xl text-green-600">
+        You successfully added a new account!
+      </p>
+      <br />
+      <p class="text-xl text-gray-600">You can open your addin now.</p>
     </div>
-    <p class="text-2xl text-green-600">You successfully added a new account!</p>
-    <br />
-    <p class="text-xl text-gray-600">You can open your addin now.</p>
-  </div>
-</body>
+  </body>
 </html>

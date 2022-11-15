@@ -47,7 +47,7 @@ export const ControlBar: React.FC<{
         <div>
           <div className="flex items-center space-x-4">
             {/* Date */}
-            <div className="color-gray-600 w-64 text-xl font-semibold">
+            <div className="w-64 text-xl font-semibold text-gray-600">
               <span>{`${month} ${year}, Week ${weekNumber}`}</span>
             </div>
 
@@ -85,7 +85,7 @@ export const ControlBar: React.FC<{
           <div className="flex items-center space-x-4">
             <div>
               {/* <div
-                className="color-gray-300 bg-transparent text-xs cursor-pointer"
+                className="text-gray-300 bg-transparent text-xs cursor-pointer"
                 onClick={handleFeedback}
               >
                 Give us a feedback
@@ -96,7 +96,7 @@ export const ControlBar: React.FC<{
             <div className="hidden">
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger>
-                  <div className="color-gray-700 flex items-center space-x-3 rounded border border-gray-300 bg-white py-1 px-2">
+                  <div className="flex items-center space-x-3 rounded border border-gray-300 bg-white py-1 px-2 text-gray-700">
                     <div className="text-sm">{calendarType}</div>
                     <div>
                       <img
@@ -109,7 +109,7 @@ export const ControlBar: React.FC<{
                   </div>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content
-                  className="color-gray-700 z-10 rounded bg-white shadow-xl"
+                  className="z-10 rounded bg-white text-gray-700 shadow-xl"
                   align="end"
                 >
                   <DropdownMenu.Item
@@ -144,7 +144,7 @@ export const ControlBar: React.FC<{
       </div>
 
       {/* Timezone */}
-      <div className="color-gray-600 text-xs">
+      <div className="text-xs text-gray-600">
         {`(${getTimeZoneAbv(primaryTimeZone)}) ${primaryTimeZone}`}
       </div>
     </>

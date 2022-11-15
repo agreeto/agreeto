@@ -269,7 +269,7 @@ const ActionPane: FC<Props> = ({
           />
 
           {/* Attendees */}
-          <div className="pt-8">
+          <div className="pt-4">
             <Attendees onPageChange={onPageChange} />
           </div>
 

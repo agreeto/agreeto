@@ -3,7 +3,7 @@ import { toast, ToastContainer } from "react-toastify";
 
 import { Attendees } from "./../action-pane/attendees";
 import { EventResponseStatus } from "@agreeto/api/types";
-import { Modal } from "@agreeto/ui";
+import { Button, Modal } from "@agreeto/ui";
 
 import { trpc } from "../../utils/trpc";
 import { ConferenceElement } from "./conference-element";
@@ -39,15 +39,14 @@ const ConfirmationPane: React.FC<{
   const { data: accounts } = trpc.account.me.useQuery();
   const primaryAccount = accounts?.find((a) => a.isPrimary);
 
-  const { data: eventGroup, isLoading: isLoadingGroup } =
-    trpc.eventGroup.byId.useQuery(
-      { id: eventGroupId },
-      {
-        onSuccess: (eg) => {
-          setTitle(eg.title || "");
-        },
+  const { data: eventGroup } = trpc.eventGroup.byId.useQuery(
+    { id: eventGroupId },
+    {
+      onSuccess: (eg) => {
+        setTitle(eg.title || "");
       },
-    );
+    },
+  );
 
   // console.log(eventGroup);
 
@@ -155,10 +154,6 @@ const ConfirmationPane: React.FC<{
             )}
           </div>
 
-          {/* Some padding */}
-          <div className="pt-8" />
-          {isLoadingGroup && <div>Loading...</div>}
-
           {/* Title */}
           <Title
             {...{
@@ -180,7 +175,7 @@ const ConfirmationPane: React.FC<{
 
           {/* Info */}
           {/* <div className="pt-4 leading-none text-center">
-            <span className="color-gray-300 font-medium text-2xs-05">
+            <span className="text-gray-300 font-medium text-2xs-05">
               {!eventGroup?.isSelectionDone &&
                 'Once you confirm a slot, other slots will be removed from your actual calendar(s)'}
             </span>
@@ -211,21 +206,22 @@ const ConfirmationPane: React.FC<{
           {/* Save */}
           <div className="space-y-4">
             {!eventGroup?.isSelectionDone && (
-              <button
-                className="button w-full"
+              <Button
+                className="w-full"
                 onClick={handleSave}
                 disabled={!checkedEvent || isConfirming || isDeleting}
               >
                 Confirm
-              </button>
+              </Button>
             )}
-            <button
-              className="button-borderless button-borderless-danger w-full"
+            <Button
+              variant="glass"
+              className="w-full text-red-600"
               onClick={() => setShowDeleteModal(true)}
               disabled={isConfirming || isDeleting}
             >
               Delete This Group
-            </button>
+            </Button>
           </div>
         </div>
         {/* End Save */}

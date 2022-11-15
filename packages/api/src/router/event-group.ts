@@ -114,8 +114,6 @@ export const eventGroupRouter = router({
         },
       });
 
-      console.log("created group", group.id);
-
       if (input.createBlocker) {
         // Create actual events in calendars if createBlocer is true
         const promises = [];

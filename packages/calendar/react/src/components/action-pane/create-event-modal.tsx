@@ -27,7 +27,7 @@ export const CreateEventModal: React.FC<{
           {titleElem}
           {/* Date */}
           <div>
-            <div className="color-gray-600 pt-8 font-medium">Date</div>
+            <div className="pt-8 font-medium text-gray-600">Date</div>
           </div>
         </div>
       }

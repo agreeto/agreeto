@@ -54,9 +54,7 @@ const Extension: NextPage<
             placeholder="blur"
           />
         </div>
-        <h1 className="color-primary ml-2 text-4xl font-semibold text-[#2e81ff]">
-          AgreeTo
-        </h1>
+        <h1 className="ml-2 text-4xl font-semibold text-primary">AgreeTo</h1>
       </div>
       {isLoadingExtension ? (
         // We're still loading the response from the extension

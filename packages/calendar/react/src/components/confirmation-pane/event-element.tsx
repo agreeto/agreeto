@@ -49,10 +49,10 @@ export const EventElement: React.FC<{
             )}
             {/* Date */}
             <div>
-              <div className="color-gray-600 text-xs font-medium">
+              <div className="text-xs font-medium text-gray-600">
                 {format(new Date(event.startDate), "MMMM d (EEEE)")}
               </div>
-              <div className="color-gray-300 text-xs font-medium">
+              <div className="text-xs font-medium text-gray-300">
                 {`${format(new Date(event.startDate), "HH:mm")} - ${format(
                   new Date(event.endDate),
                   "HH:mm",

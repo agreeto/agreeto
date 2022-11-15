@@ -56,7 +56,7 @@ export const Attendees: React.FC<{
 
     return (
       <div
-        className="color-gray-600 cursor-pointer px-3 py-1 text-xs hover:bg-gray-200"
+        className="cursor-pointer px-3 py-1 text-xs text-gray-600 hover:bg-gray-200"
         key={user.id}
         onClick={() => {
           addAttendee(user);
@@ -72,7 +72,7 @@ export const Attendees: React.FC<{
   // Add unknown attendee to the users list by email
   const AddUnknownAttendee: React.FC = () => (
     <div
-      className="color-gray-600 cursor-pointer px-3 py-1 text-xs hover:bg-gray-200"
+      className="cursor-pointer px-3 py-1 text-xs text-gray-600 hover:bg-gray-200"
       onClick={() => {
         // Check if email is valid, else show error-toast
         if (!z.string().email().safeParse(attendeeText).success) {
@@ -195,14 +195,14 @@ export const Attendees: React.FC<{
                 className="mt-4 w-60 cursor-auto rounded border border-[#F9FAFA] bg-[#F9FAFA] p-4 text-left"
                 style={{ boxShadow: "2px 4px 12px 2px #dbd9d9" }}
               >
-                <div className="color-gray-900 text-sm font-semibold">
+                <div className="text-sm font-semibold text-gray-900">
                   Unlock Other Attendees
                 </div>
-                <div className="color-gray-900 mt-2 text-xs">
+                <div className="mt-2 text-xs text-gray-900">
                   This feature is part of the Pro Plan
                 </div>
                 <div
-                  className="color-primary mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border border-primary"
+                  className="mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border border-primary text-primary"
                   onClick={() => onPageChange?.("settings")}
                 >
                   Upgrade

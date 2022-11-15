@@ -77,7 +77,7 @@ const TimeZoneSelect: FC<Props> = ({
             <div
               className={`text-3xs-05 group flex items-center justify-center rounded border ${
                 type === "primary"
-                  ? "color-primary cursor-pointer"
+                  ? "cursor-pointer text-primary"
                   : !isFree
                   ? "cursor-pointer border-[#F0F1F2] bg-[#F0F1F2] hover:border-gray-300"
                   : "border-[#F0F1F2] bg-[#F0F1F2]"
@@ -123,14 +123,14 @@ const TimeZoneSelect: FC<Props> = ({
             className="mt-4 w-60 cursor-auto rounded border border-[#F9FAFA] bg-[#F9FAFA] p-4 text-left"
             style={{ boxShadow: "2px 4px 12px 2px #dbd9d9" }}
           >
-            <div className="color-gray-900 text-sm font-semibold">
+            <div className="text-sm font-semibold text-gray-900">
               Unlock Multiple Time Zones
             </div>
-            <div className="color-gray-900 mt-2 text-xs">
+            <div className="mt-2 text-xs text-gray-900">
               This feature is part of the Pro Plan
             </div>
             <div
-              className="color-primary mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border border-primary"
+              className="mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border border-primary text-primary"
               onClick={() => onPageChange?.("settings")}
             >
               Upgrade
@@ -155,7 +155,7 @@ const TimeZoneSelect: FC<Props> = ({
             }}
           >
             <div
-              className="color-gray-700 absolute z-10 w-80 rounded bg-white pt-6 shadow-xl"
+              className="absolute z-10 w-80 rounded bg-white pt-6 text-gray-700 shadow-xl"
               id="timeZonePopupContainer"
             >
               {/* Upper part */}

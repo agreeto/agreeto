@@ -33,14 +33,14 @@ export const ConferenceElement: React.FC<{
           {provider === "google" ? (
             <>
               <img src={googleMeetIcon} alt="meet" className="h-8 w-8" />
-              <span className="color-gray-900 pl-3 text-sm font-medium">
+              <span className="pl-3 text-sm font-medium text-gray-900">
                 Google Meet
               </span>
             </>
           ) : (
             <>
               <img src={teamsIcon} alt="teams" className="h-7 w-7" />
-              <span className="color-gray-900 pl-2 text-sm font-medium">
+              <span className="pl-2 text-sm font-medium text-gray-900">
                 Microsoft Teams
               </span>
             </>

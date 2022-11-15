@@ -196,7 +196,7 @@ const Availability: React.FC<{
               }}
             >
               {copied ? (
-                <BiCheckCircle className="h-5 w-5" color="green" />
+                <BiCheckCircle className="h-5 w-5 text-green-500" />
               ) : (
                 <BiCopy className="h-5 w-5" />
               )}
