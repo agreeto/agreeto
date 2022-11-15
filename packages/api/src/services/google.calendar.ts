@@ -1,9 +1,11 @@
-import { type Event, EventResponseStatus, type Attendee } from "@agreeto/db";
+import {
+  type Event,
+  EventResponseStatus,
+  type Attendee,
+  prisma,
+} from "@agreeto/db";
 import { type calendar_v3, google } from "googleapis";
 import { type ICreateEvent, type IGetEvents, type IUpdateEvent } from "./types";
-
-import { addDashSeparator, removeDashSeparator } from "./service-helpers";
-
 export class GoogleCalendarService {
   private accessToken: string;
   private refreshToken: string;
@@ -50,7 +52,7 @@ export class GoogleCalendarService {
       extendedProperties?.private?.isAgreeToEvent === "true";
 
     return {
-      id: addDashSeparator(id!, isAgreeToEvent),
+      id: id!,
       title: summary || "-",
       description: description || "",
       startDate: new Date(start!.dateTime!),
@@ -109,8 +111,6 @@ export class GoogleCalendarService {
       sendNotifications: true,
       sendUpdates: "all",
       requestBody: {
-        // REVIEW: Google Calendar API complains when the `-` is present
-        id: removeDashSeparator(id!),
         summary: title,
         start: {
           dateTime: startDate.toISOString(),
@@ -130,6 +130,12 @@ export class GoogleCalendarService {
     // Create event
     const response = await this.calendarClient.events.insert(params);
 
+    // Update event in DB with the generated ID
+    await prisma.event.update({
+      where: { id },
+      data: { googleId: response.data.id },
+    });
+
     return {
       rawData: response.data,
       event: this.toEvent(response.data),
@@ -142,7 +148,7 @@ export class GoogleCalendarService {
   ) {
     const params: calendar_v3.Params$Resource$Events$Patch = {
       calendarId: "primary",
-      eventId: addDashSeparator(id, true),
+      eventId: id,
       sendNotifications: true,
       sendUpdates: "all",
       requestBody: {},
@@ -205,7 +211,7 @@ export class GoogleCalendarService {
     // Generate the query params
     const params: calendar_v3.Params$Resource$Events$Delete = {
       calendarId: "primary",
-      eventId: addDashSeparator(id, true),
+      eventId: id,
     };
 
     // Fetch events
