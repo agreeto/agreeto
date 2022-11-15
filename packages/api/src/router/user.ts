@@ -108,8 +108,7 @@ export const userRouter = router({
           ...u,
           color: getAvailableColor(),
           responseStatus: EventResponseStatus.TENTATIVE as EventResponseStatus,
-        }))
-        .filter((u) => !!u);
+        }));
 
       return users;
     }),
