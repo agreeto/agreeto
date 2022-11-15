@@ -29,23 +29,14 @@ import {
 import TimeZoneSelect from "./time-zone-select";
 
 import { trpc } from "../../utils/trpc";
-import { type RouterOutputs } from "@agreeto/api";
-import {
-  useCalendarStore,
-  useEventStore,
-  useTZStore,
-  useViewStore,
-} from "../../utils/store";
-
-type Event = RouterOutputs["event"]["all"][number];
+import { useCalendarStore, useEventStore, useTZStore } from "../../utils/store";
 
 type Props = {
-  events?: Event[];
   onRefSettled: (ref: any) => void;
   onPageChange?: (page: string) => void;
 };
 
-const CalendarItem: FC<Props> = ({ events, onRefSettled, onPageChange }) => {
+const CalendarItem: FC<Props> = ({ onRefSettled, onPageChange }) => {
   const ref = useRef<any>(null);
   const enableMock = false;
 
@@ -67,12 +58,13 @@ const CalendarItem: FC<Props> = ({ events, onRefSettled, onPageChange }) => {
   const timeZones = useTZStore((s) => s.timeZones);
   const primaryTimeZone = getPrimaryTimeZone(timeZones);
 
-  const changePane = useViewStore((s) => s.changePane);
-
   const { data: currentUser } = trpc.user.me.useQuery();
   const isFree = currentUser?.membership === Membership.FREE;
   const { data: preference } = trpc.preference.byCurrentUser.useQuery();
   const locale = getDateLocale(preference);
+
+  const { data: events, isFetching: isFetchingEvents } =
+    trpc.event.all.useQuery(period, { staleTime: 30 * 1000 });
 
   const { data: directoryUsersWithEvents } = trpc.event.directoryUsers.useQuery(
     {
@@ -85,8 +77,6 @@ const CalendarItem: FC<Props> = ({ events, onRefSettled, onPageChange }) => {
       enabled: !isFree,
     },
   );
-
-  console.log(selectedSlots);
 
   useEffect(() => {
     if (ref) onRefSettled(ref);
@@ -243,7 +233,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
         start: startDate,
         end: endDate,
         backgroundColor: isDeclined ? "white" : backgroundColor,
-        textColor: "#000" ?? textColor,
+        textColor: textColor,
         borderColor: isDeclined ? textColor : "transparent",
         extendedProps: {
           isDeclined,
@@ -254,7 +244,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
     });
 
     // Add events of directory users
-    directoryUsersWithEvents?.forEach(({ events: directoryEvents }) => {
+    directoryUsersWithEvents?.forEach(({ events: directoryEvents, color }) => {
       directoryEvents?.forEach((event) => {
         const { id, title, startDate, endDate } = event;
 
@@ -263,7 +253,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
           title: title,
           start: startDate,
           end: endDate,
-          backgroundColor: directoryUsersWithEvents?.color,
+          backgroundColor: color,
           textColor: "white",
           borderColor: "transparent",
           extendedProps: {
@@ -277,7 +267,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
   };
 
   const handleSelect = ({ start, end }: DateSelectArg) => {
-    const slot: EventInput = {
+    selectSlot({
       id: ulid(),
       start,
       end,
@@ -290,76 +280,75 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
       extendedProps: {
         new: true,
       },
-    };
-    selectSlot(slot);
+    });
     ref.current.getApi().unselect();
   };
 
   return (
     <div className="relative w-full">
-      <FullCalendar
-        plugins={[interactionPlugin, timeGridPlugin, momentTimezonePlugin]}
-        initialView="timeGridWeek"
-        ref={ref}
-        dayHeaderContent={renderCalendarHeader}
-        eventContent={renderCalendarEvent}
-        selectable
-        select={handleSelect}
-        events={getEvents()}
-        headerToolbar={false}
-        weekends={showWeekends}
-        eventClick={({ event }) => {
-          if (event.extendedProps.isAgreeToEvent) {
-            console.log("selected event", event);
-            selectEventGroup(event.extendedProps?.eventGroupId);
-            setCheckedEvent(event.extendedProps?.event);
-            changePane("confirmation");
-          }
-        }}
-        slotLabelInterval={{ hours: 1 }}
-        slotDuration="00:15:00"
-        height={600}
-        allDaySlot={false}
-        slotLabelContent={renderSlotLabels}
-        eventChange={({ event }) => updateSlots(event.toJSON())}
-        scrollTime="08:00:00"
-        nowIndicator
-        timeZone={primaryTimeZone}
-        eventOrder={(e1: any, e2: any) => {
-          // TODO: Why doesn't FullCalendar's type match here?
-          if (e1?.extendedProps?.new) {
+      <div className={isFetchingEvents ? "animate-pulse" : ""}>
+        <FullCalendar
+          plugins={[interactionPlugin, timeGridPlugin, momentTimezonePlugin]}
+          initialView="timeGridWeek"
+          ref={ref}
+          dayHeaderContent={renderCalendarHeader}
+          eventContent={renderCalendarEvent}
+          selectable
+          select={handleSelect}
+          events={getEvents()}
+          headerToolbar={false}
+          weekends={showWeekends}
+          eventClick={({ event }) => {
+            if (event.extendedProps.isAgreeToEvent) {
+              selectEventGroup(event.extendedProps?.eventGroupId);
+              setCheckedEvent(event.extendedProps?.event);
+            }
+          }}
+          slotLabelInterval={{ hours: 1 }}
+          slotDuration="00:15:00"
+          height={600}
+          allDaySlot={false}
+          slotLabelContent={renderSlotLabels}
+          eventChange={({ event }) => updateSlots(event.toJSON())}
+          scrollTime="08:00:00"
+          nowIndicator
+          timeZone={primaryTimeZone}
+          eventOrder={(e1: any, e2: any) => {
+            // TODO: Why doesn't FullCalendar's type match here?
+            if (e1?.extendedProps?.new) {
+              return 1;
+            }
+            if (e2?.extendedProps?.new) {
+              return -1;
+            }
             return 1;
-          }
-          if (e2?.extendedProps?.new) {
-            return -1;
-          }
-          return 1;
-        }}
-        eventDidMount={({ el, event }) => {
-          el.style.width = "calc(100% - 10px)";
-          if (hoveredEvent?.id === event.id) {
-            el.style.borderStyle = "dashed";
-            el.style.borderColor = "#E57373";
-            el.style.borderWidth = "3px";
-          } else if (
-            eventGroupId &&
-            eventGroupId === event.extendedProps.eventGroupId
-          ) {
-            el.style.borderStyle = "dashed";
-            el.style.borderColor = "#E57373";
-            el.style.borderWidth = "1px";
-            el.style.cursor = "pointer";
-          } else if (event.extendedProps?.new) {
-            el.style.borderStyle = "dashed";
-            el.style.borderWidth = "2px";
-          } else if (event.extendedProps?.isAgreeToEvent) {
-            el.style.borderStyle = "hidden";
-            el.style.cursor = "pointer";
-          } else {
-            el.style.cursor = "not-allowed";
-          }
-        }}
-      />
+          }}
+          eventDidMount={({ el, event }) => {
+            el.style.width = "calc(100% - 10px)";
+            if (hoveredEvent?.id === event.id) {
+              el.style.borderStyle = "dashed";
+              el.style.borderColor = "#E57373";
+              el.style.borderWidth = "3px";
+            } else if (
+              eventGroupId &&
+              eventGroupId === event.extendedProps.eventGroupId
+            ) {
+              el.style.borderStyle = "dashed";
+              el.style.borderColor = "#E57373";
+              el.style.borderWidth = "1px";
+              el.style.cursor = "pointer";
+            } else if (event.extendedProps?.new) {
+              el.style.borderStyle = "dashed";
+              el.style.borderWidth = "2px";
+            } else if (event.extendedProps?.isAgreeToEvent) {
+              el.style.borderStyle = "hidden";
+              el.style.cursor = "pointer";
+            } else {
+              el.style.cursor = "not-allowed";
+            }
+          }}
+        />
+      </div>
 
       {/* Timezone title */}
       <div

@@ -9,16 +9,11 @@ import { ControlBar } from "./components/control-bar";
 import CalendarItem from "./components/calendar-item";
 import { type CalendarApi } from "@fullcalendar/react";
 import ConfirmationPane from "./components/confirmation-pane";
+import { type ActionType } from "./components/action-pane/action-pane";
 
 import { type PLATFORM } from "@agreeto/calendar-core";
-import { type PRIMARY_ACTION_TYPES } from "./utils/enums";
 import { trpc } from "./utils/trpc";
-import {
-  useCalendarStore,
-  useEventStore,
-  useTZStore,
-  useViewStore,
-} from "./utils/store";
+import { useCalendarStore, useEventStore, useTZStore } from "./utils/store";
 import { Language, Membership } from "@agreeto/api/types";
 
 type Props = {
@@ -26,7 +21,7 @@ type Props = {
   renderKey?: number;
   platform?: PLATFORM;
   onPageChange?: (page: string) => void;
-  onPrimaryActionClick?: (type: PRIMARY_ACTION_TYPES) => void;
+  onPrimaryActionClick?: (type: ActionType) => void;
 };
 
 const Calendar: React.FC<Props> = ({
@@ -41,23 +36,13 @@ const Calendar: React.FC<Props> = ({
 
   // Zustand
   const setFocusedDate = useCalendarStore((s) => s.setFocusedDate);
-  const period = useCalendarStore((s) => s.period);
 
-  const selectedSlots = useEventStore((s) => s.selectedSlots);
   const selectedEventGroupId = useEventStore((s) => s.selectedEventGroupId);
-  const selectEventGroup = useEventStore((s) => s.selectEventGroup);
-
-  const openPane = useViewStore((s) => s.openPane);
-  const changePane = useViewStore((s) => s.changePane);
+  const openPane = useEventStore((s) => s.openPane);
 
   const setTzDefaults = useTZStore((s) => s.setTimeZoneDefaults);
 
-  // trpc
   const utils = trpc.useContext();
-
-  const { data: events, isFetching: isFetchingEvents } =
-    trpc.event.all.useQuery(period, { staleTime: 30 * 1000 });
-
   useEffect(() => {
     // get user from the query cache
     const user = utils.user.me.getData();
@@ -91,19 +76,6 @@ const Calendar: React.FC<Props> = ({
       setFocusedDate(new Date(calendarApi.view.currentStart));
     }
   }, [calendarRef, setFocusedDate]);
-
-  useEffect(() => {
-    if (selectedSlots.length > 0) {
-      changePane("action");
-    }
-  }, [selectedSlots, changePane]);
-
-  // Unselect the eventGroupId when the confirmation pane is closed
-  useEffect(() => {
-    if (openPane !== "confirmation") {
-      selectEventGroup(null);
-    }
-  }, [openPane, selectEventGroup]);
 
   // Sometimes, resizing of calendar breaks in the page. For this
   // situations we are updating size on every visibility change
@@ -148,9 +120,8 @@ const Calendar: React.FC<Props> = ({
           <ControlBar calendarRef={calendarRef} />
         </div>
 
-        <div className={`w-full ${isFetchingEvents ? "animate-pulse" : ""}`}>
+        <div className="w-full">
           <CalendarItem
-            events={events}
             onRefSettled={setCalendarRef}
             onPageChange={onPageChange}
           />

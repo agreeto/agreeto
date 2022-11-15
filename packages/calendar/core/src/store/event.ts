@@ -1,4 +1,4 @@
-import create from "zustand/vanilla";
+import create, { type StateCreator } from "zustand/vanilla";
 import uniqBy from "lodash/uniqBy";
 import { type RouterOutputs } from "@agreeto/api";
 import { type EventInput } from "@fullcalendar/react";
@@ -8,7 +8,7 @@ type DirectoryUser = RouterOutputs["event"]["directoryUsers"][number];
 type Attendee = RouterOutputs["user"]["getFriends"][number];
 
 // Contains the state of the current "booking" process
-export interface EventStore {
+export interface EventSlice {
   // State
   title: string;
 
@@ -38,7 +38,10 @@ export interface EventStore {
   setDirectoryUsersWithEvents: (users: DirectoryUser[]) => void;
 }
 
-export const eventStore = create<EventStore>()((set) => ({
+export const createEventSlice: StateCreator<EventStore, [], [], EventSlice> = (
+  set,
+  get,
+) => ({
   // State
   title: "Hold: ",
 
@@ -70,11 +73,17 @@ export const eventStore = create<EventStore>()((set) => ({
   selectSlot(slot) {
     set((state) => ({
       selectedSlots: [...state.selectedSlots, slot],
+      // Change to the action pane when selecting a slot
+      openPane: "action",
     }));
   },
   deleteSlot(slot) {
+    const selectedSlots = get().selectedSlots.filter((s) => s.id !== slot.id);
+
     set((state) => ({
-      selectedSlots: state.selectedSlots.filter((s) => s.id !== slot.id),
+      selectedSlots,
+      // Change to the action pane if there are still slots selected
+      openPane: selectedSlots.length > 0 ? "action" : state.openPane,
     }));
   },
   updateSlots(event) {
@@ -107,7 +116,7 @@ export const eventStore = create<EventStore>()((set) => ({
     set({ hoveredEvent: event });
   },
   selectEventGroup(id) {
-    set({ selectedEventGroupId: id });
+    set({ selectedEventGroupId: id, openPane: "confirmation" });
   },
   addAttendee(attendee) {
     set((state) => ({
@@ -138,4 +147,16 @@ export const eventStore = create<EventStore>()((set) => ({
   setDirectoryUsersWithEvents(users) {
     set({ directoryUsersWithEvents: users });
   },
+});
+
+/**
+ * Create a store that combines the event and view slices,
+ * since they have side-effects to eachother.
+ */
+import { createViewSlice, type ViewSlice } from "./view";
+
+export type EventStore = EventSlice & ViewSlice;
+export const eventStore = create<EventStore>()((...a) => ({
+  ...createViewSlice(...a),
+  ...createEventSlice(...a),
 }));

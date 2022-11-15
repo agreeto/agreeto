@@ -19,7 +19,7 @@ const actionTypes = {
   "Create Hold and Copy":
     "Creates unconfirmed events in the calendar of each attendee, then copies the selected time slots.",
 };
-type ActionType = keyof typeof actionTypes;
+export type ActionType = keyof typeof actionTypes;
 
 type Props = {
   onClose?: () => void;

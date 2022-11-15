@@ -221,6 +221,7 @@ export const Attendees: React.FC<{
                     onChange={(e) => setAttendeeText(e)}
                     value={attendeeText}
                   />
+                  {/** Icon inside input field */}
                   <div className="absolute mr-2 h-4 w-4">
                     {isLoadingUsers ? (
                       <Spinner />

@@ -9,7 +9,7 @@ import { trpc } from "../../utils/trpc";
 import { ConferenceElement } from "./conference-element";
 import { EventElement } from "./event-element";
 import { Title } from "./title";
-import { useEventStore, useViewStore } from "../../utils/store";
+import { useEventStore } from "../../utils/store";
 import { IoClose, IoChevronBackOutline } from "react-icons/io5";
 
 const ConfirmationPane: React.FC<{
@@ -26,7 +26,7 @@ const ConfirmationPane: React.FC<{
   );
   const unknownAttendees = useEventStore((s) => s.unknownAttendees);
 
-  const changePane = useViewStore((s) => s.changePane);
+  const changePane = useEventStore((s) => s.changePane);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [addConference, setAddConference] = useState(false);
@@ -47,8 +47,6 @@ const ConfirmationPane: React.FC<{
       },
     },
   );
-
-  // console.log(eventGroup);
 
   const { mutate: confirmEvent, isLoading: isConfirming } =
     trpc.event.confirm.useMutation({

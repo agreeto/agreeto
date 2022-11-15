@@ -2,8 +2,7 @@ import { type EventInput } from "@fullcalendar/react";
 import { format } from "date-fns-tz";
 import { toast } from "react-toastify";
 import Flag from "react-flagkit";
-import { MdKeyboardArrowDown } from "react-icons/md";
-import { BiCheckCircle, BiCopy, BiTrash } from "react-icons/bi";
+import { BiCheckCircle, BiChevronDown, BiCopy, BiTrash } from "react-icons/bi";
 import {
   convertToDate,
   copyToClipboard,
@@ -68,7 +67,7 @@ const Availability: React.FC<{
               size={16}
             />
           )}
-          <MdKeyboardArrowDown className="h-full" />
+          <BiChevronDown className="h-full" />
         </div>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content
@@ -137,7 +136,7 @@ const Availability: React.FC<{
       <DropdownMenu.Trigger>
         <div className="flex h-6 items-center space-x-2 rounded border border-gray-300 bg-white py-1 px-1 text-gray-700">
           <div className="text-2xs">{getTimeZoneAbv(selectedTimeZone)}</div>
-          <MdKeyboardArrowDown className="h-4 w-4" />
+          <BiChevronDown className="h-4 w-4" />
         </div>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content

@@ -1,6 +1,6 @@
-import create from "zustand/vanilla";
-
-export interface ViewStore {
+import { type StateCreator } from "zustand/vanilla";
+import { type EventStore } from "./event";
+export interface ViewSlice {
   // State
   openPane: "action" | "confirmation";
 
@@ -8,12 +8,26 @@ export interface ViewStore {
   changePane: (pane: "action" | "confirmation") => void;
 }
 
-export const viewStore = create<ViewStore>()((set, _get) => ({
+/**
+ * Since we trigger side-effects when changing panes, we keep it in the event store but
+ * separate it into its own slice.
+ */
+export const createViewSlice: StateCreator<EventStore, [], [], ViewSlice> = (
+  set,
+  get,
+) => ({
   // State
   openPane: "action",
 
   // Actions
-  changePane(pane) {
-    set(() => ({ openPane: pane }));
+  changePane(newPane) {
+    // Unselect the event group if we're closing the confirmation pane
+    const { openPane, selectedEventGroupId } = get();
+    const resetEG = openPane === "confirmation";
+
+    set({
+      openPane: newPane,
+      selectedEventGroupId: resetEG ? null : selectedEventGroupId,
+    });
   },
-}));
+});

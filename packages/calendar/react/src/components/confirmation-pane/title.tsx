@@ -20,7 +20,7 @@ export const Title: React.FC<{
     <div>
       <input
         className="mt-6 w-full border-b-2 border-gray-400 bg-transparent px-2 text-xl outline-none hover:border-primary focus:border-primary"
-        // placeholder="Add a title"
+        placeholder="Add a title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         readOnly={isSelectionDone}
