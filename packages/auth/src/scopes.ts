@@ -9,6 +9,16 @@ export const azureScopes = [
   "Calendars.Read",
   "OnlineMeetings.Read",
   "OnlineMeetings.ReadWrite",
+  "https://graph.microsoft.com/user.read",
+  "https://graph.microsoft.com/openid",
+  "https://graph.microsoft.com/profile",
+  "https://graph.microsoft.com/email",
+  "https://graph.microsoft.com/offline_access",
+  "https://graph.microsoft.com/Calendars.Read",
+  "https://graph.microsoft.com/Calendars.ReadWrite",
+  "https://graph.microsoft.com/Calendars.Read",
+  "https://graph.microsoft.com/OnlineMeetings.Read",
+  "https://graph.microsoft.com/OnlineMeetings.ReadWrite",
 ];
 
 export const googleScopes = [

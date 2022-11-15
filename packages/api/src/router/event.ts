@@ -42,9 +42,9 @@ export const eventRouter = router({
       const calendarEvents = await Promise.all(
         accounts
           // FIXME: REMOVE GOOGLE FILTER
-          .filter((a) => a.provider === "google")
+          // .filter((a) => a.provider === "google")
           .map(async (account) => {
-            const { service } = getCalendarService(account);
+            const service = getCalendarService(account);
             const { events } = await service.getEvents(input);
             return events.map((e) => ({
               ...e,
@@ -197,12 +197,12 @@ export const eventRouter = router({
           const { account } = event.eventGroup;
           await Promise.all(
             deletedEvents.map((del) => {
-              const { service, eventId } = getCalendarService(account, del);
+              const service = getCalendarService(account);
               return service
-                .deleteEvent(eventId as string)
+                .deleteEvent(del.providerEventId as string)
                 .catch((err) =>
                   console.error(
-                    `Failed to delete the event from the calendar service for the event: ${eventId}`,
+                    `Failed to delete the event from the calendar service for the event: ${del.providerEventId}`,
                     err,
                   ),
                 );
@@ -228,17 +228,12 @@ export const eventRouter = router({
           const attendeeEmails = [
             ...new Set([
               ...input.attendees.map((a) => a.email),
-              ...accounts
-                .map((a) => a.email)
-                .filter((e): e is string => Boolean(e)),
+              ...accounts.map((a) => a.email).filter((e): e is string => !!e),
             ]),
           ];
 
-          const { service, eventId } = getCalendarService(
-            primaryAccount,
-            event,
-          );
-          await service.updateEvent(eventId as string, {
+          const service = getCalendarService(primaryAccount);
+          await service.updateEvent(event.providerEventId as string, {
             hasConference: input.addConference,
             title: input.title,
             attendeeEmails,

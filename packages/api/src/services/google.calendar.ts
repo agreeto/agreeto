@@ -1,9 +1,4 @@
-import {
-  type Event,
-  EventResponseStatus,
-  type Attendee,
-  prisma,
-} from "@agreeto/db";
+import { type Event, EventResponseStatus, type Attendee } from "@agreeto/db";
 import { type calendar_v3, google } from "googleapis";
 import { type ICreateEvent, type IGetEvents, type IUpdateEvent } from "./types";
 export class GoogleCalendarService {
@@ -52,16 +47,16 @@ export class GoogleCalendarService {
       extendedProperties?.private?.isAgreeToEvent === "true";
 
     return {
-      id: id!,
+      id: id as string,
       title: summary || "-",
       description: description || "",
-      startDate: new Date(start!.dateTime!),
-      endDate: new Date(end!.dateTime!),
+      startDate: start?.dateTime ? new Date(start.dateTime) : undefined,
+      endDate: end?.dateTime ? new Date(end.dateTime) : undefined,
       isAgreeToEvent,
       attendees: !attendees
         ? []
         : attendees.map((a) => ({
-            id: a.id!,
+            id: a.id as string,
             color: null,
             eventId: id!,
             email: a.email!,
@@ -99,7 +94,6 @@ export class GoogleCalendarService {
   }
 
   async createEvent({
-    id,
     title,
     startDate,
     endDate,
@@ -129,12 +123,6 @@ export class GoogleCalendarService {
 
     // Create event
     const response = await this.calendarClient.events.insert(params);
-
-    // Update event in DB with the generated ID
-    await prisma.event.update({
-      where: { id },
-      data: { googleId: response.data.id },
-    });
 
     return {
       rawData: response.data,

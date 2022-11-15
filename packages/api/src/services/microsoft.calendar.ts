@@ -43,12 +43,23 @@ export class MicrosoftCalendarService {
     this.graphClient = Client.initWithMiddleware({
       authProvider: {
         getAccessToken: async () => {
-          const result = await this.msalClient.acquireTokenByRefreshToken({
-            refreshToken: this.refreshToken,
-            scopes: azureScopes,
-          });
-          // TODO: Save the refresh token to our DB if it is changed (result.refreshToken)
-          return result!.accessToken;
+          try {
+            const result = await this.msalClient.acquireTokenByRefreshToken({
+              refreshToken: this.refreshToken,
+              scopes: azureScopes,
+            });
+            console.log("access token refreshed");
+            console.log(result);
+            // TODO: Save the refresh token to our DB if it is changed (result.refreshToken)
+            return result!.accessToken;
+          } catch (cause) {
+            console.error("Error while refreshing access token", cause);
+            throw new TRPCError({
+              code: "INTERNAL_SERVER_ERROR",
+              message: "Error while refreshing access token",
+              cause,
+            });
+          }
         },
       },
     });
@@ -80,7 +91,7 @@ export class MicrosoftCalendarService {
 
     return {
       id: agreeToId?.value || id,
-      microsoftId: id,
+      providerEventId: id,
       title: subject || "-",
       description: body.content || "",
       startDate: new Date(`${start.dateTime}+00:00`),
@@ -123,24 +134,24 @@ export class MicrosoftCalendarService {
         .top(100)
         .get();
 
-      console.log(response);
+      // console.log(response);
 
       return {
         rawData: response,
         events: this.toEvents(response.value || []),
       };
-    } catch (err) {
-      console.error(err);
+    } catch (cause) {
+      console.error("An error occured in Microsoft services (get)", cause);
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "An error occured in Microsoft services",
-        cause: err,
+        cause,
       });
     }
   }
 
   async createEvent({
-    id,
+    // id,
     title,
     startDate,
     endDate,
@@ -160,16 +171,16 @@ export class MicrosoftCalendarService {
         emailAddress: { address: email, name: email },
         type: "required",
       })),
-      singleValueExtendedProperties: [
-        {
-          id: EXTENDED_PROP_SEARCH,
-          value: "true",
-        },
-        {
-          id: EXTENDED_PROP_ID_SEARCH,
-          value: id,
-        },
-      ],
+      // singleValueExtendedProperties: [
+      //   {
+      //     id: EXTENDED_PROP_SEARCH,
+      //     value: "true",
+      //   },
+      //   {
+      //     id: EXTENDED_PROP_ID_SEARCH,
+      //     value: id,
+      //   },
+      // ],
     };
 
     try {
@@ -177,15 +188,18 @@ export class MicrosoftCalendarService {
         .api("/me/calendar/events")
         .post(params);
 
+      console.log("Created event", response);
+
       return {
         rawData: response,
         event: this.toEvent(response),
       };
-    } catch (err) {
+    } catch (cause) {
+      console.error("An error occured in Microsoft services (create)", cause);
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "An error occured in Microsoft services",
-        cause: err,
+        cause,
       });
     }
   }
@@ -226,12 +240,12 @@ export class MicrosoftCalendarService {
         rawData: response,
         events: this.toEvents(response.value || []),
       };
-    } catch (error) {
-      console.error("An error occured in Microsoft services", error);
+    } catch (cause) {
+      console.error("An error occured in Microsoft services (update)", cause);
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "An error occured in Microsoft services",
-        cause: error,
+        cause,
       });
     }
   }
@@ -270,12 +284,12 @@ export class MicrosoftCalendarService {
       return {
         rawData: response,
       };
-    } catch (error) {
-      console.error("An error occured in Microsoft services", error);
+    } catch (cause) {
+      console.error("An error occured in Microsoft services (delete)", cause);
       throw new TRPCError({
         code: "INTERNAL_SERVER_ERROR",
         message: "An error occured in Microsoft services",
-        cause: error,
+        cause,
       });
     }
   }

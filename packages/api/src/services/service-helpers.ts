@@ -1,26 +1,20 @@
-import { type Account, type Event } from "@agreeto/db";
+import { type Account } from "@agreeto/db";
 import { TRPCError } from "@trpc/server";
 import { GoogleCalendarService } from "./google.calendar";
 import { MicrosoftCalendarService } from "./microsoft.calendar";
 
-export const getCalendarService = (account: Account, event?: Event) => {
+export const getCalendarService = (account: Account) => {
   switch (account.provider) {
     case "google":
-      return {
-        service: new GoogleCalendarService(
-          account.access_token,
-          account.refresh_token,
-        ),
-        eventId: event?.googleId ?? undefined,
-      };
+      return new GoogleCalendarService(
+        account.access_token,
+        account.refresh_token,
+      );
     case "azure-ad":
-      return {
-        service: new MicrosoftCalendarService(
-          account.access_token,
-          account.refresh_token,
-        ),
-        eventId: event?.microsoftId ?? undefined,
-      };
+      return new MicrosoftCalendarService(
+        account.access_token,
+        account.refresh_token,
+      );
     default:
       throw new TRPCError({
         code: "BAD_REQUEST",

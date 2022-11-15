@@ -96,7 +96,7 @@ export const authOptions: NextAuthOptions = {
       authorization: {
         params: {
           access_type: "offline",
-          prompt: "select_account",
+          prompt: "consent",
           scope: azureScopes.join(" "),
         },
       },
