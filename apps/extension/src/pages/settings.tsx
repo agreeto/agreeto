@@ -44,36 +44,60 @@ export const Settings = () => {
 };
 
 const SettingsTabs = () => (
-  <Tabs.Root className="TabsRoot" defaultValue="tab1">
-    <Tabs.List className="TabsList" aria-label="Manage your account">
-      <Tabs.Trigger className="TabsTrigger" value="tab1">
+  <Tabs.Root
+    className="flex flex-col w-full h-full shadow-md"
+    defaultValue="tab1"
+  >
+    <Tabs.List
+      className="flex flex-shrink-0 border-b border-mauve-6"
+      aria-label="Manage your account"
+    >
+      <Tabs.Trigger
+        className="bg-white h-[45] flex-1 flex items-center justify-center text-xl leading-2 text-mauve-11 select-none hover:text-violet-11 active:text-violet-11 active:shadow-inner active:shadow-violet-11 focus:relative focus:shadow-sm focus:shadow-black"
+        value="tab1"
+      >
         Account
       </Tabs.Trigger>
-      <Tabs.Trigger className="TabsTrigger" value="tab2">
+      <Tabs.Trigger
+        className="bg-white h-[45] flex-1 flex items-center justify-center text-xl leading-2 text-mauve-11 select-none hover:text-violet-11 active:text-violet-11 active:shadow-inner active:shadow-violet-11 focus:relative focus:shadow-sm focus:shadow-black"
+        value="tab2"
+      >
         Other Settings
       </Tabs.Trigger>
     </Tabs.List>
-    <Tabs.Content className="TabsContent" value="tab1">
-      <p className="Text">
+    <Tabs.Content
+      className="p-5 bg-white outline-none flex-grow-1 focus:shadow-sm focus:shadow-black"
+      value="tab1"
+    >
+      <p className="mt-0 mb-[20] text-mauve-11 text-sm">
         Make changes to your account here. Click save when you&saposre done.
       </p>
-      <fieldset className="Fieldset">
-        <label className="Label" htmlFor="name">
+      <fieldset className="flex flex-col justify-start w-full mb-4">
+        <label
+          className="mb-3 text-sm text-violet-12 display-block"
+          htmlFor="name"
+        >
           Name
         </label>
-        <input className="Input" id="name" defaultValue="Pedro Duarte" />
+        <input
+          className="flex-1 flex-auto pb-2 text-sm shadow-sm border-1 text-violet-11 shadow-violet-7 focus:shadow-sm focus:shadow-violet-8"
+          id="name"
+          defaultValue="Pedro Duarte"
+        />
       </fieldset>
-      <fieldset className="Fieldset">
-        <label className="Label" htmlFor="username">
+      <fieldset className="flex flex-col justify-start w-full mb-4">
+        <label
+          className="mb-3 text-sm text-violet-12 display-block"
+          htmlFor="username"
+        >
           Username
         </label>
-        <input className="Input" id="username" defaultValue="@peduarte" />
+        <input
+          className="flex-1 flex-auto border-"
+          id="username"
+          defaultValue="@peduarte"
+        />
       </fieldset>
-      <div
-        style={{ display: "flex", marginTop: 20, justifyContent: "flex-end" }}
-      >
-        <button className="Button green">Save changes</button>
-      </div>
     </Tabs.Content>
     <Tabs.Content className="TabsContent" value="tab2">
       <p className="Text">
