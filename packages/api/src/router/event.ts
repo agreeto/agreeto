@@ -42,7 +42,7 @@ export const eventRouter = router({
       const calendarEvents = await Promise.all(
         accounts
           // FIXME: REMOVE GOOGLE FILTER
-          .filter((a) => a.provider === "google")
+          // .filter((a) => a.provider === "google")
           .map(async (account) => {
             const service = getCalendarService(account);
             const { events } = await service.getEvents(input);

@@ -1,10 +1,12 @@
-import { BiChevronDown, BiChevronLeft, BiChevronRight } from "react-icons/bi";
+import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 import { addDays, endOfWeek, getISOWeek, startOfWeek } from "date-fns";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { getPrimaryTimeZone, getTimeZoneAbv } from "@agreeto/calendar-core";
 import { useCalendarStore, useTZStore } from "../../utils/store";
 import { type CalendarApi } from "@fullcalendar/react";
 import { Button } from "@agreeto/ui";
+import { Switch } from "@headlessui/react";
+import { Fragment } from "react";
+import clsx from "clsx";
 
 export const ControlBar: React.FC<{
   // FIXME: Is there no type for this?
@@ -14,8 +16,7 @@ export const ControlBar: React.FC<{
   const setPeriod = useCalendarStore((s) => s.setPeriod);
   const focusedDate = useCalendarStore((s) => s.focusedDate);
   const setFocusedDate = useCalendarStore((s) => s.setFocusedDate);
-  const calendarType = useCalendarStore((s) => s.calendarType);
-  const setCalendarType = useCalendarStore((s) => s.setCalendarType);
+  const showWeekends = useCalendarStore((s) => s.showWeekends);
   const setShowWeekends = useCalendarStore((s) => s.setShowWeekends);
 
   const month = focusedDate.toLocaleString(undefined, { month: "long" });
@@ -94,8 +95,34 @@ export const ControlBar: React.FC<{
               </div> */}
             </div>
 
+            {/* Weekend switch */}
+            <Switch
+              checked={showWeekends}
+              onChange={setShowWeekends}
+              as={Fragment}
+            >
+              {({ checked }) => (
+                <div className="flex flex-col items-center">
+                  <span className="font-semibold">Weekends</span>
+                  <button
+                    className={clsx(
+                      "relative inline-flex h-6 w-11 items-center rounded-full",
+                      { "bg-primary": checked, "bg-gray-200": !checked },
+                    )}
+                  >
+                    <span
+                      className={clsx(
+                        "inline-block h-4 w-4 transform rounded-full bg-white transition",
+                        { "translate-x-6": checked, "translate-x-1": !checked },
+                      )}
+                    />
+                  </button>
+                </div>
+              )}
+            </Switch>
+
             {/* Remove hidden to show 5-7 days change */}
-            <div className="hidden">
+            {/* <div className="flex">
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger>
                   <div className="flex items-center space-x-3 rounded border border-gray-300 bg-white py-1 px-2 text-gray-700">
@@ -133,7 +160,7 @@ export const ControlBar: React.FC<{
                   </DropdownMenu.Item>
                 </DropdownMenu.Content>
               </DropdownMenu.Root>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

@@ -48,12 +48,14 @@ export class MicrosoftCalendarService {
               refreshToken: this.refreshToken,
               scopes: azureScopes,
             });
-            console.log("access token refreshed");
-            console.log(result);
             // TODO: Save the refresh token to our DB if it is changed (result.refreshToken)
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             return result!.accessToken;
           } catch (cause) {
-            console.error("Error while refreshing access token", cause);
+            console.error(
+              "An error occured in Microsoft services (auth)",
+              cause,
+            );
             throw new TRPCError({
               code: "INTERNAL_SERVER_ERROR",
               message: "Error while refreshing access token",
@@ -128,9 +130,9 @@ export class MicrosoftCalendarService {
       const response = await this.graphClient
         .api("/me/calendarview")
         .query(params)
-        .expand(
-          `singleValueExtendedProperties($filter=(id eq '${EXTENDED_PROP_SEARCH}') or (id eq '${EXTENDED_PROP_ID_SEARCH}'))`,
-        )
+        // .expand(
+        //   `singleValueExtendedProperties($filter=(id eq '${EXTENDED_PROP_SEARCH}') or (id eq '${EXTENDED_PROP_ID_SEARCH}'))`,
+        // )
         .top(100)
         .get();
 
