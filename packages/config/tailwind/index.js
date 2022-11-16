@@ -1,5 +1,4 @@
-// FIXME: disable ts rule for config .js files? https://eslint.org/docs/latest/user-guide/configuring#disabling-rules-only-for-a-group-of-files
-// eslint-disable-next-line
+/* eslint-disable @typescript-eslint/no-var-requires */
 const radixColors = require("@radix-ui/colors");
 /** @type {import('tailwindcss').Config} */
 module.exports = {
