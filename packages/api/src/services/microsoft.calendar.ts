@@ -19,8 +19,8 @@ export type MicrosoftMeetingProviders =
 // Read here: https://docs.microsoft.com/en-us/graph/api/singlevaluelegacyextendedproperty-get?view=graph-rest-1.0&tabs=javascript
 const EXTENDED_PROP_SEARCH =
   "String {66f5a359-4659-4830-9070-00047ec6ac6e} Name isAgreeToEvent";
-const EXTENDED_PROP_ID_SEARCH =
-  "String {66f5a359-4659-4830-9070-00047ec6ac6e} Name id";
+// const EXTENDED_PROP_ID_SEARCH =
+//   "String {66f5a359-4659-4830-9070-00047ec6ac6e} Name id";
 
 export class MicrosoftCalendarService {
   private accessToken: string;
@@ -87,12 +87,12 @@ export class MicrosoftCalendarService {
     };
 
     // Get agreeToId from extended props if possible
-    const agreeToId = singleValueExtendedProperties?.find(
-      (p: any) => p.id === EXTENDED_PROP_ID_SEARCH,
-    );
+    // const agreeToId = singleValueExtendedProperties?.find(
+    //   (p: any) => p.id === EXTENDED_PROP_ID_SEARCH,
+    // );
 
     return {
-      id: agreeToId?.value || id,
+      // id: id,
       providerEventId: id,
       title: subject || "-",
       description: body.content || "",
@@ -135,8 +135,6 @@ export class MicrosoftCalendarService {
         // )
         .top(100)
         .get();
-
-      // console.log(response);
 
       return {
         rawData: response,
@@ -189,8 +187,6 @@ export class MicrosoftCalendarService {
       const response = await this.graphClient
         .api("/me/calendar/events")
         .post(params);
-
-      console.log("Created event", response);
 
       return {
         rawData: response,

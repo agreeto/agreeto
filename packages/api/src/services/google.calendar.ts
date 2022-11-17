@@ -47,7 +47,8 @@ export class GoogleCalendarService {
       extendedProperties?.private?.isAgreeToEvent === "true";
 
     return {
-      id: id as string,
+      //id: id as string,
+      providerEventId: id as string,
       title: summary || "-",
       description: description || "",
       startDate: start?.dateTime ? new Date(start.dateTime) : undefined,

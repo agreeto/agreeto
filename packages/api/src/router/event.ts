@@ -40,18 +40,15 @@ export const eventRouter = router({
 
       // Get calendar Events
       const calendarEvents = await Promise.all(
-        accounts
-          // FIXME: REMOVE GOOGLE FILTER
-          // .filter((a) => a.provider === "google")
-          .map(async (account) => {
-            const service = getCalendarService(account);
-            const { events } = await service.getEvents(input);
-            return events.map((e) => ({
-              ...e,
-              account,
-              color: account.color.color,
-            }));
-          }),
+        accounts.map(async (account) => {
+          const service = getCalendarService(account);
+          const { events } = await service.getEvents(input);
+          return events.map((e) => ({
+            ...e,
+            account,
+            color: account.color.color,
+          }));
+        }),
       );
 
       // Merge events
