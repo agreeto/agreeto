@@ -1,12 +1,12 @@
 import type { FC } from "react";
 import { useState } from "react";
-import checkmarkBlueIcon from "../../assets/check-mark-blue.svg";
-import plusIcon from "../../assets/plus.svg";
+import { BiPlus, BiSearch } from "react-icons/bi";
+import { HiCheckCircle } from "react-icons/hi";
+import { IoClose } from "react-icons/io5";
 import { Popover } from "@headlessui/react";
 import OutsideClickHandler from "react-outside-click-handler";
-import searchIcon from "../../assets/search.svg";
-import uniq from "lodash/uniq";
-import { Membership, getTimeZoneAbv } from "@agreeto/calendar-core";
+import { getTimeZoneAbv } from "@agreeto/calendar-core";
+import { Membership } from "@agreeto/api/types";
 import { Float } from "@headlessui-float/react";
 import { trpc } from "../../utils/trpc";
 import { useTZStore } from "../../utils/store";
@@ -42,15 +42,18 @@ const TimeZoneSelect: FC<Props> = ({
 
   const title =
     type === "addIcon" ? (
-      <img src={plusIcon} style={{ opacity: isFree ? "0.3" : "1" }} alt="" />
+      <BiPlus className={isFree ? "opacity-30" : ""} />
     ) : (
       getTimeZoneAbv(value, referenceDate)
     );
 
-  const uniqTimeZones = uniq([
-    ...(type === "addIcon" ? [] : [value]),
-    ...recentlyUsedTimeZones,
-  ]).slice(0, 5);
+  const uniqTimeZones = [
+    ...new Set([
+      ...(type === "addIcon" ? [] : [value]),
+      ...recentlyUsedTimeZones,
+    ]),
+  ].slice(0, 5);
+
   // First filter the selected timeZones then put them into the front
   const timeZoneList: string[] = (Intl as any)
     .supportedValuesOf("timeZone")
@@ -76,7 +79,7 @@ const TimeZoneSelect: FC<Props> = ({
             <div
               className={`text-3xs-05 group flex items-center justify-center rounded border ${
                 type === "primary"
-                  ? "color-primary cursor-pointer"
+                  ? "cursor-pointer text-primary"
                   : !isFree
                   ? "cursor-pointer border-[#F0F1F2] bg-[#F0F1F2] hover:border-gray-300"
                   : "border-[#F0F1F2] bg-[#F0F1F2]"
@@ -122,14 +125,14 @@ const TimeZoneSelect: FC<Props> = ({
             className="mt-4 w-60 cursor-auto rounded border border-[#F9FAFA] bg-[#F9FAFA] p-4 text-left"
             style={{ boxShadow: "2px 4px 12px 2px #dbd9d9" }}
           >
-            <div className="color-gray-900 text-sm font-semibold">
+            <div className="text-sm font-semibold text-gray-900">
               Unlock Multiple Time Zones
             </div>
-            <div className="color-gray-900 mt-2 text-xs">
+            <div className="mt-2 text-xs text-gray-900">
               This feature is part of the Pro Plan
             </div>
             <div
-              className="border-primary color-primary mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border"
+              className="mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border border-primary text-primary"
               onClick={() => onPageChange?.("settings")}
             >
               Upgrade
@@ -154,7 +157,7 @@ const TimeZoneSelect: FC<Props> = ({
             }}
           >
             <div
-              className="color-gray-700 absolute z-10 w-80 rounded bg-white pt-6 shadow-xl"
+              className="absolute z-10 w-80 rounded bg-white pt-6 text-gray-700 shadow-xl"
               id="timeZonePopupContainer"
             >
               {/* Upper part */}
@@ -162,19 +165,18 @@ const TimeZoneSelect: FC<Props> = ({
                 {/* Title */}
                 <div className="flex items-center justify-between pb-4">
                   <div className="text-xl font-semibold">Time zone</div>
-
-                  <div
-                    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded border border-gray-50"
+                  <button
+                    className="cursor-pointer rounded border border-transparent p-1 hover:border-gray-100"
                     onClick={() => setIsOpen(false)}
                   >
-                    X
-                  </div>
+                    <IoClose className="h-5 w-5 text-gray-900" />
+                  </button>
                 </div>
 
                 {/* Search */}
-                <div className="input-icon-after">
+                <label className="relative flex h-8 w-full items-center justify-end px-1">
                   <input
-                    className="h-8 w-full border-b border-gray-50 outline-none"
+                    className="w-full border-b border-gray-100 outline-none"
                     placeholder="Search for country or city"
                     autoFocus
                     onChange={(e) => {
@@ -182,10 +184,8 @@ const TimeZoneSelect: FC<Props> = ({
                     }}
                     value={searchText}
                   />
-                  <div className="input-icon-container">
-                    <img src={searchIcon} alt="info" />
-                  </div>
-                </div>
+                  <BiSearch className="absolute mr-2 h-4 w-4" />
+                </label>
               </div>
 
               <div
@@ -262,13 +262,7 @@ const TimeZoneSelect: FC<Props> = ({
                           )}) ${tz}`}</div>
                           {/* Checmkark */}
                           {isSame && (
-                            <div>
-                              <img
-                                alt=""
-                                className="h-4 w-4"
-                                src={checkmarkBlueIcon}
-                              />
-                            </div>
+                            <HiCheckCircle className="h-5 w-5 fill-primary" />
                           )}
                         </div>
                       </div>

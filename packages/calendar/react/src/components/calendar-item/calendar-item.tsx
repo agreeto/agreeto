@@ -18,7 +18,7 @@ import { getTimezoneOffset } from "date-fns-tz";
 import "./calendar-item.scss";
 import type { FC } from "react";
 import { useEffect, useRef } from "react";
-import { EventResponseStatus } from "@agreeto/calendar-core";
+import { EventResponseStatus, Membership } from "@agreeto/api/types";
 import { eventMocks } from "./mock";
 import { ulid } from "ulid";
 import {
@@ -29,34 +29,20 @@ import {
 import TimeZoneSelect from "./time-zone-select";
 
 import { trpc } from "../../utils/trpc";
-import { type RouterOutputs } from "@agreeto/api";
-import {
-  useCalendarStore,
-  useEventStore,
-  useTZStore,
-  useViewStore,
-} from "../../utils/store";
-
-type Event = RouterOutputs["event"]["all"][number];
+import { useCalendarStore, useEventStore, useTZStore } from "../../utils/store";
 
 type Props = {
-  events?: Event[];
   onRefSettled: (ref: any) => void;
-  directoryUsersWithEvents: RouterOutputs["event"]["directoryUsers"];
   onPageChange?: (page: string) => void;
 };
 
-const CalendarItem: FC<Props> = ({
-  events,
-  onRefSettled,
-  directoryUsersWithEvents,
-  onPageChange,
-}) => {
+const CalendarItem: FC<Props> = ({ onRefSettled, onPageChange }) => {
   const ref = useRef<any>(null);
   const enableMock = false;
 
   const referenceDate = useCalendarStore((s) => s.focusedDate);
   const showWeekends = useCalendarStore((s) => s.showWeekends);
+  const period = useCalendarStore((s) => s.period);
 
   const selectedSlots = useEventStore((s) => s.selectedSlots);
   const deleteSlot = useEventStore((s) => s.deleteSlot);
@@ -65,17 +51,32 @@ const CalendarItem: FC<Props> = ({
   const selectSlot = useEventStore((s) => s.selectSlot);
   const selectEventGroup = useEventStore((s) => s.selectEventGroup);
   const setCheckedEvent = useEventStore((s) => s.setCheckedEvent);
+  const attendees = useEventStore((s) => s.attendees);
   const hoveredEvent = useEventStore((s) => s.hoveredEvent);
   const eventGroupId = useEventStore((s) => s.selectedEventGroupId);
 
   const timeZones = useTZStore((s) => s.timeZones);
   const primaryTimeZone = getPrimaryTimeZone(timeZones);
 
-  const changePane = useViewStore((s) => s.changePane);
-
   const { data: currentUser } = trpc.user.me.useQuery();
+  const isFree = currentUser?.membership === Membership.FREE;
   const { data: preference } = trpc.preference.byCurrentUser.useQuery();
   const locale = getDateLocale(preference);
+
+  const { data: events, isFetching: isFetchingEvents } =
+    trpc.event.all.useQuery(period, { staleTime: 30 * 1000 });
+
+  const { data: directoryUsersWithEvents } = trpc.event.directoryUsers.useQuery(
+    {
+      startDate: period.startDate,
+      endDate: period.endDate,
+      users: attendees,
+    },
+    {
+      keepPreviousData: true,
+      enabled: !isFree,
+    },
+  );
 
   useEffect(() => {
     if (ref) onRefSettled(ref);
@@ -101,10 +102,10 @@ const CalendarItem: FC<Props> = ({
 
     return (
       <div>
-        <div className="color-gray-600 font-normal">{day}</div>
+        <div className="font-normal text-gray-600">{day}</div>
         <div
           className={`my-1 flex h-10 w-10 items-center justify-center rounded-full text-xl font-semibold ${
-            isToday ? "bg-primary text-white" : "color-gray-600"
+            isToday ? "bg-primary text-white" : "text-gray-600"
           }`}
         >
           {date.getDate()}
@@ -145,7 +146,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
         {extendedProps?.new && (
           <div
             className={
-              "text-3xs-05 bg-event-block absolute flex h-4 w-4 cursor-pointer items-center justify-center rounded-full text-white"
+              "absolute flex h-4 w-4 cursor-pointer items-center justify-center rounded-full bg-primary text-white"
             }
             style={{
               top: extendedProps?.new ? "-10px" : "-8px",
@@ -155,7 +156,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
               deleteSlot(event.toJSON());
             }}
           >
-            X
+            ✕
           </div>
         )}
       </div>
@@ -165,7 +166,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
   const renderSlotLabels = ({ time }: SlotLabelContentArg) => {
     return (
       <div
-        className={`text-ceter color-gray-300 flex text-xs ${
+        className={`text-ceter flex text-xs text-gray-300 ${
           timeZones.length === 1
             ? "w-14 justify-center"
             : "w-24 justify-between pr-2"
@@ -243,7 +244,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
     });
 
     // Add events of directory users
-    directoryUsersWithEvents.forEach(({ events: directoryEvents }) => {
+    directoryUsersWithEvents?.forEach(({ events: directoryEvents, color }) => {
       directoryEvents?.forEach((event) => {
         const { id, title, startDate, endDate } = event;
 
@@ -252,8 +253,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
           title: title,
           start: startDate,
           end: endDate,
-          // FIXME: Color
-          backgroundColor: "cyan", // color,
+          backgroundColor: color,
           textColor: "white",
           borderColor: "transparent",
           extendedProps: {
@@ -267,7 +267,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
   };
 
   const handleSelect = ({ start, end }: DateSelectArg) => {
-    const slot: EventInput = {
+    selectSlot({
       id: ulid(),
       start,
       end,
@@ -280,74 +280,75 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
       extendedProps: {
         new: true,
       },
-    };
-    selectSlot(slot);
+    });
     ref.current.getApi().unselect();
   };
 
   return (
     <div className="relative w-full">
-      <FullCalendar
-        plugins={[interactionPlugin, timeGridPlugin, momentTimezonePlugin]}
-        initialView="timeGridWeek"
-        ref={ref}
-        dayHeaderContent={renderCalendarHeader}
-        eventContent={renderCalendarEvent}
-        selectable
-        select={handleSelect}
-        events={getEvents()}
-        headerToolbar={false}
-        weekends={showWeekends}
-        eventClick={({ event }) => {
-          if (event.extendedProps.isAgreeToEvent) {
-            selectEventGroup(event.extendedProps?.eventGroupId);
-            setCheckedEvent(event.extendedProps?.event);
-            changePane("confirmation");
-          }
-        }}
-        slotLabelInterval={{ hours: 1 }}
-        slotDuration="00:15:00"
-        height={600}
-        allDaySlot={false}
-        slotLabelContent={renderSlotLabels}
-        eventChange={({ event }) => updateSlots(event.toJSON())}
-        scrollTime="08:00:00"
-        nowIndicator
-        timeZone={primaryTimeZone}
-        eventOrder={(e1: any, e2: any) => {
-          if (e1?.extendedProps?.new) {
+      <div className={isFetchingEvents ? "animate-pulse" : ""}>
+        <FullCalendar
+          plugins={[interactionPlugin, timeGridPlugin, momentTimezonePlugin]}
+          initialView="timeGridWeek"
+          ref={ref}
+          dayHeaderContent={renderCalendarHeader}
+          eventContent={renderCalendarEvent}
+          selectable
+          select={handleSelect}
+          events={getEvents()}
+          headerToolbar={false}
+          weekends={showWeekends}
+          eventClick={({ event }) => {
+            if (event.extendedProps.isAgreeToEvent) {
+              selectEventGroup(event.extendedProps?.eventGroupId);
+              setCheckedEvent(event.extendedProps?.event);
+            }
+          }}
+          slotLabelInterval={{ hours: 1 }}
+          slotDuration="00:15:00"
+          height={600}
+          allDaySlot={false}
+          slotLabelContent={renderSlotLabels}
+          eventChange={({ event }) => updateSlots(event.toJSON())}
+          scrollTime="08:00:00"
+          nowIndicator
+          timeZone={primaryTimeZone}
+          eventOrder={(e1: any, e2: any) => {
+            // TODO: Why doesn't FullCalendar's type match here?
+            if (e1?.extendedProps?.new) {
+              return 1;
+            }
+            if (e2?.extendedProps?.new) {
+              return -1;
+            }
             return 1;
-          }
-          if (e2?.extendedProps?.new) {
-            return -1;
-          }
-          return 1;
-        }}
-        eventDidMount={({ el, event }) => {
-          el.style.width = "calc(100% - 10px)";
-          if (hoveredEvent?.id === event.id) {
-            el.style.borderStyle = "dashed";
-            el.style.borderColor = "#E57373";
-            el.style.borderWidth = "3px";
-          } else if (
-            eventGroupId &&
-            eventGroupId === event.extendedProps.eventGroupId
-          ) {
-            el.style.borderStyle = "dashed";
-            el.style.borderColor = "#E57373";
-            el.style.borderWidth = "1px";
-            el.style.cursor = "pointer";
-          } else if (event.extendedProps?.new) {
-            el.style.borderStyle = "dashed";
-            el.style.borderWidth = "2px";
-          } else if (event.extendedProps?.isAgreeToEvent) {
-            el.style.borderStyle = "hidden";
-            el.style.cursor = "pointer";
-          } else {
-            el.style.cursor = "not-allowed";
-          }
-        }}
-      />
+          }}
+          eventDidMount={({ el, event }) => {
+            el.style.width = "calc(100% - 10px)";
+            if (hoveredEvent?.id === event.id) {
+              el.style.borderStyle = "dashed";
+              el.style.borderColor = "#E57373";
+              el.style.borderWidth = "3px";
+            } else if (
+              eventGroupId &&
+              eventGroupId === event.extendedProps.eventGroupId
+            ) {
+              el.style.borderStyle = "dashed";
+              el.style.borderColor = "#E57373";
+              el.style.borderWidth = "1px";
+              el.style.cursor = "pointer";
+            } else if (event.extendedProps?.new) {
+              el.style.borderStyle = "dashed";
+              el.style.borderWidth = "2px";
+            } else if (event.extendedProps?.isAgreeToEvent) {
+              el.style.borderStyle = "hidden";
+              el.style.cursor = "pointer";
+            } else {
+              el.style.cursor = "not-allowed";
+            }
+          }}
+        />
+      </div>
 
       {/* Timezone title */}
       <div

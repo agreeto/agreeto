@@ -1,4 +1,5 @@
 import create from "zustand/vanilla";
+import { endOfWeek, startOfWeek } from "date-fns";
 
 type CalendarType = "5 days" | "7 days";
 
@@ -7,11 +8,16 @@ export interface CalendarStore {
   focusedDate: Date;
   showWeekends: boolean;
   calendarType: CalendarType;
+  period: {
+    startDate: Date;
+    endDate: Date;
+  };
 
   // Actions
   setFocusedDate: (date: Date) => void;
   setShowWeekends: (show: boolean) => void;
   setCalendarType: (type: CalendarType) => void;
+  setPeriod: (start: Date, end: Date) => void;
 }
 
 /**
@@ -23,6 +29,10 @@ export const calendarStore = create<CalendarStore>()((set) => ({
   focusedDate: new Date(),
   showWeekends: true,
   calendarType: "7 days",
+  period: {
+    startDate: startOfWeek(new Date()),
+    endDate: endOfWeek(new Date()),
+  },
 
   // Actions
   setFocusedDate(date) {
@@ -38,6 +48,11 @@ export const calendarStore = create<CalendarStore>()((set) => ({
   setCalendarType(type) {
     set({
       calendarType: type,
+    });
+  },
+  setPeriod(startDate, endDate) {
+    set({
+      period: { startDate, endDate },
     });
   },
 }));

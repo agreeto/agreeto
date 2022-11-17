@@ -1,9 +1,20 @@
 import { Button } from "@agreeto/ui";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import clsx from "clsx";
+import { FaUser } from "react-icons/fa";
+import { HiCheckCircle } from "react-icons/hi";
 
 import { trpcApi } from "~features/trpc/api/hooks";
 
 export const Settings = () => {
-  const userQuery = trpcApi.account.me.useQuery();
+  const utils = trpcApi.useContext();
+  const { data: accounts } = trpcApi.account.me.useQuery();
+  const { data: primaryAccount } = trpcApi.account.primary.useQuery();
+  const { mutate: changePrimary } = trpcApi.account.changePrimary.useMutation({
+    onSuccess() {
+      utils.account.primary.invalidate();
+    },
+  });
 
   return (
     <div className="w-full">
@@ -29,13 +40,49 @@ export const Settings = () => {
         >
           Sign Out
         </Button>
+
+        {/* Account Switch */}
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger asChild>
+            <button className="bg-primary h-8 w-8 rounded flex items-center justify-center">
+              <FaUser className="text-white h-6 w-6" />
+            </button>
+          </DropdownMenu.Trigger>
+
+          <DropdownMenu.Portal>
+            <DropdownMenu.Content
+              className="rounded bg-white text-gray-900 border shadow-xl"
+              sideOffset={5}
+            >
+              {accounts?.map((a, idx) => (
+                <DropdownMenu.Item
+                  key={a.id}
+                  onSelect={() => changePrimary({ id: a.id })}
+                >
+                  <div
+                    className={clsx(
+                      "flex items-center justify-between gap-3 p-2 border-gray-900 hover:opacity-80 cursor-pointer",
+                      { "border-b": idx !== accounts.length - 1 },
+                    )}
+                  >
+                    <div className="text-sm">{a.email}</div>
+                    {a.id === primaryAccount?.id && (
+                      <HiCheckCircle className="text-primary h-6" />
+                    )}
+                  </div>
+                </DropdownMenu.Item>
+              ))}
+            </DropdownMenu.Content>
+          </DropdownMenu.Portal>
+        </DropdownMenu.Root>
       </div>
-      <details className="p-2 overflow-y-scroll">
-        <summary className="text-md font-medium">Accounts</summary>
-        <pre className="overflow-scroll max-w-md">
-          {JSON.stringify(userQuery.data, null, 2)}
-        </pre>
-      </details>
+      {primaryAccount && (
+        <div className="p-2">
+          <h3 className="text-lg font-bold">Primary Account</h3>
+          <p>{primaryAccount.email}</p>
+          <p>{primaryAccount.provider}</p>
+        </div>
+      )}
     </div>
   );
 };

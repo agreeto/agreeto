@@ -1,11 +1,7 @@
 import { type FC } from "react";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import {
-  convertToDate,
-  EventResponseStatus,
-  copyToClipboard,
-} from "@agreeto/calendar-core";
+import { convertToDate, copyToClipboard } from "@agreeto/calendar-core";
 import Availability from "./availability";
 import { Attendees } from "./attendees";
 import { IoClose, IoCheckmarkCircle } from "react-icons/io5";
@@ -14,11 +10,8 @@ import { Float } from "@headlessui-float/react";
 import OutsideClickHandler from "react-outside-click-handler";
 import { Spinner } from "@agreeto/ui";
 import { trpc } from "../../utils/trpc";
-import { type RouterInputs, type RouterOutputs } from "@agreeto/api";
 import { useEventStore } from "../../utils/store";
 import clsx from "clsx";
-
-type DirectoryUsers = RouterOutputs["event"]["directoryUsers"];
 
 const actionTypes = {
   "Copy and Close":
@@ -26,20 +19,16 @@ const actionTypes = {
   "Create Hold and Copy":
     "Creates unconfirmed events in the calendar of each attendee, then copies the selected time slots.",
 };
-type ActionType = keyof typeof actionTypes;
+export type ActionType = keyof typeof actionTypes;
 
 type Props = {
   onClose?: () => void;
-  directoryUsersWithEvents: DirectoryUsers;
-  onDirectoryUsersWithEventsChange: (users: DirectoryUsers) => void;
   onPageChange?: (page: string) => void;
   onPrimaryActionClick?: (type: ActionType) => void;
 };
 
 const ActionPane: FC<Props> = ({
   onClose,
-  directoryUsersWithEvents,
-  onDirectoryUsersWithEventsChange,
   onPageChange,
   onPrimaryActionClick,
 }) => {
@@ -48,13 +37,13 @@ const ActionPane: FC<Props> = ({
   const title = useEventStore((s) => s.title);
   const resetTitle = useEventStore((s) => s.resetTitle);
   const updateTitle = useEventStore((s) => s.updateTitle);
+  const attendees = useEventStore((s) => s.attendees);
+  const unknownAttendees = useEventStore((s) => s.unknownAttendees);
+  const clearAttendees = useEventStore((s) => s.clearAttendees);
 
   const selectedSlots = useEventStore((s) => s.selectedSlots);
   const clearSlots = useEventStore((s) => s.clearSlots);
 
-  const [unknownAttendees, setUnknownAttendees] = useState<
-    RouterInputs["eventGroup"]["create"]["events"][number]["attendees"]
-  >([]);
   const [showActionTypesPopup, setShowActionTypesPopup] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [showCreatingSpinner, setShowCreatingSpinner] = useState(false);
@@ -65,7 +54,7 @@ const ActionPane: FC<Props> = ({
   const { mutate: createEventGroup, isLoading: isCreatingEventGroup } =
     trpc.eventGroup.create.useMutation({
       onSuccess() {
-        setUnknownAttendees([]);
+        clearAttendees();
         utils.event.all.invalidate();
 
         copyToClipboard(selectedSlots, preference);
@@ -136,20 +125,19 @@ const ActionPane: FC<Props> = ({
           title: slot.title || "",
           startDate: convertToDate(slot.start),
           endDate: convertToDate(slot.end),
-          attendees: unknownAttendees.concat(
-            directoryUsersWithEvents.map((u) => ({
-              id: u.id,
-              name: u.name,
-              surname: u.surname,
-              email: u.email,
-              provider: u.provider,
-              responseStatus: EventResponseStatus.NEEDS_ACTION,
-            })),
-          ),
+          attendees: [...attendees, ...unknownAttendees],
         };
       }),
     });
   };
+
+  // TESTING PURPOSES TO QUICKLY SWITCH BETWEEN PAYMENT TIERS
+  const { data: user } = trpc.user.me.useQuery();
+  const { mutate: updateUserTier } = trpc.user.updateTier.useMutation({
+    onSettled() {
+      utils.user.me.invalidate();
+    },
+  });
 
   const actionTypesPopup = (
     <OutsideClickHandler
@@ -250,6 +238,19 @@ const ActionPane: FC<Props> = ({
           {/* Close icon */}
           {(onClose || true) && (
             <div className="flex flex-1 justify-end">
+              {/* TODO: (Remove) Testing Tier Button */}
+              {user?.membership && (
+                <button
+                  className="mr-2 rounded border-2 border-primary text-sm font-semibold text-primary hover:bg-primary hover:text-white"
+                  onClick={() => {
+                    updateUserTier({
+                      tier: user?.membership === "FREE" ? "PRO" : "FREE",
+                    });
+                  }}
+                >
+                  {user?.membership}
+                </button>
+              )}
               <button
                 className="cursor-pointer rounded bg-red-500 p-1 hover:bg-red-600"
                 onClick={handleClose}
@@ -268,16 +269,8 @@ const ActionPane: FC<Props> = ({
           />
 
           {/* Attendees */}
-          <div className="pt-8">
-            <Attendees
-              unknownAttendees={unknownAttendees}
-              onUnknownAttendeesChange={setUnknownAttendees}
-              directoryUsersWithEvents={directoryUsersWithEvents}
-              onDirectoryUsersWithEventsChange={
-                onDirectoryUsersWithEventsChange
-              }
-              onPageChange={onPageChange}
-            />
+          <div className="pt-4">
+            <Attendees onPageChange={onPageChange} />
           </div>
 
           {/* Availability */}

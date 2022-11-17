@@ -9,7 +9,7 @@ export const Layout: React.FC<{ children?: React.ReactNode }> = ({
         <Navbar />
       </aside>
       {/* - 👇 inject the `children` here 👇 */}
-      <main className="flex flex-1">{children}</main>
+      <main className="flex flex-1 overflow-y-hidden">{children}</main>
     </div>
   );
 };

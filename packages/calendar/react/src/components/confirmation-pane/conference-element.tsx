@@ -1,8 +1,8 @@
 import React from "react";
 import { type RouterOutputs } from "@agreeto/api";
-import checkMark2Icon from "../../assets/check-mark-2.png";
+import { HiCheckCircle } from "react-icons/hi";
 import googleMeetIcon from "../../assets/google-meet.svg";
-import teamsIcon from "../../assets/ms-teams.svg";
+import { SiMicrosoftteams } from "react-icons/si";
 
 export const ConferenceElement: React.FC<{
   eventGroup: RouterOutputs["eventGroup"]["byId"];
@@ -23,24 +23,22 @@ export const ConferenceElement: React.FC<{
       >
         {/* Check icon */}
         {addConference && (
-          <div className="absolute -right-2 -top-2">
-            <img src={checkMark2Icon} className="h-4 w-4" alt="" />
-          </div>
+          <HiCheckCircle className=" absolute -right-2 -top-2 h-5 w-5 text-green-500" />
         )}
 
         {/* Icon and title */}
         <div className="flex items-center">
           {provider === "google" ? (
             <>
-              <img src={googleMeetIcon} alt="meet" className="h-8 w-8" />
-              <span className="color-gray-900 pl-3 text-sm font-medium">
+              <img src={googleMeetIcon} alt="meet" className="h-7 w-7" />
+              <span className="pl-3 text-sm font-medium text-gray-900">
                 Google Meet
               </span>
             </>
           ) : (
             <>
-              <img src={teamsIcon} alt="teams" className="h-7 w-7" />
-              <span className="color-gray-900 pl-2 text-sm font-medium">
+              <SiMicrosoftteams className="h-7 w-7 text-[#6264A7]" />
+              <span className="pl-2 text-sm font-medium text-gray-900">
                 Microsoft Teams
               </span>
             </>

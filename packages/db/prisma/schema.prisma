@@ -5,6 +5,10 @@ generator client {
     provider = "prisma-client-js"
 }
 
+generator enums {
+    provider = "tsx ./prisma/enum-generator"
+}
+
 datasource db {
     provider = "postgresql"
     url      = env("DATABASE_URL")
@@ -161,21 +165,21 @@ model EventGroup {
 }
 
 model Event {
-    id             String            @id @default(cuid())
-    userId         String
-    microsoftId    String?
-    eventGroupId   String
-    accountId      String
-    title          String
-    location       String?
-    description    String            @default("")
-    attendees      Attendee[]
-    calendarType   EventCalendarType @default(BLOCKER)
-    startDate      DateTime
-    endDate        DateTime
-    isAgreeToEvent Boolean           @default(true)
-    isSelected     Boolean           @default(false)
-    hasConference  Boolean           @default(false)
+    id              String            @id @default(cuid())
+    userId          String
+    providerEventId String?
+    eventGroupId    String
+    accountId       String
+    title           String
+    location        String?
+    description     String            @default("")
+    attendees       Attendee[]
+    calendarType    EventCalendarType @default(BLOCKER)
+    startDate       DateTime
+    endDate         DateTime
+    isAgreeToEvent  Boolean           @default(true)
+    isSelected      Boolean           @default(false)
+    hasConference   Boolean           @default(false)
 
     deletedAt DateTime?
     createdAt DateTime  @default(now())

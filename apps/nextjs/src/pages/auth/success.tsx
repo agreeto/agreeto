@@ -13,9 +13,7 @@ const Success: NextPage = () => {
         <div className="relative h-20 w-20">
           <Image src="/icon512.png" alt="AgreeTo" layout="fill" />
         </div>
-        <h1 className="color-primary ml-2 text-4xl font-semibold text-[#2e81ff]">
-          AgreeTo
-        </h1>
+        <h1 className="ml-2 text-4xl font-semibold text-primary">AgreeTo</h1>
       </div>
       <p className="text-2xl text-green-600">You are successfully logged in!</p>
       <br />

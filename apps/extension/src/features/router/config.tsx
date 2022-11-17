@@ -27,8 +27,8 @@ export const getRoutes: () => Route[] = () => {
       path: "settings",
       element: <Settings />,
       // TODO: add account fetching to the settings route
-      async loader({ params }) {
-        console.log({ params });
+      async loader({ params: _p }) {
+        // console.log({ params });
         // FIXME: Should prob not include all this information
         utils.account.me.fetch();
         return {};

@@ -1,49 +1,36 @@
-import { type FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import closeIcon from "../../assets/close.svg";
-import backIcon from "../../assets/double-arrow-left.svg";
 
 import { Attendees } from "./../action-pane/attendees";
-import { EventResponseStatus } from "@agreeto/calendar-core";
-// TODO: This modal should come from `ui` package. I disabled it because we are having trouble with tailwindcss
-// on `ext` app when we import the modal from the `ui` package
-import { Modal } from "../modal";
+import { EventResponseStatus } from "@agreeto/api/types";
+import { Button, Modal } from "@agreeto/ui";
 
-import { type RouterInputs, type RouterOutputs } from "@agreeto/api";
 import { trpc } from "../../utils/trpc";
-import { ConferenceElement } from "./conference-element.new";
-import { EventElement } from "./event-element.new";
-import { Title } from "./title.new";
-import { useEventStore, useViewStore } from "../../utils/store";
+import { ConferenceElement } from "./conference-element";
+import { EventElement } from "./event-element";
+import { Title } from "./title";
+import { useEventStore } from "../../utils/store";
+import { IoClose, IoChevronBackOutline } from "react-icons/io5";
 
-type DirectoryUser = RouterOutputs["event"]["directoryUsers"][number];
-
-type Props = {
+const ConfirmationPane: React.FC<{
   onClose?: () => void;
-
+  // Passed as props here instead of grabbing it from store
+  // since we need it to be non-nullable
   eventGroupId: string;
-  directoryUsersWithEvents: DirectoryUser[];
-  onDirectoryUsersWithEventsChange: (users: DirectoryUser[]) => void;
-};
-
-const ConfirmationPane: FC<Props> = ({
-  onClose,
-  eventGroupId,
-  directoryUsersWithEvents,
-  onDirectoryUsersWithEventsChange,
-}) => {
+}> = ({ onClose, eventGroupId }) => {
   const utils = trpc.useContext();
 
   const checkedEvent = useEventStore((s) => s.checkedEvent);
+  const directoryUsersWithEvents = useEventStore(
+    (s) => s.directoryUsersWithEvents,
+  );
+  const unknownAttendees = useEventStore((s) => s.unknownAttendees);
 
-  const changePane = useViewStore((s) => s.changePane);
+  const changePane = useEventStore((s) => s.changePane);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [addConference, setAddConference] = useState(false);
   const [title, setTitle] = useState("");
-  const [unknownAttendees, setUnknownAttendees] = useState<
-    RouterInputs["eventGroup"]["create"]["events"][number]["attendees"]
-  >([]);
 
   useEffect(() => {
     setAddConference(false);
@@ -52,15 +39,14 @@ const ConfirmationPane: FC<Props> = ({
   const { data: accounts } = trpc.account.me.useQuery();
   const primaryAccount = accounts?.find((a) => a.isPrimary);
 
-  const { data: eventGroup, isLoading: isLoadingGroup } =
-    trpc.eventGroup.byId.useQuery(
-      { id: eventGroupId },
-      {
-        onSuccess: (eg) => {
-          setTitle(eg.title || "");
-        },
+  const { data: eventGroup } = trpc.eventGroup.byId.useQuery(
+    { id: eventGroupId },
+    {
+      onSuccess: (eg) => {
+        setTitle(eg.title || "");
       },
-    );
+    },
+  );
 
   const { mutate: confirmEvent, isLoading: isConfirming } =
     trpc.event.confirm.useMutation({
@@ -125,6 +111,7 @@ const ConfirmationPane: FC<Props> = ({
       attendees: unknownAttendees.concat(
         directoryUsersWithEvents.map((u) => ({
           id: u.id,
+          color: u.color,
           name: u.name,
           surname: u.surname,
           email: u.email,
@@ -145,33 +132,25 @@ const ConfirmationPane: FC<Props> = ({
       <div className="flex h-full flex-col justify-between">
         {/* Top */}
         <div>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-1 justify-between">
             {/* Back icon */}
-            <div>
-              <img
-                src={backIcon}
-                alt="back"
-                className="h-8 w-8 cursor-pointer"
-                onClick={() => changePane("action")}
-              />
-            </div>
+            <button
+              className="cursor-pointer rounded p-1 hover:bg-gray-200"
+              onClick={() => changePane("action")}
+            >
+              <IoChevronBackOutline className="text-neutral h-6 w-6" />
+            </button>
 
             {/* Close icon */}
-            {onClose && (
-              <div>
-                <img
-                  src={closeIcon}
-                  alt="close"
-                  className="h-8 w-8 cursor-pointer"
-                  onClick={() => onClose?.()}
-                />
-              </div>
+            {(onClose || true) && (
+              <button
+                className="cursor-pointer rounded bg-red-500 p-1 hover:bg-red-600"
+                onClick={() => onClose?.()}
+              >
+                <IoClose className="h-6 w-6 text-white" />
+              </button>
             )}
           </div>
-
-          {/* Some padding */}
-          <div className="pt-8" />
-          {isLoadingGroup && <div>Loading...</div>}
 
           {/* Title */}
           <Title
@@ -194,7 +173,7 @@ const ConfirmationPane: FC<Props> = ({
 
           {/* Info */}
           {/* <div className="pt-4 leading-none text-center">
-            <span className="color-gray-300 font-medium text-2xs-05">
+            <span className="text-gray-300 font-medium text-2xs-05">
               {!eventGroup?.isSelectionDone &&
                 'Once you confirm a slot, other slots will be removed from your actual calendar(s)'}
             </span>
@@ -216,15 +195,7 @@ const ConfirmationPane: FC<Props> = ({
 
           {/* Attendees */}
           <div className="pt-4">
-            <Attendees
-              unknownAttendees={unknownAttendees}
-              onUnknownAttendeesChange={setUnknownAttendees}
-              directoryUsersWithEvents={directoryUsersWithEvents}
-              onDirectoryUsersWithEventsChange={
-                onDirectoryUsersWithEventsChange
-              }
-              eventGroup={eventGroup}
-            />
+            <Attendees eventGroup={eventGroup} />
           </div>
         </div>
 
@@ -233,21 +204,22 @@ const ConfirmationPane: FC<Props> = ({
           {/* Save */}
           <div className="space-y-4">
             {!eventGroup?.isSelectionDone && (
-              <button
-                className="button w-full"
+              <Button
+                className="w-full"
                 onClick={handleSave}
                 disabled={!checkedEvent || isConfirming || isDeleting}
               >
                 Confirm
-              </button>
+              </Button>
             )}
-            <button
-              className="button-borderless button-borderless-danger w-full"
+            <Button
+              variant="glass"
+              className="w-full text-red-600"
               onClick={() => setShowDeleteModal(true)}
               disabled={isConfirming || isDeleting}
             >
               Delete This Group
-            </button>
+            </Button>
           </div>
         </div>
         {/* End Save */}
