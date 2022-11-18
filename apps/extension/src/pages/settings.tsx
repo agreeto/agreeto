@@ -5,6 +5,7 @@ import { FaUser } from "react-icons/fa";
 import { HiCheckCircle } from "react-icons/hi";
 
 import { trpcApi } from "~features/trpc/api/hooks";
+import { trpcChromeClient } from "~features/trpc/chrome/client";
 
 export const Settings = () => {
   const utils = trpcApi.useContext();
@@ -19,7 +20,7 @@ export const Settings = () => {
     {
       async onSuccess({ checkoutUrl }) {
         // Redirect to Stripe checkout
-        await chrome.tabs.create({ url: checkoutUrl });
+        trpcChromeClient.openTab.mutate(checkoutUrl);
       },
     },
   );
