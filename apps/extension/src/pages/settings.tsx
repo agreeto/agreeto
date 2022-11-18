@@ -15,6 +15,14 @@ export const Settings = () => {
       utils.account.primary.invalidate();
     },
   });
+  const { mutate: upgradeAccount } = trpcApi.stripe.checkout.create.useMutation(
+    {
+      async onSuccess({ checkoutUrl }) {
+        // Redirect to Stripe checkout
+        await chrome.tabs.create({ url: checkoutUrl });
+      },
+    },
+  );
 
   return (
     <div className="w-full">
@@ -33,6 +41,7 @@ export const Settings = () => {
         >
           Add Account
         </Button>
+        <Button onClick={() => upgradeAccount()}>Upgrade Account</Button>
         <Button
           onClick={() => {
             window.open(`${process.env.PLASMO_PUBLIC_WEB_URL}/auth/signout`);

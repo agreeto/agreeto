@@ -5,6 +5,7 @@ import { eventRouter } from "./event";
 import { eventGroupRouter } from "./event-group";
 import { preferenceRouter } from "./preference";
 import { sessionRouter } from "./session";
+import { stripeRouter } from "./stripe";
 import { userRouter } from "./user";
 
 export const appRouter = router({
@@ -12,6 +13,7 @@ export const appRouter = router({
   event: eventRouter,
   eventGroup: eventGroupRouter,
   session: sessionRouter,
+  stripe: stripeRouter,
   preference: preferenceRouter,
   user: userRouter,
 });

@@ -21,4 +21,6 @@ if (process.env.NODE_ENV !== "production") {
   global.prisma = prisma;
 }
 
+export type Prisma = typeof prisma;
+
 export * from "@prisma/client";
