@@ -11,8 +11,6 @@ const Success: NextPage = () => {
         type: "successful-payment",
       });
     }
-
-    setTimeout(() => close(), 1500);
   }, []);
 
   return (
@@ -25,10 +23,10 @@ const Success: NextPage = () => {
       </div>
       <p className="text-2xl text-green-600">Thank you for your purchase!</p>
       <br />
-      <p className="text-lg text-gray-600">You can open your extension now.</p>
       <p className="text-lg text-gray-600">
-        This page will close automatically.
+        You can open your extension now and access your premium features.
       </p>
+      <p className="text-lg text-gray-600">You can close this window.</p>
     </div>
   );
 };
