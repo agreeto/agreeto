@@ -1,4 +1,4 @@
-import { type Prisma } from "@agreeto/db";
+import { Membership, type Prisma } from "@agreeto/db";
 import { TRPCError } from "@trpc/server";
 import { Stripe } from "stripe";
 import { z } from "zod";
@@ -89,6 +89,11 @@ export const stripeRouter = router({
         ],
         success_url: `${process.env.NEXTAUTH_URL}/payment/success`,
         cancel_url: `${process.env.NEXTAUTH_URL}/payment/cancel`,
+        subscription_data: {
+          metadata: {
+            userId: ctx.user.id,
+          },
+        },
       });
 
       if (!session || !session.url)
@@ -101,11 +106,58 @@ export const stripeRouter = router({
     }),
   }),
 
+  subscription: router({
+    createBillingPortalSession: privateProcedure.mutation(async ({ ctx }) => {
+      const customerId = await getCustomerId(ctx.user.id, ctx.prisma);
+      const session = await stripe.billingPortal.sessions.create({
+        customer: customerId,
+        return_url: `${process.env.NEXTAUTH_URL}/dashboard`,
+      });
+      return session;
+    }),
+  }),
+
   // Webhooks for Stripe events, server-called by Next.js API router
   webhooks: router({
     invoice: router({
-      paid: stripeWHProcedure.mutation(async () => {
-        /** no-op */
+      paid: stripeWHProcedure.mutation(async ({ ctx, input }) => {
+        // Extract out metadata which contains some user info
+        const invoice = input.event.data.object as Stripe.Invoice;
+        const subscription = await stripe.subscriptions.retrieve(
+          invoice.subscription as string,
+        );
+        const { userId } = subscription.metadata;
+
+        const lineItem = invoice.lines.data[0];
+        const priceId = lineItem?.plan?.id;
+        if (!priceId) throw new TRPCError({ code: "BAD_REQUEST" });
+
+        const membership =
+          priceId === process.env.STRIPE_MONTHLY_PRICE_ID
+            ? Membership.PRO
+            : Membership.PREMIUM;
+
+        // Update the user's membership, and register the payment
+        await Promise.all([
+          ctx.prisma.user.update({
+            where: { id: userId },
+            data: { membership },
+          }),
+          ctx.prisma.payment.create({
+            data: {
+              user: { connect: { id: userId } },
+              email: invoice.customer_email as string,
+              membershipPlan: priceId,
+              membership,
+              subscriptionId: subscription.id,
+              customerId: subscription.customer as string,
+              eventId: input.event.id,
+              // Multiply with 1000 to convert it into ms
+              membershipStartDate: lineItem.period.start * 1000,
+              membershipEndDate: lineItem.period.end * 1000,
+            },
+          }),
+        ]);
       }),
       failed: stripeWHProcedure.mutation(async () => {
         /** no-op */
