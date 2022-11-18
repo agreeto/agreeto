@@ -37,12 +37,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       case "customer.subscription.updated":
         await caller.stripe.webhooks.subscription.updated({ event });
         break;
+      case "customer.subscription.deleted":
+        await caller.stripe.webhooks.subscription.deleted({ event });
+        break;
 
       default:
       // console.log("Unhandled Stripe event type", event.type);
     }
 
-    res.status(200).end();
+    res.status(200).json({ success: true });
   } catch (cause) {
     // Error occured in the tRPC webhook handlers
     if (cause instanceof TRPCError) {

@@ -122,7 +122,7 @@ export const stripeRouter = router({
       const { customerId } = await getCustomerId(ctx.user.id, ctx.prisma);
       const session = await stripe.billingPortal.sessions.create({
         customer: customerId,
-        return_url: `${process.env.NEXTAUTH_URL}/dashboard`,
+        return_url: process.env.NEXTAUTH_URL,
       });
       return session;
     }),
@@ -174,6 +174,8 @@ export const stripeRouter = router({
         /** no-op */
       }),
     }),
+
+    // Occurs whenever a source's details are changed
     subscription: router({
       updated: stripeWHProcedure.mutation(async ({ ctx, input }) => {
         const subscription = input.event.data.object as Stripe.Subscription;
@@ -183,25 +185,53 @@ export const stripeRouter = router({
           ? new Date(subscription.cancel_at * 1000)
           : null;
 
+        // NOTE: Just cause we get cancelled doesn't mean we should end the
+        // membership, as the subscription is still active until the end of the
+        // billing period. We get a separete `delete` event for that ⬇️⬇️⬇️
+
         await Promise.all([
           ctx.prisma.user.update({
             where: { id: userId },
             data: {
               subscriptionCanceledDate: canceledDate,
-              // update the membership if the subscription is canceled
-              membership: canceledDate ? Membership.FREE : undefined,
-              preference: {
-                update: {
-                  // reset the preference if the subscription is canceled
-                  formatLanguage: canceledDate ? Language.EN : undefined,
-                },
-              },
             },
           }),
           ctx.prisma.payment.updateMany({
             where: { subscriptionId: subscription.id },
             data: {
               canceledDate,
+            },
+          }),
+        ]);
+      }),
+
+      // Occurs whenever a customer's subscription ends
+      // We use this to update the user's membership and reset their premium features
+      deleted: stripeWHProcedure.mutation(async ({ ctx, input }) => {
+        const subscription = input.event.data.object as Stripe.Subscription;
+        const { userId } = subscription.metadata;
+
+        await Promise.all([
+          ctx.prisma.user.update({
+            where: { id: userId },
+            data: {
+              subscriptionCanceledDate: new Date(),
+              membership: Membership.FREE,
+              preference: {
+                update: {
+                  formatLanguage: Language.EN,
+                },
+              },
+            },
+          }),
+          ctx.prisma.payment.updateMany({
+            where: {
+              subscriptionId: subscription.id,
+              // This might already have been updated ⬆️⬆️⬆️, so we only update the `null` ones
+              canceledDate: null,
+            },
+            data: {
+              canceledDate: new Date(),
             },
           }),
         ]);
