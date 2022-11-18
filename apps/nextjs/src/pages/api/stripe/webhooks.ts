@@ -39,7 +39,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         break;
 
       default:
-        console.log("Unhandled Stripe event type", event.type);
+      // console.log("Unhandled Stripe event type", event.type);
     }
 
     res.status(200).end();
