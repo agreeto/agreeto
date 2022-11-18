@@ -100,7 +100,14 @@ export const eventGroupRouter = router({
               startDate: event.startDate,
               endDate: event.endDate,
               title: event.title,
-              attendees: event.attendees,
+              attendees: {
+                createMany: {
+                  data: event.attendees.map((a) => ({
+                    ...a,
+                    id: undefined,
+                  })),
+                },
+              },
               deletedAt: null,
             })),
           },
@@ -122,7 +129,7 @@ export const eventGroupRouter = router({
         });
 
         // Initialize calendar service
-        const { service } = getCalendarService(primaryAccount);
+        const service = getCalendarService(primaryAccount);
 
         savedEvents.forEach((ev) => {
           const attendeeEmails = new Set([
@@ -133,25 +140,19 @@ export const eventGroupRouter = router({
           promises.push(
             service
               .createEvent({
-                id: ev.id,
                 title: ev.title,
                 attendeeEmails: [...attendeeEmails],
                 startDate: ev.startDate,
                 endDate: ev.endDate,
               })
               .then(async ({ event }) => {
-                // Update microsoft id of event
-                if (event.microsoftId) {
-                  // We save microsoftId to our DB to be able to delete the event later
-                  // We don't need this in Google since we can overwrite created event ID in Google
-                  await ctx.prisma.event.update({
-                    where: { id: ev.id },
-                    data: {
-                      microsoftId: event.microsoftId,
-                    },
-                  });
-                }
-                return event;
+                // Update event with the provider's event id
+                return await ctx.prisma.event.update({
+                  where: { id: ev.id },
+                  data: {
+                    providerEventId: event.providerEventId,
+                  },
+                });
               }),
           );
         });
@@ -197,16 +198,13 @@ export const eventGroupRouter = router({
         (await Promise.all(
           group.events.map((event) => {
             // Initialize the service
-            const { service, eventId } = getCalendarService(
-              group.account,
-              event,
-            );
+            const service = getCalendarService(group.account);
 
             return service
-              .deleteEvent(eventId as string)
+              .deleteEvent(event.providerEventId as string)
               .catch((err) =>
                 console.error(
-                  `Failed to delete the event from the calendar service for the event: ${eventId}`,
+                  `Failed to delete the event from the calendar service for the event: ${event.providerEventId}`,
                   err,
                 ),
               );

@@ -1,7 +1,6 @@
 import { type Event, EventResponseStatus, type Attendee } from "@agreeto/db";
 import { type calendar_v3, google } from "googleapis";
 import { type ICreateEvent, type IGetEvents, type IUpdateEvent } from "./types";
-
 export class GoogleCalendarService {
   private accessToken: string;
   private refreshToken: string;
@@ -44,19 +43,21 @@ export class GoogleCalendarService {
         : EventResponseStatus.NEEDS_ACTION;
     };
 
+    const isAgreeToEvent =
+      extendedProperties?.private?.isAgreeToEvent === "true";
+
     return {
-      id: id!,
+      //id: id as string,
+      providerEventId: id as string,
       title: summary || "-",
       description: description || "",
-      startDate: new Date(start!.dateTime!),
-      endDate: new Date(end!.dateTime!),
-      isAgreeToEvent: Boolean(
-        extendedProperties?.private?.isAgreeToEvent === "true",
-      ),
+      startDate: start?.dateTime ? new Date(start.dateTime) : undefined,
+      endDate: end?.dateTime ? new Date(end.dateTime) : undefined,
+      isAgreeToEvent,
       attendees: !attendees
         ? []
         : attendees.map((a) => ({
-            id: a.id!,
+            id: a.id as string,
             color: null,
             eventId: id!,
             email: a.email!,
@@ -87,9 +88,6 @@ export class GoogleCalendarService {
     // Fetch events
     const response = await this.calendarClient.events.list(params);
 
-    console.log("FROM GOOGLE");
-    console.dir(response.data.items, { depth: 4 });
-
     return {
       rawData: response.data,
       events: this.toEvents(response.data.items || []),
@@ -97,7 +95,6 @@ export class GoogleCalendarService {
   }
 
   async createEvent({
-    id,
     title,
     startDate,
     endDate,
@@ -109,7 +106,6 @@ export class GoogleCalendarService {
       sendNotifications: true,
       sendUpdates: "all",
       requestBody: {
-        id,
         summary: title,
         start: {
           dateTime: startDate.toISOString(),

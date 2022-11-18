@@ -2,7 +2,6 @@ import { router, privateProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { GoogleCalendarService } from "../services/google.calendar";
-import { EventValidator } from "../validators/event";
 import { EventResponseStatus, type Event } from "@agreeto/db";
 import { getCalendarService } from "../services/service-helpers";
 
@@ -41,15 +40,15 @@ export const eventRouter = router({
 
       // Get calendar Events
       const calendarEvents = await Promise.all(
-        accounts
-          // FIXME: REMOVE GOOGLE FILTER
-          .filter((a) => a.provider === "google")
-          .map(async (account) => {
-            const { service } = getCalendarService(account);
-            const { events } = await service.getEvents(input);
-            console.log("events", events);
-            return events.map((e) => ({ ...e, account }));
-          }),
+        accounts.map(async (account) => {
+          const service = getCalendarService(account);
+          const { events } = await service.getEvents(input);
+          return events.map((e) => ({
+            ...e,
+            account,
+            color: account.color.color,
+          }));
+        }),
       );
 
       // Merge events
@@ -85,6 +84,7 @@ export const eventRouter = router({
         attendees: z.array(
           z.object({
             id: z.string(),
+            color: z.string(),
             name: z.string(),
             surname: z.string(),
             email: z.string(),
@@ -92,7 +92,6 @@ export const eventRouter = router({
             responseStatus: z.nativeEnum(EventResponseStatus),
           }),
         ),
-        // .optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -124,6 +123,16 @@ export const eventRouter = router({
         });
       }
 
+      // Disconnect all attendees so that we can add the new/updated ones
+      await ctx.prisma.event.update({
+        where: { id: event.id },
+        data: {
+          attendees: {
+            set: [],
+          },
+        },
+      });
+
       const [updatedEvent, _, eventGroup] = await Promise.all([
         // Update event
         ctx.prisma.event.update({
@@ -132,7 +141,16 @@ export const eventRouter = router({
             isSelected: true,
             title: input.title,
             hasConference: input.addConference,
-            // attendees: input.attendees,
+            attendees: {
+              connectOrCreate: input.attendees.map((a) => ({
+                where: {
+                  id: a.id,
+                },
+                create: {
+                  ...a,
+                },
+              })),
+            },
           },
         }),
         // Delete all other events in the group
@@ -146,7 +164,6 @@ export const eventRouter = router({
           data: {
             deletedAt: new Date(),
             title: input.title,
-            // attendees: input.attendees,
           },
         }),
         // Update event group
@@ -175,12 +192,12 @@ export const eventRouter = router({
           const { account } = event.eventGroup;
           await Promise.all(
             deletedEvents.map((del) => {
-              const { service, eventId } = getCalendarService(account, del);
+              const service = getCalendarService(account);
               return service
-                .deleteEvent(eventId as string)
+                .deleteEvent(del.providerEventId as string)
                 .catch((err) =>
                   console.error(
-                    `Failed to delete the event from the calendar service for the event: ${eventId}`,
+                    `Failed to delete the event from the calendar service for the event: ${del.providerEventId}`,
                     err,
                   ),
                 );
@@ -206,17 +223,12 @@ export const eventRouter = router({
           const attendeeEmails = [
             ...new Set([
               ...input.attendees.map((a) => a.email),
-              ...accounts
-                .map((a) => a.email)
-                .filter((e): e is string => Boolean(e)),
+              ...accounts.map((a) => a.email).filter((e): e is string => !!e),
             ]),
           ];
 
-          const { service, eventId } = getCalendarService(
-            primaryAccount,
-            event,
-          );
-          await service.updateEvent(eventId as string, {
+          const service = getCalendarService(primaryAccount);
+          await service.updateEvent(event.providerEventId as string, {
             hasConference: input.addConference,
             title: input.title,
             attendeeEmails,
@@ -239,11 +251,12 @@ export const eventRouter = router({
         users: z
           .object({
             id: z.string(),
+            color: z.string(),
             name: z.string(),
             surname: z.string(),
             email: z.string(),
             provider: z.string(),
-            events: z.array(EventValidator.partial()).optional(),
+            // events: z.array(EventValidator.partial()).optional(),
           })
           .array(),
       }),
@@ -285,8 +298,11 @@ export const eventRouter = router({
                   if (foundUser) {
                     foundUser.events = events.map((e) => ({
                       ...e,
+                      color: user.color,
                       account,
                     }));
+                    // FIXME: Assign random?
+                    foundUser.color = "#0165FF";
                   }
                 })
                 .catch((e) => console.error("Could not fetch user events", e)),

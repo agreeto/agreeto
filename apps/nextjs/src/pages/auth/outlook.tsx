@@ -10,8 +10,6 @@ const OutlookRedirect = () => {
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const sessionToken = await getToken({ req, raw: true });
 
-  console.log("sessionToken", sessionToken);
-
   const redirect = sessionToken
     ? "/signin-redirect.html"
     : "/signout-redirect.html";

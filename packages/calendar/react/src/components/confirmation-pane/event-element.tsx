@@ -1,6 +1,6 @@
 import React from "react";
 import { type RouterOutputs } from "@agreeto/api";
-import checkMark2Icon from "../../assets/check-mark-2.png";
+import { HiCheckCircle } from "react-icons/hi";
 import { format } from "date-fns-tz";
 import { getPrimaryTimeZone, getTimeZoneAbv } from "@agreeto/calendar-core";
 import { useEventStore, useTZStore } from "../../utils/store";
@@ -33,9 +33,7 @@ export const EventElement: React.FC<{
           <div className="flex items-center space-x-3">
             {/* Checkbox */}
             {event.isSelected ? (
-              <div className="mb-1 h-6 w-6">
-                <img src={checkMark2Icon} className="h-6 w-6" alt="" />
-              </div>
+              <HiCheckCircle className="mb-1 h-6 w-6" />
             ) : (
               <div className="mb-1 h-4 w-4">
                 <input
@@ -49,10 +47,10 @@ export const EventElement: React.FC<{
             )}
             {/* Date */}
             <div>
-              <div className="color-gray-600 text-xs font-medium">
+              <div className="text-xs font-medium text-gray-600">
                 {format(new Date(event.startDate), "MMMM d (EEEE)")}
               </div>
-              <div className="color-gray-300 text-xs font-medium">
+              <div className="text-xs font-medium text-gray-300">
                 {`${format(new Date(event.startDate), "HH:mm")} - ${format(
                   new Date(event.endDate),
                   "HH:mm",

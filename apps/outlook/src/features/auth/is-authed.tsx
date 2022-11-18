@@ -22,7 +22,6 @@ export const useIsAuthed = () => {
   });
 
   const storageEventHandler = React.useCallback((e: StorageEvent) => {
-    console.log(e);
     if (e.key === "token") {
       validateToken.mutate({ token: e.newValue ?? "" });
     }

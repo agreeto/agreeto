@@ -1,23 +1,22 @@
-import leftArrowIcon from "../../assets/left-arrow.svg";
-import rightArrowIcon from "../../assets/right-arrow.svg";
+import { BiChevronLeft, BiChevronRight } from "react-icons/bi";
 import { addDays, endOfWeek, getISOWeek, startOfWeek } from "date-fns";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import arrowDownIcon from "../../assets/arrow-down.svg";
 import { getPrimaryTimeZone, getTimeZoneAbv } from "@agreeto/calendar-core";
-import { useCalendarStore, useEventStore, useTZStore } from "../../utils/store";
+import { useCalendarStore, useTZStore } from "../../utils/store";
 import { type CalendarApi } from "@fullcalendar/react";
+import { Button } from "@agreeto/ui";
+import { Switch } from "@headlessui/react";
+import { Fragment } from "react";
+import clsx from "clsx";
 
 export const ControlBar: React.FC<{
   // FIXME: Is there no type for this?
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   calendarRef: any;
 }> = ({ calendarRef }) => {
-  const setPeriod = useEventStore((s) => s.setPeriod);
-
+  const setPeriod = useCalendarStore((s) => s.setPeriod);
   const focusedDate = useCalendarStore((s) => s.focusedDate);
   const setFocusedDate = useCalendarStore((s) => s.setFocusedDate);
-  const calendarType = useCalendarStore((s) => s.calendarType);
-  const setCalendarType = useCalendarStore((s) => s.setCalendarType);
+  const showWeekends = useCalendarStore((s) => s.showWeekends);
   const setShowWeekends = useCalendarStore((s) => s.setShowWeekends);
 
   const month = focusedDate.toLocaleString(undefined, { month: "long" });
@@ -42,41 +41,44 @@ export const ControlBar: React.FC<{
   };
 
   return (
-    <>
+    <div>
       <div className="flex justify-between">
         {/* Left part */}
         <div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
             {/* Date */}
-            <div className="color-gray-600 w-64 text-xl font-semibold">
+            <div className="w-64 text-xl font-semibold text-gray-600">
               <span>{`${month} ${year}, Week ${weekNumber}`}</span>
             </div>
 
             {/* Arrows and today button */}
             <div>
-              <button
-                className="icon-button"
+              <Button
+                variant="glass"
+                className="p-1 text-gray-900"
                 onClick={() => handleDateChange("prev")}
               >
-                <img src={leftArrowIcon} alt="previous" />
-              </button>
+                <BiChevronLeft className="h-6 w-6" />
+              </Button>
             </div>
             <div>
-              <button
-                className="icon-button"
+              <Button
+                variant="glass"
+                className="p-1 text-gray-900"
                 onClick={() => handleDateChange("next")}
               >
-                <img src={rightArrowIcon} alt="next" />
-              </button>
+                <BiChevronRight className="h-6 w-6" />
+              </Button>
             </div>
 
             <div>
-              <button
-                className="button-outline"
+              <Button
+                variant="glass"
+                className="p-1 text-gray-900"
                 onClick={() => handleDateChange("today")}
               >
-                Today
-              </button>
+                <span className="h-6 leading-6">Today</span>
+              </Button>
             </div>
           </div>
         </div>
@@ -86,31 +88,50 @@ export const ControlBar: React.FC<{
           <div className="flex items-center space-x-4">
             <div>
               {/* <div
-                className="color-gray-300 bg-transparent text-xs cursor-pointer"
+                className="text-gray-300 bg-transparent text-xs cursor-pointer"
                 onClick={handleFeedback}
               >
                 Give us a feedback
               </div> */}
             </div>
 
+            {/* Weekend switch */}
+            <Switch
+              checked={showWeekends}
+              onChange={setShowWeekends}
+              as={Fragment}
+            >
+              {({ checked }) => (
+                <div className="flex flex-col items-center">
+                  <span className="font-semibold">Weekends</span>
+                  <button
+                    className={clsx(
+                      "relative inline-flex h-6 w-11 items-center rounded-full",
+                      { "bg-primary": checked, "bg-gray-200": !checked },
+                    )}
+                  >
+                    <span
+                      className={clsx(
+                        "inline-block h-4 w-4 transform rounded-full bg-white transition",
+                        { "translate-x-6": checked, "translate-x-1": !checked },
+                      )}
+                    />
+                  </button>
+                </div>
+              )}
+            </Switch>
+
             {/* Remove hidden to show 5-7 days change */}
-            <div className="hidden">
+            {/* <div className="flex">
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger>
-                  <div className="color-gray-700 flex items-center space-x-3 rounded border border-gray-300 bg-white py-1 px-2">
+                  <div className="flex items-center space-x-3 rounded border border-gray-300 bg-white py-1 px-2 text-gray-700">
                     <div className="text-sm">{calendarType}</div>
-                    <div>
-                      <img
-                        src={arrowDownIcon}
-                        width={12}
-                        height={7}
-                        alt="down"
-                      />
-                    </div>
+                    <BiChevronDown className="h-4 w-4" />
                   </div>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content
-                  className="color-gray-700 z-10 rounded bg-white shadow-xl"
+                  className="z-10 rounded bg-white text-gray-700 shadow-xl"
                   align="end"
                 >
                   <DropdownMenu.Item
@@ -139,15 +160,15 @@ export const ControlBar: React.FC<{
                   </DropdownMenu.Item>
                 </DropdownMenu.Content>
               </DropdownMenu.Root>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
 
       {/* Timezone */}
-      <div className="color-gray-600 text-xs">
+      <div className="text-xs text-gray-600">
         {`(${getTimeZoneAbv(primaryTimeZone)}) ${primaryTimeZone}`}
       </div>
-    </>
+    </div>
   );
 };

@@ -2,4 +2,3 @@
 export { calendarStore } from "./calendar";
 export { eventStore } from "./event";
 export { tzStore } from "./timezone";
-export { viewStore } from "./view";

@@ -2,8 +2,7 @@ import { type EventInput } from "@fullcalendar/react";
 import { format } from "date-fns-tz";
 import { toast } from "react-toastify";
 import Flag from "react-flagkit";
-import { MdKeyboardArrowDown } from "react-icons/md";
-import { BiCheckCircle, BiCopy, BiTrash } from "react-icons/bi";
+import { BiCheckCircle, BiChevronDown, BiCopy, BiTrash } from "react-icons/bi";
 import {
   convertToDate,
   copyToClipboard,
@@ -15,7 +14,7 @@ import {
   getLanguageName,
 } from "@agreeto/calendar-core";
 import { ulid } from "ulid";
-import { Language, Membership } from "@agreeto/calendar-core";
+import { Language, Membership } from "@agreeto/api/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { trpc } from "../../utils/trpc";
 import { useEventStore, useTZStore } from "../../utils/store";
@@ -41,7 +40,7 @@ const Availability: React.FC<{
   const { data: user } = trpc.user.me.useQuery();
   const isFree = user?.membership === Membership.FREE;
 
-  const { data: preference, isFetching: isFetchingPreference } =
+  const { data: preference, isLoading: isLoadingPreference } =
     trpc.preference.byCurrentUser.useQuery();
   const locale = getDateLocale(preference);
 
@@ -57,10 +56,10 @@ const Availability: React.FC<{
   const languageDropdown = (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
-        disabled={isFetchingPreference || isUpdatingPreference}
+        disabled={isLoadingPreference || isUpdatingPreference}
       >
         <div className="flex h-6 w-14 items-center space-x-3 rounded border border-gray-300 bg-white px-2 text-gray-700">
-          {isFetchingPreference ? (
+          {isLoadingPreference ? (
             <Spinner />
           ) : (
             <Flag
@@ -68,7 +67,7 @@ const Availability: React.FC<{
               size={16}
             />
           )}
-          <MdKeyboardArrowDown className="h-full" />
+          <BiChevronDown className="h-full" />
         </div>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content
@@ -137,7 +136,7 @@ const Availability: React.FC<{
       <DropdownMenu.Trigger>
         <div className="flex h-6 items-center space-x-2 rounded border border-gray-300 bg-white py-1 px-1 text-gray-700">
           <div className="text-2xs">{getTimeZoneAbv(selectedTimeZone)}</div>
-          <MdKeyboardArrowDown className="h-4 w-4" />
+          <BiChevronDown className="h-4 w-4" />
         </div>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content
@@ -196,7 +195,7 @@ const Availability: React.FC<{
               }}
             >
               {copied ? (
-                <BiCheckCircle className="h-5 w-5" color="green" />
+                <BiCheckCircle className="h-5 w-5 text-green-500" />
               ) : (
                 <BiCopy className="h-5 w-5" />
               )}

@@ -1,4 +1,4 @@
-import { Language } from "../types";
+import { Language } from "@agreeto/api/types";
 import { de, enUS, es, fr, it } from "date-fns/locale";
 import { type Locale } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";

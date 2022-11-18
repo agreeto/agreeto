@@ -9,58 +9,40 @@ import { ControlBar } from "./components/control-bar";
 import CalendarItem from "./components/calendar-item";
 import { type CalendarApi } from "@fullcalendar/react";
 import ConfirmationPane from "./components/confirmation-pane";
+import { type ActionType } from "./components/action-pane/action-pane";
 
 import { type PLATFORM } from "@agreeto/calendar-core";
-import { type PRIMARY_ACTION_TYPES } from "./utils/enums";
 import { trpc } from "./utils/trpc";
-import { type RouterOutputs } from "@agreeto/api";
-import {
-  useCalendarStore,
-  useEventStore,
-  useTZStore,
-  useViewStore,
-} from "./utils/store";
+import { useCalendarStore, useEventStore, useTZStore } from "./utils/store";
+import { Language, Membership } from "@agreeto/api/types";
 
 type Props = {
   onClose?: () => void;
   renderKey?: number;
   platform?: PLATFORM;
   onPageChange?: (page: string) => void;
-  onPrimaryActionClick?: (type: PRIMARY_ACTION_TYPES) => void;
+  onPrimaryActionClick?: (type: ActionType) => void;
 };
-
-type DirectoryUser = RouterOutputs["event"]["directoryUsers"][number];
 
 const Calendar: React.FC<Props> = ({
   onClose,
   renderKey,
   platform = "web",
   onPageChange,
-  onPrimaryActionClick,
+  onPrimaryActionClick: _primaryActionClick,
 }) => {
-  const utils = trpc.useContext();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [calendarRef, setCalendarRef] = useState<any>();
 
+  // Zustand
   const setFocusedDate = useCalendarStore((s) => s.setFocusedDate);
 
-  const period = useEventStore((s) => s.period);
-  const selectedSlots = useEventStore((s) => s.selectedSlots);
   const selectedEventGroupId = useEventStore((s) => s.selectedEventGroupId);
-  const selectEventGroup = useEventStore((s) => s.selectEventGroup);
-
-  const openPane = useViewStore((s) => s.openPane);
-  const changePane = useViewStore((s) => s.changePane);
+  const openPane = useEventStore((s) => s.openPane);
 
   const setTzDefaults = useTZStore((s) => s.setTimeZoneDefaults);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [calendarRef, setCalendarRef] = useState<any>();
-  const [directoryUsersWithEvents, setDirectoryUsersWithEvents] = useState<
-    DirectoryUser[]
-  >([]);
-
-  const { data: events, isFetching: isFetchingEvents } =
-    trpc.event.all.useQuery(period, { staleTime: 30 * 1000 });
-
+  const utils = trpc.useContext();
   useEffect(() => {
     // get user from the query cache
     const user = utils.user.me.getData();
@@ -95,19 +77,6 @@ const Calendar: React.FC<Props> = ({
     }
   }, [calendarRef, setFocusedDate]);
 
-  useEffect(() => {
-    if (selectedSlots.length > 0) {
-      changePane("action");
-    }
-  }, [selectedSlots, changePane]);
-
-  // Unselect the eventGroupId when the confirmation pane is closed
-  useEffect(() => {
-    if (openPane !== "confirmation") {
-      selectEventGroup(null);
-    }
-  }, [openPane, selectEventGroup]);
-
   // Sometimes, resizing of calendar breaks in the page. For this
   // situations we are updating size on every visibility change
   useEffect(() => {
@@ -119,26 +88,40 @@ const Calendar: React.FC<Props> = ({
     }
   }, [renderKey, calendarRef]);
 
+  // FIXME: Maybe we should do this on server - check back when payment stuff is done
+  // Verify locale when membership changes
+  const { data: user } = trpc.user.me.useQuery();
+  const { data: preference } = trpc.preference.byCurrentUser.useQuery();
+  const { mutate: updatePreference } = trpc.preference.update.useMutation({
+    onSettled() {
+      utils.user.me.invalidate();
+      utils.preference.byCurrentUser.invalidate();
+    },
+  });
+  useEffect(() => {
+    if (user && user.membership === Membership.FREE) {
+      preference?.formatLanguage !== Language.EN &&
+        updatePreference({
+          formatLanguage: Language.EN,
+        });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
   return (
     <div className="flex h-full">
       <div
-        className="p-8"
+        className="space-y-4 p-8"
         style={{
           width: openPane ? "calc(100% - 325px)" : "100%",
         }}
       >
-        <div className="w-full pb-4">
-          <ControlBar calendarRef={calendarRef} />
-        </div>
+        <ControlBar calendarRef={calendarRef} />
 
-        <div className={`w-full ${isFetchingEvents ? "animate-pulse" : ""}`}>
-          <CalendarItem
-            events={events}
-            onRefSettled={setCalendarRef}
-            directoryUsersWithEvents={directoryUsersWithEvents}
-            onPageChange={onPageChange}
-          />
-        </div>
+        <CalendarItem
+          onRefSettled={setCalendarRef}
+          onPageChange={onPageChange}
+        />
       </div>
 
       <div
@@ -148,21 +131,13 @@ const Calendar: React.FC<Props> = ({
         }}
       >
         {openPane === "action" ? (
-          <ActionPane
-            onClose={onClose}
-            directoryUsersWithEvents={directoryUsersWithEvents}
-            onDirectoryUsersWithEventsChange={setDirectoryUsersWithEvents}
-            onPageChange={onPageChange}
-            onPrimaryActionClick={onPrimaryActionClick}
-          />
+          <ActionPane onClose={onClose} onPageChange={onPageChange} />
         ) : (
           openPane === "confirmation" &&
           !!selectedEventGroupId && (
             <ConfirmationPane
-              eventGroupId={selectedEventGroupId}
               onClose={onClose}
-              directoryUsersWithEvents={directoryUsersWithEvents}
-              onDirectoryUsersWithEventsChange={setDirectoryUsersWithEvents}
+              eventGroupId={selectedEventGroupId}
             />
           )
         )}

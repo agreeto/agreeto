@@ -5,7 +5,7 @@ import { AttendeeValidator } from "./attendee";
 export const EventValidator = z.object({
   id: z.string().cuid(),
   userId: z.string(),
-  microsoftId: z.string().optional(),
+  providerEventId: z.string().nullish(),
   eventGroupId: z.string(),
   accountId: z.string(),
   title: z.string(),

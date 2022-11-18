@@ -1,12 +1,18 @@
 import { router, privateProcedure, publicProcedure } from "../trpc";
 import { z } from "zod";
-// import { TRPCError } from "@trpc/server";
 
 export const accountRouter = router({
   // Get the accounts for the current user
   me: privateProcedure.query(async ({ ctx }) => {
     return ctx.prisma.account.findMany({
       where: { userId: ctx.user.id },
+      include: { color: true },
+    });
+  }),
+
+  primary: privateProcedure.query(async ({ ctx }) => {
+    return ctx.prisma.account.findFirst({
+      where: { userId: ctx.user.id, isPrimary: true },
       include: { color: true },
     });
   }),
@@ -34,6 +40,27 @@ export const accountRouter = router({
         },
         include: { color: true },
       });
+    }),
+
+  changePrimary: privateProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const account = await ctx.prisma.account.update({
+        where: { id: input.id },
+        data: { isPrimary: true },
+      });
+
+      // Update the primary account
+      await ctx.prisma.account.updateMany({
+        where: { userId: ctx.user.id, id: { not: input.id } },
+        data: { isPrimary: false },
+      });
+
+      return account;
     }),
 
   // TODO:

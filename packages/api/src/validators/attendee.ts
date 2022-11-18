@@ -2,7 +2,7 @@ import { EventResponseStatus } from "@agreeto/db";
 import { z } from "zod";
 
 export const AttendeeValidator = z.object({
-  id: z.string().cuid(),
+  id: z.string(),
   email: z.string(),
   name: z.string(),
   surname: z.string(),
