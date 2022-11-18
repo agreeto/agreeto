@@ -77,10 +77,10 @@ model User {
     payments                 Payment[]
     preference               Preference?
     membership               Membership  @default(FREE)
-    paidUntil                Int? // in milliseconds
+    paidUntil                DateTime?
     stripeCustomerId         String?
     stripePlanId             String?
-    subscriptionCanceledDate Int?
+    subscriptionCanceledDate DateTime?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
@@ -213,9 +213,9 @@ model Payment {
     customerId          String
     membershipPlan      String
     membership          Membership
-    membershipStartDate Int? // Shouldn't these be DateTime?
-    membershipEndDate   Int?
-    canceledDate        Int?
+    membershipStartDate DateTime?
+    membershipEndDate   DateTime?
+    canceledDate        DateTime?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt

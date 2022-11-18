@@ -1,4 +1,4 @@
-import { Membership, type Prisma } from "@agreeto/db";
+import { Language, Membership, type Prisma } from "@agreeto/db";
 import { TRPCError } from "@trpc/server";
 import { Stripe } from "stripe";
 import { z } from "zod";
@@ -45,7 +45,7 @@ const getCustomerId = async (userId: string, prisma: Prisma) => {
     });
 
   if (user.stripeCustomerId) {
-    return user.stripeCustomerId;
+    return { customerId: user.stripeCustomerId, user };
   }
 
   // Create a new customer
@@ -68,13 +68,24 @@ const getCustomerId = async (userId: string, prisma: Prisma) => {
       message: "Failed to create Stripe customer",
     });
 
-  return updated.stripeCustomerId;
+  return { customerId: updated.stripeCustomerId, user };
 };
 
 export const stripeRouter = router({
   checkout: router({
     create: privateProcedure.mutation(async ({ ctx }) => {
-      const customerId = await getCustomerId(ctx.user.id, ctx.prisma);
+      const { customerId, user } = await getCustomerId(ctx.user.id, ctx.prisma);
+
+      if (
+        user.paidUntil &&
+        user.paidUntil > new Date() &&
+        user.membership !== Membership.FREE
+      ) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "User already has a paid membership",
+        });
+      }
 
       const session = await stripe.checkout.sessions.create({
         customer: customerId,
@@ -108,7 +119,7 @@ export const stripeRouter = router({
 
   subscription: router({
     createBillingPortalSession: privateProcedure.mutation(async ({ ctx }) => {
-      const customerId = await getCustomerId(ctx.user.id, ctx.prisma);
+      const { customerId } = await getCustomerId(ctx.user.id, ctx.prisma);
       const session = await stripe.billingPortal.sessions.create({
         customer: customerId,
         return_url: `${process.env.NEXTAUTH_URL}/dashboard`,
@@ -153,8 +164,8 @@ export const stripeRouter = router({
               customerId: subscription.customer as string,
               eventId: input.event.id,
               // Multiply with 1000 to convert it into ms
-              membershipStartDate: lineItem.period.start * 1000,
-              membershipEndDate: lineItem.period.end * 1000,
+              membershipStartDate: new Date(lineItem.period.start * 1000),
+              membershipEndDate: new Date(lineItem.period.end * 1000),
             },
           }),
         ]);
@@ -164,8 +175,36 @@ export const stripeRouter = router({
       }),
     }),
     subscription: router({
-      updated: stripeWHProcedure.mutation(async () => {
-        /** no-op */
+      updated: stripeWHProcedure.mutation(async ({ ctx, input }) => {
+        const subscription = input.event.data.object as Stripe.Subscription;
+        const { userId } = subscription.metadata;
+
+        const canceledDate = subscription.cancel_at
+          ? new Date(subscription.cancel_at * 1000)
+          : null;
+
+        await Promise.all([
+          ctx.prisma.user.update({
+            where: { id: userId },
+            data: {
+              subscriptionCanceledDate: canceledDate,
+              // update the membership if the subscription is canceled
+              membership: canceledDate ? Membership.FREE : undefined,
+              preference: {
+                update: {
+                  // reset the preference if the subscription is canceled
+                  formatLanguage: canceledDate ? Language.EN : undefined,
+                },
+              },
+            },
+          }),
+          ctx.prisma.payment.updateMany({
+            where: { subscriptionId: subscription.id },
+            data: {
+              canceledDate,
+            },
+          }),
+        ]);
       }),
     }),
   }),
