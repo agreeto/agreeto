@@ -128,7 +128,7 @@ export const stripeRouter = router({
     }),
   }),
 
-  // Webhooks for Stripe events, server-called by Next.js API router
+  // Webhooks for Stripe events, server-called by Next.js API endpoint
   webhooks: router({
     invoice: router({
       paid: stripeWHProcedure.mutation(async ({ ctx, input }) => {
@@ -152,7 +152,10 @@ export const stripeRouter = router({
         await Promise.all([
           ctx.prisma.user.update({
             where: { id: userId },
-            data: { membership },
+            data: {
+              membership,
+              paidUntil: new Date(invoice.period_end * 1000),
+            },
           }),
           ctx.prisma.payment.create({
             data: {
@@ -181,9 +184,9 @@ export const stripeRouter = router({
         const subscription = input.event.data.object as Stripe.Subscription;
         const { userId } = subscription.metadata;
 
-        const canceledDate = subscription.cancel_at
-          ? new Date(subscription.cancel_at * 1000)
-          : null;
+        // const canceledDate = subscription.cancel_at
+        //   ? new Date(subscription.cancel_at * 1000)
+        //   : null;
 
         // NOTE: Just cause we get cancelled doesn't mean we should end the
         // membership, as the subscription is still active until the end of the
@@ -193,13 +196,14 @@ export const stripeRouter = router({
           ctx.prisma.user.update({
             where: { id: userId },
             data: {
-              subscriptionCanceledDate: canceledDate,
+              paidUntil: new Date(subscription.current_period_end * 1000),
+              subscriptionCanceledDate: new Date(),
             },
           }),
           ctx.prisma.payment.updateMany({
             where: { subscriptionId: subscription.id },
             data: {
-              canceledDate,
+              canceledDate: new Date(),
             },
           }),
         ]);
@@ -215,6 +219,7 @@ export const stripeRouter = router({
           ctx.prisma.user.update({
             where: { id: userId },
             data: {
+              paidUntil: null,
               subscriptionCanceledDate: new Date(),
               membership: Membership.FREE,
               preference: {
