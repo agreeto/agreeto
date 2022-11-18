@@ -5,6 +5,6 @@ import type { ChromeRouter } from "./router";
 
 const port = chrome.runtime.connect(chrome.runtime.id);
 
-export const trpcChromeClient = createTRPCProxyClient<ChromeRouter>({
+export const client = createTRPCProxyClient<ChromeRouter>({
   links: [chromeLink({ port })],
 });
