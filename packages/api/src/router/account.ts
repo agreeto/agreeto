@@ -1,5 +1,6 @@
 import { router, privateProcedure, publicProcedure } from "../trpc";
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 
 export const accountRouter = router({
   // Get the accounts for the current user
@@ -63,30 +64,27 @@ export const accountRouter = router({
       return account;
     }),
 
+  delete: privateProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const userAccounts = await ctx.prisma.account.findMany({
+        where: { userId: ctx.user.id },
+      });
+      if (userAccounts.length < 2) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `Unable to remove account with id ${input.id} as it's the only account for the user`,
+        });
+      }
+      return ctx.prisma.account.delete({
+        where: { id: input.id },
+      });
+    }),
+
   // TODO:
   // downgrade: privateProcedure.input(z.object({
   //   id: z.string(),
   // })).query(async ({ ctx, input }) => {
 
   // }),
-
-  // deleteByEmail: privateProcedure
-  //   .input(
-  //     z.object({
-  //       email: z.string().email(),
-  //     })
-  //   )
-  //   .mutation(async ({ ctx, input }) => {
-  //     if (input.email !== ctx.user.email) {
-  //       throw new TRPCError({
-  //         code: "UNAUTHORIZED",
-  //         message: "The entered email does not match your account",
-  //       });
-  //     }
-  //     return ctx.prisma.account.delete({
-  //       where: {
-  //         email: input.email,
-  //       },
-  //     });
-  //   }),
 });

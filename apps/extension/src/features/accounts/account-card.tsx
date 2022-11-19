@@ -307,6 +307,11 @@ const DropdownMenuDemo = ({account, container}:{account: Account, container: HTM
           utils.account.primary.invalidate();
         },
       });
+    const { mutate: removeAccount } = trpcApi.account.delete.useMutation({
+      onSuccess() {
+        utils.account.me.invalidate()
+      },
+    })
   return (
     <DropdownMenu.Root>
       {/* <DropdownMenu.Trigger > */}
@@ -321,7 +326,7 @@ const DropdownMenuDemo = ({account, container}:{account: Account, container: HTM
           <DropdownMenu.Item asChild> 
                 <button className="flex items-center w-full px-4 py-3 space-x-2 font-medium border-b border-mauve-6 disabled:cursor-not-allowed disabled:opacity-50 enabled:hover:bg-gray-100"
                 // disabled={!!account?.isPrimary}
-                onClick={() => changePrimary({ id: account?.id })}
+                onClick={() => changePrimary({ id: account.id })}
                 >
                   <HiCheckCircle className="w-4 h-4" />
                 <div>Set as organizer</div>
@@ -364,7 +369,7 @@ const DropdownMenuDemo = ({account, container}:{account: Account, container: HTM
                 <Button variant="glass">Cancel</Button>
               </AlertDialog.Cancel>
             <AlertDialog.Action asChild>
-                <Button variant="error" >Yes, remove</Button>
+                <Button variant="error" onClick={() => removeAccount({id: account.id})} >Yes, remove</Button>
             </AlertDialog.Action>
         </div>
           </AlertDialog.Content>
