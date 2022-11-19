@@ -17,8 +17,9 @@ export const Button: React.FC<
         {
           "bg-primary text-white hover:bg-primary/80": variant === "primary",
           "bg-white text-primary hover:bg-primary/20": variant === "secondary",
-          "bg-default text-mauve hover:opacity-70": variant === "glass",
-          "bg-red-9 text-white hover:opacity-70": variant === "error",
+          "text-mauve border-mauve-6 bg-white hover:border-mauve-8":
+            variant === "glass",
+          "bg-red-9 text-white hover:bg-red-10": variant === "error",
         },
         props.className,
       )}

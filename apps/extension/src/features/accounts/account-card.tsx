@@ -5,7 +5,7 @@ import * as Tooltip from "@radix-ui/react-tooltip";
 import type { FC } from "react";
 import React, { useState } from "react";
 import { AiOutlineMore } from "react-icons/ai";
-import { HiCheckCircle, HiOutlineTrash, HiTrash } from "react-icons/hi";
+import { HiCheckCircle, HiOutlineExclamation, HiOutlineTrash, HiTrash } from "react-icons/hi";
 import { RiMore2Line } from "react-icons/more";
 import OutsideClickHandler from "react-outside-click-handler";
 // import type { IAccount } from "services/types";
@@ -306,41 +306,24 @@ const DropdownMenuDemo = ({account, container}:{account: Account, container: HTM
           <DropdownMenu.Item asChild>
           <AlertDialog.Root>
         <AlertDialog.Trigger asChild>
-        <div className={`py-3 w-full px-4 text-[#D90026] font-medium flex space-x-2 items-center ${
-                  account?.isPrimary
-                    ? "cursor-not-allowed opacity-50"
-                    : "hover:bg-gray-100"
-                }`}
-                // disabled={!!account.isPrimary}
+        <button className="py-3 w-full px-4 text-[#D90026] font-medium flex space-x-2 items-center disabled:cursor-not-allowed disabled:opacity-50 hover:bg-gray-100"
+                disabled={!!account.isPrimary}
                 onClick={() => <></>}
                 >
                   <HiTrash className="w-4 h-4" />
                 <div>Remove account</div>
-                </div>
+                </button>
         </AlertDialog.Trigger>
         <AlertDialog.Portal container={container}>
-          <AlertDialog.Overlay className="fixed inset-0 transition-opacity bg-opacity-75 bg-mauveA-2"/>
+          <AlertDialog.Overlay className="fixed inset-0 transition-opacity opacity-80 bg-blackA-9"/>
           <AlertDialog.Content 
-           className="fixed -translate-x-1/2 -translate-y-1/2 bg-white shadow-sm top-1/2 left-1/2 shadow-transparent l-1/2 "
+           className="fixed w-3/5 -translate-x-1/2 -translate-y-1/2 bg-white rounded-md shadow-sm top-1/2 left-1/2 shadow-transparent l-1/2"
           
           >
-            <div className="sm:flex sm:items-start">
+            {/* dialog body */}
+            <div className="flex items-center justify-center p-3 mb-5 sm:flex sm:items-start">
                   <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-red-100 rounded-full sm:mx-0 sm:h-10 sm:w-10">
-                    <svg
-                      className="w-6 h-6 text-red-600"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="2"
-                      stroke="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                      />
-                    </svg>
+                  <HiOutlineExclamation className="w-5 h-5 stroke-red-9"/>
                   </div>
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                     <h3
@@ -349,17 +332,15 @@ const DropdownMenuDemo = ({account, container}:{account: Account, container: HTM
                     >
                       Are you sure you want to remove this account?
                     </h3>
-                    {/* <div className="mt-2">
-                      <p className="text-sm text-gray-500">{description}</p>
-                    </div> */}
                   </div>
                 </div>
-            <div style={{ display: 'flex', gap: 25, justifyContent: 'flex-end' }}>
+                {/* dialog footer */}
+            <div className="flex justify-end gap-6 p-3 bg-mauve-2">
               <AlertDialog.Cancel asChild>
                 <Button variant="glass">Cancel</Button>
               </AlertDialog.Cancel>
             <AlertDialog.Action asChild>
-                <Button variant="error" >Yes, delete account</Button>
+                <Button variant="error" >Yes, remove</Button>
             </AlertDialog.Action>
         </div>
           </AlertDialog.Content>
