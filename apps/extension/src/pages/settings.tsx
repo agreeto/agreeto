@@ -126,10 +126,11 @@ const SettingsTabs = () => {
         <AddAccountButton />
         <div className="m-4" />
         {/* Account list */}
-
-        {accounts?.map((account) => (
-          <AccountCard account={account} />
-        ))}
+        <div className="space-y-2">
+          {accounts?.map((account) => (
+            <AccountCard account={account} />
+          ))}
+        </div>
       </Tabs.Content>
       <Tabs.Content className="TabsContent" value="tab2">
         <p className="Text">
