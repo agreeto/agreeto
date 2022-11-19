@@ -173,10 +173,10 @@ const AccountCard: FC<{
     <Tooltip.Provider>
       <div className="flex justify-between py-6 pr-6 space-x-4 border rounded-lg h-30 border-mauve-6 pl-9">
         {/* Info */}
-        <div className="flex items-center justify-between w-full space-x-4">
+        <div className="grid w-full grid-cols-6 gap-4">
           {/* Avatar */}
           <div
-            className="flex items-center justify-center w-10 h-10 rounded-full"
+            className="self-center w-10 h-10 leading-10 text-center rounded-full"
             style={{
               backgroundColor: accountColor,
               color: darkColor,
@@ -184,8 +184,9 @@ const AccountCard: FC<{
           >
             {initials}
           </div>
-          {/* Email & Colors */}
-          <div>
+          {/* Email, Colors & Badges */}
+          <div className="flex justify-between col-span-4">
+            <div>
             <div>{account.email}</div>
             <div className="flex pt-4 space-x-3">
               {colors?.map((color, ix) => {
@@ -224,8 +225,8 @@ const AccountCard: FC<{
               })}
               {updating && <Spinner />}
             </div>
-          </div>
-          {/* Badges */}
+            </div>
+            {/* badges */}
           <div className="flex items-center space-x-5">
             {account.isPrimary && (
               <Tooltip.Root delayDuration={300}>
@@ -247,9 +248,7 @@ const AccountCard: FC<{
               </Tooltip.Root>
             )}
           </div>
-
-
-
+          </div>
         {/* Actions */}
         <DropdownMenuDemo account={account} container={container}/>
         </div>
@@ -309,10 +308,10 @@ const DropdownMenuDemo = ({account, container}:{account: Account, container: HTM
         },
       });
   return (
-    <DropdownMenu.Root >
+    <DropdownMenu.Root>
       {/* <DropdownMenu.Trigger > */}
       <DropdownMenu.Trigger asChild> 
-        <button className="flex items-center justify-center w-8 h-8 ml-auto cursor-pointer hover:bg-gray-100 hover:rounded-md" aria-label="Customise options">
+        <button className="flex items-center self-center justify-center w-8 h-8 ml-auto cursor-pointer hover:bg-gray-100 hover:rounded-md" aria-label="Customise options">
            <AiOutlineMore className="w-6 h-6"/>
         </button>
         </DropdownMenu.Trigger>
