@@ -153,6 +153,21 @@ const AddAccountButton = () => {
     >
       <div>
         <Button
+          className="w-48"
+          variant="primary"
+          onClick={() => {
+            window.open(
+              `${
+                process.env.PLASMO_PUBLIC_WEB_URL
+              }/api/auth/signin?${new URLSearchParams({
+                callbackUrl: `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/extension`,
+              })}`,
+            );
+          }}
+        >
+          Add Account
+        </Button>
+        {/* <Button
           className="w-48 "
           onClick={() => {
             // if (isFreeUser) return
@@ -164,7 +179,7 @@ const AddAccountButton = () => {
           // onPointerEnter={() => setShowProTooltip(true)}
         >
           Add new
-        </Button>
+        </Button> */}
       </div>
       <div
         className="rounded border border-[#F9FAFA] p-4 w-60 bg-[#F9FAFA] text-left mt-4 cursor-auto"
