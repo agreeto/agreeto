@@ -67,19 +67,19 @@ model Session {
 }
 
 model User {
-    id               String         @id @default(cuid())
+    id               String          @id @default(cuid())
     name             String?
-    email            String?        @unique
+    email            String?         @unique
     emailVerified    DateTime?
     image            String?
     accounts         Account[]
     sessions         Session[]
     payments         Invoice[]
     preference       Preference?
-    membership       Membership     @default(FREE)
-    hasTrialed       Boolean        @default(false)
-    stripeCustomer   StripeCustomer @relation(fields: [stripeCustomerId], references: [id])
-    stripeCustomerId String
+    membership       Membership      @default(FREE)
+    hasTrialed       Boolean         @default(false)
+    stripeCustomer   StripeCustomer? @relation(fields: [stripeCustomerId], references: [id])
+    stripeCustomerId String?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
@@ -270,8 +270,8 @@ model StripeCustomer {
     livemode       Boolean
     metadata       Json?
     subscriptions  StripeSubscription[]
-    User           User[]
-    Payment        Invoice[]
+    user           User[]
+    payment        Invoice[]
 }
 
 model StripeSubscription {
@@ -299,7 +299,7 @@ model StripeSubscription {
     ended_at             DateTime?
     trial_end            DateTime?
     trial_start          DateTime?
-    Payment              Invoice[]
+    payment              Invoice[]
 }
 
 // ======================================

@@ -103,6 +103,9 @@ const getCustomerId = async (userId: string, prisma: Prisma) => {
     }),
     prisma.stripeCustomer.create({
       data: {
+        user: {
+          connect: { id: user.id },
+        },
         id: customer.id,
         name: customer.name,
         email: customer.email,
@@ -233,8 +236,6 @@ export const stripeRouter = router({
             where: { id: userId },
             data: {
               membership,
-              stripePlanId: priceId,
-              paidUntil: new Date(invoice.period_end * 1000),
             },
           }),
           ctx.prisma.payment.create({
