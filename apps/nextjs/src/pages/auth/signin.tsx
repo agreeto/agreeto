@@ -13,15 +13,12 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const searchParams = new URLSearchParams(ctx.req.url?.split("?")[1]);
   const callbackUrl = searchParams.get("callbackUrl");
 
-  console.log(ctx.req.headers.referer);
-
+  // See if we're coming from an oauth provider
   const origin = ctx.req.headers.referer;
   const fromOAuth =
     origin?.includes("google") ||
     origin?.includes("live") ||
     origin?.includes("microsoft");
-
-  console.log("Origin", origin, "fromOAuth", fromOAuth);
 
   // Redirect to the callbackUrl if we're coming from an OAuth provider
   if (fromOAuth && callbackUrl) {
