@@ -110,14 +110,14 @@ const getCustomerId = async (userId: string, prisma: Prisma) => {
         name: customer.name,
         email: customer.email,
         phone: customer.phone,
-        address: customer.address as any,
+        address: {
+          ...customer.address,
+        },
         balance: customer.balance,
         description: customer.description,
         created: new Date(customer.created * 1000), // convert to milliseconds
         currency: customer.currency,
-        default_source: customer.default_source as any,
         delinquent: !!customer.delinquent,
-        discount: customer.discount as any,
         livemode: customer.livemode,
         metadata: customer.metadata,
       },
@@ -238,18 +238,17 @@ export const stripeRouter = router({
               membership,
             },
           }),
-          ctx.prisma.payment.create({
+          ctx.prisma.invoice.create({
             data: {
+              id: invoice.id,
               user: { connect: { id: userId } },
+              subscription: { connect: { id: subscription.id } },
+              customer: { connect: { id: invoice.customer as string } },
+              event: { connect: { id: input.event.id } },
               email: invoice.customer_email as string,
               membershipPlan: priceId,
               membership,
-              subscriptionId: subscription.id,
-              customerId: subscription.customer as string,
-              eventId: input.event.id,
-              // Multiply with 1000 to convert it into ms
-              membershipStartDate: new Date(lineItem.period.start * 1000),
-              membershipEndDate: new Date(lineItem.period.end * 1000),
+              created: new Date(invoice.created * 1000), // convert to milliseconds
             },
           }),
         ]);
@@ -265,16 +264,51 @@ export const stripeRouter = router({
         const subscription = input.event.data.object as Stripe.Subscription;
         const { userId } = subscription.metadata;
 
-        console.log(subscription);
-
-        await ctx.prisma.user.update({
-          where: { id: userId },
-          data: {
-            // consume trial
-            hasTrialed: subscription.status === "trialing" ? true : undefined,
-            subscriptionStatus: subscription.status,
-          },
-        });
+        await Promise.all([
+          ctx.prisma.user.update({
+            where: { id: userId },
+            data: {
+              // consume trial
+              hasTrialed: subscription.status === "trialing" ? true : undefined,
+            },
+          }),
+          ctx.prisma.stripeSubscription.create({
+            data: {
+              id: subscription.id,
+              cancel_at_period_end: subscription.cancel_at_period_end,
+              collection_method: subscription.collection_method,
+              livemode: subscription.livemode,
+              metadata: subscription.metadata,
+              start_date: new Date(subscription.start_date * 1000),
+              status: subscription.status,
+              stripeCustomer: {
+                connect: { id: subscription.customer as string },
+              },
+              invoices: {
+                connect: { id: subscription.latest_invoice as string },
+              },
+              current_period_start: new Date(
+                subscription.current_period_start * 1000,
+              ),
+              current_period_end: new Date(
+                subscription.current_period_end * 1000,
+              ),
+              created: new Date(subscription.created * 1000), // convert to milliseconds
+              canceled_at: subscription.canceled_at
+                ? new Date(subscription.canceled_at * 1000)
+                : undefined,
+              ended_at: subscription.ended_at
+                ? new Date(subscription.ended_at * 1000)
+                : undefined,
+              trial_start: subscription.trial_start
+                ? new Date(subscription.trial_start * 1000)
+                : undefined,
+              trial_end: subscription.trial_end
+                ? new Date(subscription.trial_end * 1000)
+                : undefined,
+            },
+          }),
+        ]);
       }),
       updated: stripeWHProcedure.mutation(async ({ ctx, input }) => {
         const subscription = input.event.data.object as Stripe.Subscription;
@@ -291,16 +325,35 @@ export const stripeRouter = router({
         await Promise.all([
           ctx.prisma.user.update({
             where: { id: userId },
-            data: {
-              paidUntil: new Date(subscription.current_period_end * 1000),
-              subscriptionCanceledDate: canceledAt,
-              subscriptionStatus: subscription.status,
-            },
+            data: {},
           }),
-          ctx.prisma.payment.updateMany({
-            where: { subscriptionId: subscription.id },
+          ctx.prisma.stripeSubscription.update({
+            where: { id: subscription.id },
             data: {
-              canceledDate: canceledAt,
+              cancel_at_period_end: subscription.cancel_at_period_end,
+              collection_method: subscription.collection_method,
+              livemode: subscription.livemode,
+              metadata: subscription.metadata,
+              status: subscription.status,
+              invoices: {
+                connect: { id: subscription.latest_invoice as string },
+              },
+              current_period_start: new Date(
+                subscription.current_period_start * 1000,
+              ),
+              current_period_end: new Date(
+                subscription.current_period_end * 1000,
+              ),
+              canceled_at: canceledAt,
+              ended_at: subscription.ended_at
+                ? new Date(subscription.ended_at * 1000)
+                : undefined,
+              trial_start: subscription.trial_start
+                ? new Date(subscription.trial_start * 1000)
+                : undefined,
+              trial_end: subscription.trial_end
+                ? new Date(subscription.trial_end * 1000)
+                : undefined,
             },
           }),
         ]);
@@ -324,9 +377,6 @@ export const stripeRouter = router({
           ctx.prisma.user.update({
             where: { id: userId },
             data: {
-              paidUntil: null,
-              subscriptionCanceledDate: new Date(),
-              subscriptionStatus: subscription.status,
               membership: Membership.FREE,
               preference: {
                 update: {
@@ -335,14 +385,15 @@ export const stripeRouter = router({
               },
             },
           }),
-          ctx.prisma.payment.updateMany({
-            where: {
-              subscriptionId: subscription.id,
-              // This might already have been updated ⬆️⬆️⬆️, so we only update the `null` ones
-              canceledDate: null,
-            },
+          ctx.prisma.stripeSubscription.update({
+            where: { id: subscription.id },
             data: {
-              canceledDate: new Date(),
+              canceled_at: subscription.canceled_at
+                ? new Date(subscription.canceled_at * 1000)
+                : undefined,
+              ended_at: subscription.ended_at
+                ? new Date(subscription.ended_at * 1000)
+                : undefined,
             },
           }),
         ]);
