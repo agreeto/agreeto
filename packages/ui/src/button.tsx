@@ -1,16 +1,18 @@
 import clsx from "clsx";
-import type { ReactNode } from "react";
+import { type ReactNode, forwardRef } from "react";
 import React from "react";
-
-export const Button: React.FC<
+// eslint-disable-next-line react/display-name
+export const Button = forwardRef<
+  HTMLButtonElement,
   {
     onClick?: () => void;
     children: ReactNode;
     variant?: "primary" | "secondary" | "glass" | "error";
   } & React.ButtonHTMLAttributes<HTMLButtonElement>
-> = ({ onClick, variant = "primary", children, ...props }) => {
+>(({ onClick, variant = "primary", children, ...props }, ref) => {
   return (
     <button
+      ref={ref}
       type="button"
       className={clsx(
         "inline-flex items-center justify-center rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4  shadow-sm focus:outline-none",
@@ -28,4 +30,4 @@ export const Button: React.FC<
       {children}
     </button>
   );
-};
+});

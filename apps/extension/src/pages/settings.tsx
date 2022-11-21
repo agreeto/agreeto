@@ -1,8 +1,11 @@
+import { Membership } from "@agreeto/api/types";
 import { Button } from "@agreeto/ui";
 import { Float } from "@headlessui-float/react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Tabs from "@radix-ui/react-tabs";
+import * as Tooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";
+import type { ReactNode } from "react";
 import React from "react";
 import { AiOutlineMore } from "react-icons/ai";
 import { FaUser } from "react-icons/fa";
@@ -96,6 +99,16 @@ export const Settings = () => {
 
 const SettingsTabs = () => {
   const { data: accounts } = trpcApi.account.me.useQuery();
+  // TESTING PURPOSES TO QUICKLY SWITCH BETWEEN PAYMENT TIERS
+  const utils = trpcApi.useContext();
+  const { data: user } = trpcApi.user.me.useQuery();
+
+  const { mutate: updateUserTier } = trpcApi.user.updateTier.useMutation({
+    onSettled() {
+      utils.user.me.invalidate();
+    },
+  });
+
   return (
     <Tabs.Root
       className="flex flex-col w-full h-full shadow-md"
@@ -122,6 +135,18 @@ const SettingsTabs = () => {
         className="p-5 bg-white outline-none flex-grow-1 focus:shadow-sm focus:shadow-black"
         value="tab1"
       >
+        {/* TODO: (Remove) Testing Tier Button */}
+        <button
+          className="mr-2 text-sm font-semibold border-2 rounded border-primary text-primary hover:bg-primary hover:text-white"
+          onClick={() => {
+            updateUserTier({
+              tier: user?.membership === "FREE" ? "PRO" : "FREE",
+            });
+          }}
+        >
+          {user?.membership}
+        </button>
+
         {/* Add account button */}
         <AddAccountButton />
         <div className="m-4" />
@@ -143,15 +168,23 @@ const SettingsTabs = () => {
 
 const AddAccountButton = () => {
   const { data: user } = trpcApi.user.me.useQuery();
+  const isFree = user?.membership === Membership.FREE;
   return (
-    <Float
-      // show={isFreeUser && showProTooltip}
-      show={false}
-      arrow
-      flip
-      className="cursor-auto"
-    >
-      <div>
+    <div>
+      {/* <TooltipDemo /> */}
+      <Copied />
+
+      {isFree ? (
+        // <TooltipDemo>
+        <Button
+          className="w-48 cursor-not-allowed"
+          variant="primary"
+          // disabled
+        >
+          Add Account
+        </Button>
+      ) : (
+        // </TooltipDemo>
         <Button
           className="w-48"
           variant="primary"
@@ -164,10 +197,12 @@ const AddAccountButton = () => {
               })}`,
             );
           }}
+          disabled={isFree}
         >
           Add Account
         </Button>
-        {/* <Button
+      )}
+      {/* <Button
           className="w-48 "
           onClick={() => {
             // if (isFreeUser) return
@@ -180,27 +215,65 @@ const AddAccountButton = () => {
         >
           Add new
         </Button> */}
-      </div>
-      <div
-        className="rounded border border-[#F9FAFA] p-4 w-60 bg-[#F9FAFA] text-left mt-4 cursor-auto"
-        style={{ boxShadow: "2px 4px 12px 2px #dbd9d9" }}
-      >
-        <div className="text-sm font-semibold color-gray-900">
-          Unlock Multiple Calendars
-        </div>
-        <div className="mt-2 text-xs color-gray-900">
-          This feature is part of the Pro Plan
-        </div>
-        <div
-          className="flex items-center justify-center w-full h-8 mt-8 border rounded cursor-pointer border-primary color-primary"
-          // onClick={() => onPageChange?.("settings")}
-        >
-          Upgrade
-        </div>
-      </div>
-    </Float>
+    </div>
   );
 };
+const Copied = () => {
+  const ref = React.createRef<HTMLButtonElement>();
+
+  return (
+    <Tooltip.Provider>
+      <Tooltip.Root>
+        <Tooltip.Trigger asChild>
+          <Button ref={ref}>Tooltip?</Button>
+          {/* <button className="w-[48]">Tooltip?</button> */}
+        </Tooltip.Trigger>
+        <Tooltip.Portal>
+          <Tooltip.Content className="TooltipContent" sideOffset={5}>
+            Add to library
+            <Tooltip.Arrow className="TooltipArrow" />
+          </Tooltip.Content>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+    </Tooltip.Provider>
+  );
+};
+
+// const TooltipDemo = () => {
+//   return (
+//     <Tooltip.Provider>
+//       <Tooltip.Root>
+//         <Tooltip.Trigger asChild>
+//           <Button className="w-[48]">Tooltip?</Button>
+//         </Tooltip.Trigger>
+
+//         {/* <Tooltip.Portal className="PORTAL??"> */}
+//         <Tooltip.Content sideOffset={5}>
+//           {/* <div>HIHIHI</div> */}
+//           {/* <div
+//               className="rounded border border-[#F9FAFA] p-4 w-60 bg-[#F9FAFA] text-left mt-4 cursor-auto"
+//               style={{ boxShadow: "2px 4px 12px 2px #dbd9d9" }}
+//             >
+//               <div className="text-sm font-semibold color-gray-900">
+//                 Unlock Multiple Calendars
+//               </div>
+//               <div className="mt-2 text-xs color-gray-900">
+//                 This feature is part of the Pro Plan
+//               </div>
+//               <div
+//                 className="flex items-center justify-center w-full h-8 mt-8 border rounded cursor-pointer border-primary color-primary"
+//                 // onClick={() => onPageChange?.("settings")}
+//               >
+//                 Upgrade
+//               </div>
+//             </div> */}
+//           {/* <Tooltip.Arrow className="TooltipArrow" /> */}
+//         </Tooltip.Content>
+//         {/* </Tooltip.Portal> */}
+//       </Tooltip.Root>
+//     </Tooltip.Provider>
+//   );
+// };
 
 const DemoContent = () => {
   return (
