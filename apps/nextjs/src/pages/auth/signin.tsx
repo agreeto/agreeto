@@ -104,7 +104,7 @@ const SignInPage: NextPage = () => {
         </div>
 
         {isLoading ? (
-          <div className="mx-auto h-12 w-12 py-8">
+          <div className="my-8 mx-auto h-12 w-12">
             <Spinner />
           </div>
         ) : !forbidden ? (
