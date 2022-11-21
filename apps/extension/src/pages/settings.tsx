@@ -1,13 +1,11 @@
 import { Membership } from "@agreeto/api/types";
 import { Button } from "@agreeto/ui";
-import { Float } from "@headlessui-float/react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Tabs from "@radix-ui/react-tabs";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";
 import type { ReactNode } from "react";
 import React from "react";
-import { AiOutlineMore } from "react-icons/ai";
 import { FaUser } from "react-icons/fa";
 import { HiCheckCircle } from "react-icons/hi";
 
@@ -171,18 +169,16 @@ const AddAccountButton = () => {
   const isFree = user?.membership === Membership.FREE;
   return (
     <div>
-      {/* <TooltipDemo /> */}
-      <Copied />
-
       {isFree ? (
-        // <TooltipDemo>
-        <Button
-          className="w-48 cursor-not-allowed"
-          variant="primary"
-          // disabled
-        >
-          Add Account
-        </Button>
+        <PaywallTooltip>
+          <Button
+            className="w-48 cursor-not-allowed"
+            variant="primary"
+            // disabled
+          >
+            Add Account
+          </Button>
+        </PaywallTooltip>
       ) : (
         // </TooltipDemo>
         <Button
@@ -202,111 +198,43 @@ const AddAccountButton = () => {
           Add Account
         </Button>
       )}
-      {/* <Button
-          className="w-48 "
-          onClick={() => {
-            // if (isFreeUser) return
-            // setIsModalOpen(true)
-            console.log("CLICK");
-          }}
-          // disabled={isFreeUser}
-          disabled={false}
-          // onPointerEnter={() => setShowProTooltip(true)}
-        >
-          Add new
-        </Button> */}
     </div>
   );
 };
-const Copied = () => {
+const PaywallTooltip = ({ children }: { children: ReactNode }) => {
   return (
     <Tooltip.Provider>
       <Tooltip.Root>
-        <Tooltip.Trigger asChild>
-          <div id="tooltip-trigger">
-            <Button>Add new</Button>
-          </div>
-          {/* <button className="w-[48]">Tooltip?</button> */}
-        </Tooltip.Trigger>
+        {/* note (richard): couldn't figure out how to make asChild work with our ui lib as the child node */}
+        {/* asked on discord about it */}
+        <Tooltip.Trigger>{children}</Tooltip.Trigger>
         <Tooltip.Portal>
-          <Tooltip.Content className="TooltipContent" sideOffset={5}>
-            Add to library
-            <Tooltip.Arrow className="TooltipArrow" />
+          <Tooltip.Content sideOffset={5} align="center" side="bottom">
+            <div
+              className="rounded border border-[#F9FAFA] p-4 w-60 bg-[#F9FAFA] text-left mt-4 cursor-auto"
+              style={{ boxShadow: "2px 4px 12px 2px #dbd9d9" }}
+            >
+              <div className="text-sm font-semibold color-gray-900">
+                Unlock Multiple Calendars
+              </div>
+              <div className="my-2 text-xs color-gray-900">
+                This feature is part of the Pro Plan
+              </div>
+              <div className="flex items-center justify-center w-full mt-4">
+                <Button
+                  className="pt-5"
+                  variant="outline"
+                  // TODO: wait for pull#12 to be merged
+                  // onClick={() => onPageChange?.("settings")}
+                >
+                  Upgrade
+                </Button>
+              </div>
+            </div>
+            <Tooltip.Arrow className="fill-black" />
           </Tooltip.Content>
         </Tooltip.Portal>
       </Tooltip.Root>
     </Tooltip.Provider>
-  );
-};
-
-// const TooltipDemo = () => {
-//   return (
-//     <Tooltip.Provider>
-//       <Tooltip.Root>
-//         <Tooltip.Trigger asChild>
-//           <Button className="w-[48]">Tooltip?</Button>
-//         </Tooltip.Trigger>
-
-//         {/* <Tooltip.Portal className="PORTAL??"> */}
-//         <Tooltip.Content sideOffset={5}>
-//           {/* <div>HIHIHI</div> */}
-//           {/* <div
-//               className="rounded border border-[#F9FAFA] p-4 w-60 bg-[#F9FAFA] text-left mt-4 cursor-auto"
-//               style={{ boxShadow: "2px 4px 12px 2px #dbd9d9" }}
-//             >
-//               <div className="text-sm font-semibold color-gray-900">
-//                 Unlock Multiple Calendars
-//               </div>
-//               <div className="mt-2 text-xs color-gray-900">
-//                 This feature is part of the Pro Plan
-//               </div>
-//               <div
-//                 className="flex items-center justify-center w-full h-8 mt-8 border rounded cursor-pointer border-primary color-primary"
-//                 // onClick={() => onPageChange?.("settings")}
-//               >
-//                 Upgrade
-//               </div>
-//             </div> */}
-//           {/* <Tooltip.Arrow className="TooltipArrow" /> */}
-//         </Tooltip.Content>
-//         {/* </Tooltip.Portal> */}
-//       </Tooltip.Root>
-//     </Tooltip.Provider>
-//   );
-// };
-
-const DemoContent = () => {
-  return (
-    <>
-      <p className="mt-0 mb-[20] text-mauve-11 text-sm">
-        Make changes to your account here. Click save when you&saposre done.
-      </p>
-      <fieldset className="flex flex-col justify-start w-full mb-4">
-        <label
-          className="mb-3 text-sm text-violet-12 display-block"
-          htmlFor="name"
-        >
-          Name
-        </label>
-        <input
-          className="flex-1 pb-2 text-sm shadow-sm border-1 text-violet-11 shadow-violet-7 focus:shadow-sm focus:shadow-violet-8"
-          id="name"
-          defaultValue="Pedro Duarte"
-        />
-      </fieldset>
-      <fieldset className="flex flex-col justify-start w-full mb-4">
-        <label
-          className="mb-3 text-sm text-violet-12 display-block"
-          htmlFor="username"
-        >
-          Username
-        </label>
-        <input
-          className="flex-1 border-"
-          id="username"
-          defaultValue="@peduarte"
-        />
-      </fieldset>
-    </>
   );
 };
