@@ -69,6 +69,11 @@ const stripeWHProcedure = publicProcedure
 const getCustomerId = async (userId: string, prisma: Prisma) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
+    include: {
+      stripeCustomer: {
+        include: { subscriptions: true },
+      },
+    },
   });
 
   // Should never happen as long as we call this in protected procedures
@@ -91,10 +96,30 @@ const getCustomerId = async (userId: string, prisma: Prisma) => {
   });
 
   // Update the user with the new customer ID
-  const updated = await prisma.user.update({
-    where: { id: user.id },
-    data: { stripeCustomerId: customer.id },
-  });
+  const [updated] = await Promise.all([
+    prisma.user.update({
+      where: { id: user.id },
+      data: { stripeCustomerId: customer.id },
+    }),
+    prisma.stripeCustomer.create({
+      data: {
+        id: customer.id,
+        name: customer.name,
+        email: customer.email,
+        phone: customer.phone,
+        address: customer.address as any,
+        balance: customer.balance,
+        description: customer.description,
+        created: new Date(customer.created * 1000), // convert to milliseconds
+        currency: customer.currency,
+        default_source: customer.default_source as any,
+        delinquent: !!customer.delinquent,
+        discount: customer.discount as any,
+        livemode: customer.livemode,
+        metadata: customer.metadata,
+      },
+    }),
+  ]);
 
   if (!updated.stripeCustomerId)
     throw new TRPCError({
@@ -111,8 +136,10 @@ export const stripeRouter = router({
       const { customerId, user } = await getCustomerId(ctx.user.id, ctx.prisma);
 
       if (
-        user.paidUntil &&
-        user.paidUntil > new Date() &&
+        // Checking the membership should be enough?
+        // user.stripeCustomer?.subscriptions.some(
+        //   (sub) => sub.status === "active",
+        // ) &&
         user.membership !== Membership.FREE
       ) {
         throw new TRPCError({
