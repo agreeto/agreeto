@@ -1,4 +1,4 @@
-import { privateProcedure, router } from "../trpc";
+import { privateProcedure, proProcedure, router } from "../trpc";
 import { z } from "zod";
 
 import { Language } from "@agreeto/db";
@@ -25,7 +25,7 @@ export const preferenceRouter = router({
   }),
 
   // Update Preferences for the current user
-  update: privateProcedure
+  update: proProcedure
     .input(
       z.object({
         formatLanguage: z.nativeEnum(Language),
