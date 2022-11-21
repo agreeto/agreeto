@@ -219,13 +219,12 @@ const AddAccountButton = () => {
   );
 };
 const Copied = () => {
-  const ref = React.createRef<HTMLButtonElement>();
 
   return (
     <Tooltip.Provider>
       <Tooltip.Root>
         <Tooltip.Trigger asChild>
-          <Button ref={ref}>Tooltip?</Button>
+          <Button>Tooltip?</Button>
           {/* <button className="w-[48]">Tooltip?</button> */}
         </Tooltip.Trigger>
         <Tooltip.Portal>
