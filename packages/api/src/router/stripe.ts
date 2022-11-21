@@ -202,13 +202,14 @@ export const stripeRouter = router({
 
         // Update the user's membership, and register the payment
         await Promise.all([
-          // ctx.prisma.user.update({
-          //   where: { id: userId },
-          //   data: {
-          //     membership,
-          //     paidUntil: new Date(invoice.period_end * 1000),
-          //   },
-          // }),
+          ctx.prisma.user.update({
+            where: { id: userId },
+            data: {
+              membership,
+              stripePlanId: priceId,
+              paidUntil: new Date(invoice.period_end * 1000),
+            },
+          }),
           ctx.prisma.payment.create({
             data: {
               user: { connect: { id: userId } },
@@ -235,6 +236,8 @@ export const stripeRouter = router({
       created: stripeWHProcedure.mutation(async ({ ctx, input }) => {
         const subscription = input.event.data.object as Stripe.Subscription;
         const { userId } = subscription.metadata;
+
+        console.log(subscription);
 
         await ctx.prisma.user.update({
           where: { id: userId },
