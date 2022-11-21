@@ -29,6 +29,14 @@ export const userRouter = router({
     return user;
   }),
 
+  myAccounts: privateProcedure.query(async ({ ctx }) => {
+    const user = await ctx.prisma.user.findUnique({
+      where: { id: ctx.user.id },
+      include: { accounts: true },
+    });
+    return user;
+  }),
+
   byEmail: publicProcedure
     .input(z.object({ email: z.string() }))
     .query(async ({ ctx, input }) => {

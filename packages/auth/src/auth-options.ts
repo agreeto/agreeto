@@ -160,4 +160,10 @@ export const authOptions: NextAuthOptions = {
       });
     },
   },
+
+  /** Pages used to override the default ones */
+  /** @see https://next-auth.js.org/configuration/pages */
+  pages: {
+    signIn: "/auth/signin",
+  },
 };

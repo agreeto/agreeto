@@ -8,6 +8,20 @@ export const stripe = new Stripe(process.env.STRIPE_SK as string, {
   apiVersion: "2022-11-15",
 });
 
+const getMembershipFromPriceId = (priceId: string | undefined): Membership => {
+  switch (priceId) {
+    case process.env.STRIPE_MONTHLY_PRICE_ID:
+      return Membership.PRO;
+    case process.env.STRIPE_YEARLY_PRICE_ID:
+      return Membership.PREMIUM;
+    default:
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: `Price ID ${priceId} not recognized`,
+      });
+  }
+};
+
 const stripeWHProcedure = publicProcedure
   .input(
     z.object({
@@ -95,34 +109,34 @@ const getCustomerId = async (userId: string, prisma: Prisma) => {
     },
   });
 
-  // Update the user with the new customer ID
-  const [updated] = await Promise.all([
-    prisma.user.update({
-      where: { id: user.id },
-      data: { stripeCustomerId: customer.id },
-    }),
-    prisma.stripeCustomer.create({
-      data: {
-        user: {
-          connect: { id: user.id },
-        },
-        id: customer.id,
-        name: customer.name,
-        email: customer.email,
-        phone: customer.phone,
-        address: {
-          ...customer.address,
-        },
-        balance: customer.balance,
-        description: customer.description,
-        created: new Date(customer.created * 1000), // convert to milliseconds
-        currency: customer.currency,
-        delinquent: !!customer.delinquent,
-        livemode: customer.livemode,
-        metadata: customer.metadata,
+  // Create customer in db
+  await prisma.stripeCustomer.create({
+    data: {
+      user: {
+        connect: { id: user.id },
       },
-    }),
-  ]);
+      id: customer.id,
+      name: customer.name,
+      email: customer.email,
+      phone: customer.phone,
+      address: {
+        ...customer.address,
+      },
+      balance: customer.balance,
+      description: customer.description,
+      created: new Date(customer.created * 1000), // convert to milliseconds
+      currency: customer.currency,
+      delinquent: !!customer.delinquent,
+      livemode: customer.livemode,
+      metadata: customer.metadata,
+    },
+  });
+
+  // Update the user with the new customer ID
+  const updated = await prisma.user.update({
+    where: { id: user.id },
+    data: { stripeCustomerId: customer.id },
+  });
 
   if (!updated.stripeCustomerId)
     throw new TRPCError({
@@ -263,13 +277,19 @@ export const stripeRouter = router({
       created: stripeWHProcedure.mutation(async ({ ctx, input }) => {
         const subscription = input.event.data.object as Stripe.Subscription;
         const { userId } = subscription.metadata;
+        const isTrial = subscription.status === "trialing";
 
         await Promise.all([
           ctx.prisma.user.update({
             where: { id: userId },
             data: {
               // consume trial
-              hasTrialed: subscription.status === "trialing" ? true : undefined,
+              hasTrialed: isTrial || undefined,
+              membership: isTrial
+                ? Membership.TRIAL
+                : getMembershipFromPriceId(
+                    subscription.items.data[0]?.price.id,
+                  ),
             },
           }),
           ctx.prisma.stripeSubscription.create({
@@ -313,6 +333,7 @@ export const stripeRouter = router({
       updated: stripeWHProcedure.mutation(async ({ ctx, input }) => {
         const subscription = input.event.data.object as Stripe.Subscription;
         const { userId } = subscription.metadata;
+        const isTrial = subscription.status === "trialing";
 
         // NOTE: Just cause we get cancelled doesn't mean we should end the
         // membership, as the subscription is still active until the end of the
@@ -325,7 +346,13 @@ export const stripeRouter = router({
         await Promise.all([
           ctx.prisma.user.update({
             where: { id: userId },
-            data: {},
+            data: {
+              membership: isTrial
+                ? Membership.TRIAL
+                : getMembershipFromPriceId(
+                    subscription.items.data[0]?.price.id,
+                  ),
+            },
           }),
           ctx.prisma.stripeSubscription.update({
             where: { id: subscription.id },
