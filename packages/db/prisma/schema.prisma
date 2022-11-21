@@ -67,20 +67,22 @@ model Session {
 }
 
 model User {
-    id                       String      @id @default(cuid())
+    id                       String                    @id @default(cuid())
     name                     String?
-    email                    String?     @unique
+    email                    String?                   @unique
     emailVerified            DateTime?
     image                    String?
     accounts                 Account[]
     sessions                 Session[]
     payments                 Payment[]
     preference               Preference?
-    membership               Membership  @default(FREE)
+    membership               Membership                @default(FREE)
+    hasTrialed               Boolean                   @default(false)
     paidUntil                DateTime?
     stripeCustomerId         String?
     stripePlanId             String?
     subscriptionCanceledDate DateTime?
+    subscriptionStatus       StripeSubscriptionStatus?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt

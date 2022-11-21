@@ -34,6 +34,8 @@ const stripeWHProcedure = publicProcedure
     }),
   )
   .use(async ({ ctx, input, next }) => {
+    console.log("Incoming Stripe Webhook", input.event);
+
     // Let the handler run
     const result = await next();
 
@@ -166,6 +168,20 @@ export const stripeRouter = router({
 
   // Webhooks for Stripe events, server-called by Next.js API endpoint
   webhooks: router({
+    customer: router({
+      deleted: stripeWHProcedure.mutation(async ({ ctx, input }) => {
+        const { event } = input;
+        const { object } = event.data;
+        const { id } = object as Stripe.Customer;
+
+        console.log(event);
+        // TODO: Prob make stripeCustomerId unique
+        await ctx.prisma.user.updateMany({
+          where: { stripeCustomerId: id },
+          data: { stripeCustomerId: null },
+        });
+      }),
+    }),
     invoice: router({
       paid: stripeWHProcedure.mutation(async ({ ctx, input }) => {
         // Extract out metadata which contains some user info
@@ -186,13 +202,13 @@ export const stripeRouter = router({
 
         // Update the user's membership, and register the payment
         await Promise.all([
-          ctx.prisma.user.update({
-            where: { id: userId },
-            data: {
-              membership,
-              paidUntil: new Date(invoice.period_end * 1000),
-            },
-          }),
+          // ctx.prisma.user.update({
+          //   where: { id: userId },
+          //   data: {
+          //     membership,
+          //     paidUntil: new Date(invoice.period_end * 1000),
+          //   },
+          // }),
           ctx.prisma.payment.create({
             data: {
               user: { connect: { id: userId } },
@@ -220,42 +236,40 @@ export const stripeRouter = router({
         const subscription = input.event.data.object as Stripe.Subscription;
         const { userId } = subscription.metadata;
 
-        if (subscription.status === "trialing") {
-          await ctx.prisma.user.update({
-            where: { id: userId },
-            data: {
-              // consume trial
-              hasTrialed: true,
-            },
-          });
-        }
+        await ctx.prisma.user.update({
+          where: { id: userId },
+          data: {
+            // consume trial
+            hasTrialed: subscription.status === "trialing" ? true : undefined,
+            subscriptionStatus: subscription.status,
+          },
+        });
       }),
       updated: stripeWHProcedure.mutation(async ({ ctx, input }) => {
         const subscription = input.event.data.object as Stripe.Subscription;
         const { userId } = subscription.metadata;
 
-        // const canceledDate = subscription.cancel_at
-        //   ? new Date(subscription.cancel_at * 1000)
-        //   : null;
-
         // NOTE: Just cause we get cancelled doesn't mean we should end the
         // membership, as the subscription is still active until the end of the
         // billing period. We get a separete `delete` event for that ⬇️⬇️⬇️
+
+        const canceledAt = subscription.canceled_at
+          ? new Date(subscription.canceled_at * 1000)
+          : null;
 
         await Promise.all([
           ctx.prisma.user.update({
             where: { id: userId },
             data: {
               paidUntil: new Date(subscription.current_period_end * 1000),
-              subscriptionCanceledDate: subscription.cancel_at
-                ? new Date()
-                : undefined,
+              subscriptionCanceledDate: canceledAt,
+              subscriptionStatus: subscription.status,
             },
           }),
           ctx.prisma.payment.updateMany({
             where: { subscriptionId: subscription.id },
             data: {
-              canceledDate: new Date(),
+              canceledDate: canceledAt,
             },
           }),
         ]);
@@ -281,6 +295,7 @@ export const stripeRouter = router({
             data: {
               paidUntil: null,
               subscriptionCanceledDate: new Date(),
+              subscriptionStatus: subscription.status,
               membership: Membership.FREE,
               preference: {
                 update: {

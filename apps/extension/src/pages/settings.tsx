@@ -110,6 +110,15 @@ export const Settings = () => {
           <p>{primaryAccount.email}</p>
           <p>{primaryAccount.provider}</p>
           <p>You&apos;re currently on the {user?.membership} plan.</p>
+          {user ? (
+            user.subscriptionCanceledDate ? (
+              <p>Expires at {user.paidUntil?.toDateString()}</p>
+            ) : (
+              <p>Next payment {user.paidUntil?.toDateString()}</p>
+            )
+          ) : (
+            <p>No active subscription</p>
+          )}
         </div>
       )}
     </div>
