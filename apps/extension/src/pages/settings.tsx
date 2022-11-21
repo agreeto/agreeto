@@ -219,12 +219,13 @@ const AddAccountButton = () => {
   );
 };
 const Copied = () => {
-
   return (
     <Tooltip.Provider>
       <Tooltip.Root>
         <Tooltip.Trigger asChild>
-          <Button>Tooltip?</Button>
+          <div id="tooltip-trigger">
+            <Button>Add new</Button>
+          </div>
           {/* <button className="w-[48]">Tooltip?</button> */}
         </Tooltip.Trigger>
         <Tooltip.Portal>
