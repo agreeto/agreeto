@@ -226,3 +226,34 @@ model Payment {
 // ======================================
 // End AgreeTo Specifics
 // ======================================
+
+// ======================================
+// Stripe Integration
+// ======================================
+
+enum StripeSubscriptionStatus {
+    incomplete
+    incomplete_expired
+    trialing
+    active
+    past_due
+    canceled
+    unpaid
+}
+
+model StripeEvent {
+    id               String   @id @unique
+    api_version      String?
+    data             Json
+    request          Json?
+    type             String
+    object           String
+    account          String?
+    created          DateTime
+    livemode         Boolean
+    pending_webhooks Int
+}
+
+// ======================================
+// End Stripe Integration
+// ======================================

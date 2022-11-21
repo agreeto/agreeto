@@ -8,28 +8,60 @@ export const stripe = new Stripe(process.env.STRIPE_SK as string, {
   apiVersion: "2022-11-15",
 });
 
-const stripeWHProcedure = publicProcedure.input(
-  z.object({
-    // From type Stripe.Event
-    event: z.object({
-      id: z.string(),
-      object: z.enum(["event"]),
-      account: z.string().nullish(),
-      created: z.number(),
-      data: z.object({
-        object: z.record(z.any()),
+const stripeWHProcedure = publicProcedure
+  .input(
+    z.object({
+      // From type Stripe.Event
+      event: z.object({
+        id: z.string(),
+        api_version: z.string().nullish(),
+        object: z.enum(["event"]),
+        account: z.string().nullish(),
+        created: z.number(),
+        data: z.object({
+          object: z.record(z.any()),
+        }),
+        request: z
+          .object({
+            id: z.string().nullish(),
+            idempotency_key: z.string().nullish(),
+          })
+          .nullish(),
+        livemode: z.boolean(),
+        type: z.string(),
+        pending_webhooks: z.number(),
       }),
-      request: z
-        .object({
-          id: z.string().nullish(),
-          idempotency_key: z.string().nullish(),
-        })
-        .nullish(),
-      livemode: z.boolean(),
-      type: z.string(),
     }),
-  }),
-);
+  )
+  .use(async ({ ctx, input, next }) => {
+    // Let the handler run
+    const result = await next();
+
+    // Log event to DB
+    const { event } = input;
+    await ctx.prisma.stripeEvent.create({
+      data: {
+        id: event.id,
+        type: event.type,
+        object: event.object,
+        api_version: event.api_version,
+        account: event.account,
+        created: new Date(event.created * 1000), // convert to milliseconds
+        data: {
+          object: event.data.object,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          previous_attributes: (event.data as any).previous_attributes,
+        },
+        livemode: event.livemode,
+        pending_webhooks: event.pending_webhooks,
+        request: {
+          id: event.request?.id,
+          idempotency_key: event.request?.idempotency_key,
+        },
+      },
+    });
+    return result;
+  });
 
 // Gets the Stripe customer ID for the current user, or creates one if it doesn't exist
 const getCustomerId = async (userId: string, prisma: Prisma) => {
@@ -98,13 +130,17 @@ export const stripeRouter = router({
             quantity: 1,
           },
         ],
+
         success_url: `${process.env.NEXTAUTH_URL}/payment/success`,
         cancel_url: `${process.env.NEXTAUTH_URL}/payment/cancel`,
         subscription_data: {
+          trial_period_days: !user.hasTrialed ? 7 : undefined,
           metadata: {
             userId: ctx.user.id,
           },
         },
+        // allow starting trials without payment
+        payment_method_collection: "if_required",
       });
 
       if (!session || !session.url)
@@ -180,6 +216,20 @@ export const stripeRouter = router({
 
     // Occurs whenever a source's details are changed
     subscription: router({
+      created: stripeWHProcedure.mutation(async ({ ctx, input }) => {
+        const subscription = input.event.data.object as Stripe.Subscription;
+        const { userId } = subscription.metadata;
+
+        if (subscription.status === "trialing") {
+          await ctx.prisma.user.update({
+            where: { id: userId },
+            data: {
+              // consume trial
+              hasTrialed: true,
+            },
+          });
+        }
+      }),
       updated: stripeWHProcedure.mutation(async ({ ctx, input }) => {
         const subscription = input.event.data.object as Stripe.Subscription;
         const { userId } = subscription.metadata;
@@ -197,7 +247,9 @@ export const stripeRouter = router({
             where: { id: userId },
             data: {
               paidUntil: new Date(subscription.current_period_end * 1000),
-              subscriptionCanceledDate: new Date(),
+              subscriptionCanceledDate: subscription.cancel_at
+                ? new Date()
+                : undefined,
             },
           }),
           ctx.prisma.payment.updateMany({
@@ -207,6 +259,14 @@ export const stripeRouter = router({
             },
           }),
         ]);
+      }),
+
+      trialWillEnd: stripeWHProcedure.mutation(async ({ input }) => {
+        const subscription = input.event.data.object as Stripe.Subscription;
+        const { userId } = subscription.metadata;
+        console.log("Trial ending for user", userId);
+
+        // Send email using Nodemailer?
       }),
 
       // Occurs whenever a customer's subscription ends
