@@ -220,9 +220,9 @@ const PaywallTooltip = ({ children }: { children: ReactNode }) => {
               <div className="my-2 text-xs color-gray-900">
                 This feature is part of the Pro Plan
               </div>
-              <div className="flex items-center justify-center w-full mt-4">
+              <div className="flex items-center justify-center w-full mt-5">
                 <Button
-                  className="pt-5"
+                  className="py-1"
                   variant="outline"
                   // TODO: wait for pull#12 to be merged
                   // onClick={() => onPageChange?.("settings")}
