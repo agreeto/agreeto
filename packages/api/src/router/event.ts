@@ -2,6 +2,7 @@ import { router, privateProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { GoogleCalendarService } from "../services/google.calendar";
+
 import { EventResponseStatus, type Event } from "@agreeto/db";
 import { getCalendarService } from "../services/service-helpers";
 
@@ -39,10 +40,13 @@ export const eventRouter = router({
       ]);
 
       // Get calendar Events
+
       const calendarEvents = await Promise.all(
         accounts.map(async (account) => {
+          console.log("INPUT?", input);
           const service = getCalendarService(account);
           const { events } = await service.getEvents(input);
+          console.log(events.length);
           return events.map((e) => ({
             ...e,
             account,
@@ -54,24 +58,28 @@ export const eventRouter = router({
       // Merge events
       const allEvents = [...userEvents, ...calendarEvents.flat()];
 
-      // Remove duplicate events
-      const addedEvents = new Map<string | undefined, boolean>();
-      const newEvents = allEvents.filter((event) => {
-        const { id, startDate, endDate, title } = event;
-        // TODO: Find a better way for composite key
-        // This composite key is used to avoid duplicate events which have the same name and date, but a different id
-        // Note: Having different ids occur when a user with multiple accounts creates an event. The reason for this is that
-        // we cannot update non-primary calender ids only by having them attendees
-        const compositeKey = `${title},${startDate},${endDate}`;
-        // If an event with the same is added before, just skip it to avoid duplicates
-        if (addedEvents.has(compositeKey) || addedEvents.has(id)) {
-          return false;
+      // Deduplicate allEvents based on event.title, event.startDate and event.endDate
+      const dedupedEvents = allEvents.reduce((acc, event) => {
+        const existingEvent = acc.find(
+          (e) =>
+            e.title === event.title &&
+            e.startDate?.getTime() === event.startDate?.getTime() &&
+            e.endDate?.getTime() === event.endDate?.getTime(),
+        );
+        if (existingEvent) {
+          // If the event already exists, merge the attendees
+          existingEvent.attendees = [
+            ...(existingEvent.attendees || []),
+            ...(event.attendees || []),
+          ];
+        } else {
+          // If the event doesn't exist, add it to the accumulator
+          acc.push(event);
         }
-        addedEvents.set(compositeKey, true);
-        addedEvents.set(id, true);
-        return true;
-      });
-      return newEvents;
+        return acc;
+      }, [] as typeof allEvents[number][]);
+
+      return dedupedEvents;
     }),
 
   // Confirm an Event by Id
