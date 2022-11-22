@@ -18,6 +18,8 @@ import { trpcApi } from "~features/trpc/api/hooks";
 import type { RouterOutputs } from "@agreeto/api";
 import type { Maybe } from "@trpc/server";
 import * as AlertDialog from '@radix-ui/react-alert-dialog';
+import * as RadioGroup from '@radix-ui/react-radio-group';
+
 
 
 
@@ -201,7 +203,7 @@ const AccountCard: FC<{
                         Organizer
                       </div>
                     </Tooltip.Trigger>
-                    <Tooltip.Content align="end" side="bottom" sideOffset={10} className="z-10">
+                    <Tooltip.Content align="end" side="right" sideOffset={10} className="z-10">
                       <div
                         className="px-5 py-6 bg-white rounded-lg shadow-2xl w-[350]">
                         <div className="font-semibold">Organizer Account</div>
@@ -215,20 +217,26 @@ const AccountCard: FC<{
                 )}
                 </div>
 
-            <div className="flex pt-4 space-x-2">
+  <RadioGroup.Root asChild>
+            <div className="flex pt-4 space-x-4">
               {colors?.map((color, ix) => {
                 // const isSelected = account.color.id === id;
 
                 return (
-                  <div
-                    key={ix}
-                    className="relative w-8 h-8 border rounded cursor-pointer"
-                    // onClick={() => handleUpdateColor(id)}
-                    style={{
-                      backgroundColor: color,
-                      //   borderColor: isSelected ? darkColor : color,
-                    }}
+                  <RadioGroup.Item
+      key={ix}
+      className="relative w-8 h-8 border rounded cursor-pointer"
+      // onClick={() => handleUpdateColor(id)}
+      style={{
+        backgroundColor: color,
+        //   borderColor: isSelected ? darkColor : color,
+      }}
                   >
+      <RadioGroup.Indicator />
+    </RadioGroup.Item>)})}
+                  
+                  
+
                     {/* {isSelected && (
                       <div className="absolute flex bottom-1 right-1">
                         <span className="checkmark">
@@ -247,11 +255,10 @@ const AccountCard: FC<{
                         </span>
                       </div>
                     )} */}
-                  </div>
-                );
-              })}
-              {updating && <Spinner />}
+    
               </div>
+  </RadioGroup.Root>
+              {/* {updating && <Spinner />} */}
             {/* </div> */}
             </div>
             
