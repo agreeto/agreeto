@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "@agreeto/tsconfig": "workspace:*",
+    "@microsoft/microsoft-graph-types-beta": "0.29.0-preview",
     "typescript": "^4.8.4"
   }
 }
