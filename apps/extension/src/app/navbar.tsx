@@ -4,7 +4,10 @@ import { useState } from "react";
 import { AiOutlineEdit } from "react-icons/ai";
 import { BsCalendarPlus, BsGear } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
-import { MdOutlineManageAccounts, MdOutlinePermContactCalendar, MdOutlinePermContactCalendar } from "react-icons/md";
+import {
+  MdOutlineManageAccounts,
+  MdOutlinePermContactCalendar,
+} from "react-icons/md";
 
 const options = ["cal-plus", "cal-profile", "profile-gear", "profile"] as const;
 export const Navbar = () => {
