@@ -38,7 +38,7 @@ const AccountCard: FC<{
   const { mutateAsync: updateEventColor } =
     trpcApi.account.updateColor.useMutation({
       onSuccess() {
-        utils.account.me.invalidate();
+        utils.user.myAccounts.invalidate();
       },
     });
 
@@ -239,15 +239,11 @@ const DropdownMenuDemo = ({
   const { mutate: changePrimary } = trpcApi.account.changePrimary.useMutation({
     onSuccess() {
       utils.user.myAccounts.invalidate();
-      utils.account.me.invalidate();
-      utils.account.primary.invalidate();
     },
   });
   const { mutate: removeAccount } = trpcApi.account.delete.useMutation({
     onSuccess() {
       utils.user.myAccounts.invalidate();
-      utils.account.me.invalidate();
-      utils.account.primary.invalidate();
     },
   });
   return (
