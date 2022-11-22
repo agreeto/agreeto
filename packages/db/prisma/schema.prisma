@@ -18,7 +18,7 @@ datasource db {
 // Start Mostly Next-Auth.js
 // ======================================
 model Account {
-    id                String       @id @default(cuid())
+    id                String          @id @default(cuid())
     userId            String
     colorId           String
     // Email is optional cause it's not set at login, but with a custom event
@@ -27,20 +27,20 @@ model Account {
     provider          String
     type              String
     providerAccountId String
-    refresh_token     String       @db.Text
-    access_token      String       @db.Text
+    refresh_token     String          @db.Text
+    access_token      String          @db.Text
     expires_at        Int
     token_type        String
     scope             String
-    id_token          String?      @db.Text
+    id_token          String?         @db.Text
     session_state     String?
     ext_expires_in    Int?
-    isPrimary         Boolean      @default(false)
-    user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+    isPrimary         Boolean         @default(false)
+    user              User            @relation(fields: [userId], references: [id], onDelete: Cascade)
     eventGroups       EventGroup[]
     events            Event[]
-    color             AccountColor @relation(fields: [colorId], references: [id])
-    eventColor        RadixColor   @default(value: violet)
+    color             AccountColor    @relation(fields: [colorId], references: [id])
+    eventColor        EventColorRadix @default(value: violet)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
@@ -48,13 +48,15 @@ model Account {
     @@unique([provider, providerAccountId])
 }
 
-enum RadixColor {
-    tomato
-    red
+// ============================================
+// The allowed colors for the account's event
+// as defined by radix-colors
+// ============================================
+enum EventColorRadix {
     crimson
-    pink
-    plum
-    purple
+    lime
+    yellow
+    sky
     violet
 }
 
