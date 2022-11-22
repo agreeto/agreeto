@@ -174,7 +174,7 @@ const AddAccountButton = () => {
           <Button
             className="w-48 cursor-not-allowed"
             variant="primary"
-            // disabled
+            disabled
           >
             Add Account
           </Button>
@@ -205,9 +205,7 @@ const PaywallTooltip = ({ children }: { children: ReactNode }) => {
   return (
     <Tooltip.Provider>
       <Tooltip.Root>
-        {/* note (richard): couldn't figure out how to make asChild work with our ui lib as the child node */}
-        {/* asked on discord about it */}
-        <Tooltip.Trigger>{children}</Tooltip.Trigger>
+        <Tooltip.Trigger asChild>{children}</Tooltip.Trigger>
         <Tooltip.Portal>
           <Tooltip.Content sideOffset={5} align="center" side="bottom">
             <div
