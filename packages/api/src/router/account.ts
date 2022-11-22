@@ -1,6 +1,7 @@
 import { router, privateProcedure, publicProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
+import { RadixColor } from "@agreeto/db";
 
 export const accountRouter = router({
   // Get the accounts for the current user
@@ -8,6 +9,7 @@ export const accountRouter = router({
     return ctx.prisma.account.findMany({
       where: { userId: ctx.user.id },
       include: { color: true },
+      orderBy: [{ isPrimary: "asc" }, { email: "asc" }],
     });
   }),
 
@@ -59,6 +61,25 @@ export const accountRouter = router({
       await ctx.prisma.account.updateMany({
         where: { userId: ctx.user.id, id: { not: input.id } },
         data: { isPrimary: false },
+      });
+
+      return account;
+    }),
+
+  updateColor: privateProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        eventColor: z.enum(
+          // FIXME: parse the Object.keys with zod in a type safe way to avoid type cast hack
+          Object.keys(RadixColor) as [RadixColor, ...RadixColor[]],
+        ),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const account = await ctx.prisma.account.update({
+        where: { id: input.id },
+        data: { eventColor: input.eventColor },
       });
 
       return account;

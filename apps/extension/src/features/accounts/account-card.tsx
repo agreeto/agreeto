@@ -9,7 +9,7 @@ import { HiCheckCircle, HiOutlineExclamation, HiOutlineTrash, HiTrash } from "re
 import { RiMore2Line } from "react-icons/more";
 import OutsideClickHandler from "react-outside-click-handler";
 // import type { IAccount } from "services/types";
-import tailwindConfig from "tailwind.config";
+import tailwindConfig from "./../../../tailwind.config";
 import resolveConfig from "tailwindcss/resolveConfig";
 
 import React from 'react';
@@ -19,6 +19,7 @@ import type { RouterOutputs } from "@agreeto/api";
 import type { Maybe } from "@trpc/server";
 import * as AlertDialog from '@radix-ui/react-alert-dialog';
 import * as RadioGroup from '@radix-ui/react-radio-group';
+import clsx from "clsx";
 
 
 
@@ -37,140 +38,27 @@ const AccountCard: FC<{
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-
+  
   //   const { data: colors } = useGetAccountColors({ staleTime: 60 * 60 * 1000 });
   // style the events
-  //   const fullConfig = resolveConfig({
-  //     ...tailwindConfig,
-  //     content: ["./src/**/*.{html,js,ts,tsx}"],
-  //   });
-
+  const fullConfig = resolveConfig({
+    ...tailwindConfig,
+    content: ["./src/**/*.{html,js,ts,tsx}"],
+  });
+  console.log(fullConfig)
+  
   // FIXME: make typesafe
   const colors: RadixColor[] = Object.keys(RadixColor);
   const [container, setContainer] = React.useState<HTMLDivElement | null>(null);
-
-  //   const eventColor = fullConfig.theme?.colors[account?.eventColor];
-  //   const { mutateAsync: updateAccount } = useUpdateAccount();
-  //   const { mutateAsync: updatePrimaryAccount } = useUpdatePrimaryAccount();
-  //   const { mutateAsync: removeAccount } = useRemoveAccount();
-
-  //   const handleUpdateColor = async (colorId: string) => {
-  //     if (colorId === account.color.id) return;
-
-  //     setIsDropdownOpen(false);
-  //     setUpdating(true);
-
-  //     try {
-  //       await updateAccount({ accountId: account.id, body: { colorId } });
-  //       await Promise.all([
-  //         queryClient.invalidateQueries([QUERY_KEY.GET_ACCOUNTS]),
-  //         queryClient.invalidateQueries([QUERY_KEY.GET_EVENTS]),
-  //       ]);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-
-  //     setUpdating(false);
-  //   };
-
-  //   const handleDelete = async () => {
-  //     setIsDropdownOpen(false);
-  //     setShowDeleteModal(false);
-  //     setUpdating(true);
-
-  //     try {
-  //       await removeAccount(account.id);
-  //       await Promise.all([
-  //         queryClient.invalidateQueries([QUERY_KEY.GET_ACCOUNTS]),
-  //         queryClient.invalidateQueries([QUERY_KEY.GET_EVENTS]),
-  //       ]);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-
-  //     setUpdating(false);
-  //   };
-
-  //   const handlePrimaryAccountUpdate = async () => {
-  //     setIsDropdownOpen(false);
-  //     setUpdating(true);
-
-  //     try {
-  //       await updatePrimaryAccount({ body: { newAccountId: account.id } });
-  //       await Promise.all([
-  //         queryClient.invalidateQueries([QUERY_KEY.GET_ACCOUNTS]),
-  //         queryClient.invalidateQueries([QUERY_KEY.GET_EVENTS]),
-  //       ]);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-
-  //     setUpdating(false);
-  //   };
-
-  //   const optionsDropdown = (
-  //     <OutsideClickHandler
-  //       onOutsideClick={(e: any) => {
-  //         // This check is put here to prevent unexpexted closes in the extension
-  //         if (e.path?.find((p: any) => p.id === optionsDropdownId)) {
-  //           return;
-  //         }
-  //         setIsDropdownOpen(false);
-  //       }}
-  //     >
-  //       <Menu
-  //         as="div"
-  //         className="relative inline-block text-left"
-  //         id={optionsDropdownId}
-  //       >
-  //         <div>
-  //           <Menu.Button
-  //             className="flex items-center justify-center w-8 h-8 cursor-pointer hover:bg-gray-100 hover:rounded-full"
-  //             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-  //           >
-  //             <AiOutlineMore className="w-5 h-5" />
-  //           </Menu.Button>
-  //         </div>
-  //         {isDropdownOpen && (
-  //           <Menu.Items
-  //             className="absolute right-0 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg w-52 ring-1 ring-black ring-opacity-5 focus:outline-none"
-  //             static
-  //           >
-  //             <Menu.Item>
-  //               <button
-  //                 className="py-3 w-full px-4 border-b border-[#E3E5E8] font-medium flex space-x-2 items-center disabled:cursor-not-allowed disabled:opacity-50 enabled:hover:bg-gray-100"
-  //                 disabled={!!account.isPrimary}
-  //                 onClick={handlePrimaryAccountUpdate}
-  //               >
-  //                 <div>
-  //                   <HiCheckCircle className="w-4 h-4" />
-  //                 </div>
-  //                 <div>Set as organizer</div>
-  //               </button>
-  //             </Menu.Item>
-
-  //             <Menu.Item>
-  //               <button
-  //                 className={`py-3 w-full px-4 text-[#D90026] font-medium flex space-x-2 items-center ${
-  //                   account.isPrimary
-  //                     ? "cursor-not-allowed opacity-50"
-  //                     : "hover:bg-gray-100"
-  //                 }`}
-  //                 disabled={!!account.isPrimary}
-  //                 onClick={() => setShowDeleteModal(true)}
-  //               >
-  //                 <div>
-  //                   <HiOutlineTrash className="w-4 h-4 fill-red-9" />
-  //                 </div>
-  //                 <div>Remove account</div>
-  //               </button>
-  //             </Menu.Item>
-  //           </Menu.Items>
-  //         )}
-  //       </Menu>
-  //     </OutsideClickHandler>
-  //   );
-
+  
+  const themeColors = fullConfig.theme?.colors;
+  const utils = trpcApi.useContext();
+  const { mutateAsync: updateEventColor } = trpcApi.account.updateColor.useMutation({
+    onSuccess() {
+      utils.account.me.invalidate()
+    },
+  })
+  
   return (
     <Tooltip.Provider>
       <div className="flex justify-between py-6 pr-6 space-x-4 border rounded-lg h-30 border-mauve-6 pl-9">
@@ -180,12 +68,16 @@ const AccountCard: FC<{
           <div
             className="self-center w-10 h-10 leading-10 text-center rounded-full"
             style={{
-              backgroundColor: accountColor,
-              color: darkColor,
+              backgroundColor: themeColors[account.eventColor][7],
+              color: themeColors[account.eventColor][11],
             }}
           >
             {initials}
           </div>
+          {/* the account color for the given account */}
+          <div className="flex flex-col justify-center">
+            <div className="text-sm font-medium">{account.eventColor}</div>
+            </div>
           {/* Email, Colors & Badges */}
           {/* <div className="flex flex-grow"> */}
               <div className="flex flex-col items-start flex-grow px-10 ">
@@ -216,8 +108,7 @@ const AccountCard: FC<{
                   </Tooltip.Root>
                 )}
                 </div>
-
-  <RadioGroup.Root asChild>
+  <RadioGroup.Root asChild defaultValue={account?.eventColor}>
             <div className="flex pt-4 space-x-4">
               {colors?.map((color, ix) => {
                 // const isSelected = account.color.id === id;
@@ -225,14 +116,34 @@ const AccountCard: FC<{
                 return (
                   <RadioGroup.Item
       key={ix}
-      className="relative w-8 h-8 border rounded cursor-pointer"
-      // onClick={() => handleUpdateColor(id)}
+      value={color}
+      className="relative w-[2.25rem] h-[2.25rem] border rounded cursor-pointer"
+      onClick={(e) => updateEventColor({id: account.id, eventColor: e.target.value})}
       style={{
-        backgroundColor: color,
-        //   borderColor: isSelected ? darkColor : color,
+        backgroundColor: themeColors[color][7],borderColor: themeColors[color][11]
       }}
                   >
-      <RadioGroup.Indicator />
+      <RadioGroup.Indicator asChild>
+      <div className="absolute bottom-[2px] right-[2px] flex" >
+                        <span className="inline-block w-3.5 h-3.5 -rotate-[140deg]">
+                          <div
+                            id="circle"
+                            className="absolute w-3.5 h-3.5 rounded-xl  left-[1px] top-[1px]"
+                            style={{ backgroundColor: themeColors[color][11] }}
+                            ></div>
+                          <div
+                            id="checkmark-stem"
+                            className={clsx(["w-[1px] h-[8px] absolute top-[5px] left-1.5"],`bg-${color}-9`)}
+                            style={{ backgroundColor: themeColors[color][7] }}
+                            ></div>
+                          <div
+                          id="checkmark-kick"
+                          className={clsx(["w-[5px] h-[1px] absolute top-[4px] left-1.5", `bg-${color}-9`])}
+                          style={{ backgroundColor: themeColors[color][7] }}
+                          ></div>
+                        </span>
+                      </div>
+      </RadioGroup.Indicator>
     </RadioGroup.Item>)})}
                   
                   
@@ -258,6 +169,7 @@ const AccountCard: FC<{
     
               </div>
   </RadioGroup.Root>
+
               {/* {updating && <Spinner />} */}
             {/* </div> */}
             </div>
