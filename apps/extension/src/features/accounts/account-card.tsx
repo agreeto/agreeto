@@ -173,7 +173,7 @@ const AccountCard: FC<{
     <Tooltip.Provider>
       <div className="flex justify-between py-6 pr-6 space-x-4 border rounded-lg h-30 border-mauve-6 pl-9">
         {/* Info */}
-        <div className="grid w-full grid-cols-6 gap-4">
+        <div className="flex w-full gap-4">
           {/* Avatar */}
           <div
             className="self-center w-10 h-10 leading-10 text-center rounded-full"
@@ -185,10 +185,37 @@ const AccountCard: FC<{
             {initials}
           </div>
           {/* Email, Colors & Badges */}
-          <div className="flex justify-between col-span-4">
-            <div>
-            <div>{account.email}</div>
-            <div className="flex pt-4 space-x-3">
+          {/* <div className="flex flex-grow"> */}
+              <div className="flex flex-col items-start flex-grow px-10 ">
+                {/* this div makes sure that the children have the same width as determined by colors */}
+                <div>
+                  
+                
+            <div className="flex justify-between">
+              {/* a div displaying the email on the left side and a conditional organizer badge on the right */}
+                <div className="text-sm font-normal">{account.email}</div>
+                {account.isPrimary && (
+                  <Tooltip.Root delayDuration={300}>
+                    <Tooltip.Trigger asChild>
+                      <div className="px-2 py-1 text-xs text-white rounded bg-blue-9 cursor-help">
+                        Organizer
+                      </div>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content align="end" side="bottom" sideOffset={10} className="z-10">
+                      <div
+                        className="px-5 py-6 bg-white rounded-lg shadow-2xl w-[350]">
+                        <div className="font-semibold">Organizer Account</div>
+                        <div className="pt-2">
+                          The selected account will be the organizer for all events
+                          created.
+                        </div>
+                      </div>
+                    </Tooltip.Content>
+                  </Tooltip.Root>
+                )}
+                </div>
+
+            <div className="flex pt-4 space-x-2">
               {colors?.map((color, ix) => {
                 // const isSelected = account.color.id === id;
 
@@ -224,30 +251,10 @@ const AccountCard: FC<{
                 );
               })}
               {updating && <Spinner />}
+              </div>
+            {/* </div> */}
             </div>
-            </div>
-            {/* badges */}
-          <div className="flex items-center space-x-5">
-            {account.isPrimary && (
-              <Tooltip.Root delayDuration={300}>
-                <Tooltip.Trigger>
-                  <div className="px-2 py-1 text-xs text-white rounded bg-blue-9 cursor-help">
-                    Organizer
-                  </div>
-                </Tooltip.Trigger>
-                <Tooltip.Content align="end" side="bottom" sideOffset={10} className="z-10">
-                  <div
-                    className="px-5 py-6 bg-white rounded-lg shadow-2xl w-[350]">
-                    <div className="font-semibold">Organizer Account</div>
-                    <div className="pt-2">
-                      The selected account will be the organizer for all events
-                      created.
-                    </div>
-                  </div>
-                </Tooltip.Content>
-              </Tooltip.Root>
-            )}
-          </div>
+            
           </div>
         {/* Actions */}
         <DropdownMenuDemo account={account} container={container}/>
