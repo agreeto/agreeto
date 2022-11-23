@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-router";
 
 // import { trpcApi } from "~features/trpc/api/hooks";
-import { SettingsLayout } from "~pages/settings";
+import { SettingsLayout } from "~pages/settings/layout";
 import { SettingsPage } from "~pages/settings/settings";
 import { Subscription } from "~pages/settings/subscription";
 
@@ -26,6 +26,10 @@ const routeConfig = createRouteConfig().createChildren((createRoute) => [
     path: "settings",
     component: SettingsLayout,
   }).createChildren((createRoute) => [
+    createRoute({
+      path: "/",
+      component: () => <>Select action pane</>,
+    }),
     createRoute({
       path: "subscription",
       component: Subscription,

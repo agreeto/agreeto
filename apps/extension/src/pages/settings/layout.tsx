@@ -13,18 +13,18 @@ export const SettingsLayout = () => {
       >
         <Link
           to="/settings/subscription"
-          className="text-semibold px-3 h-10 flex items-center box-border"
+          className="text-semibold px-3 h-10 flex items-center pb-[2px]"
           activeProps={{
-            className: "border-b-2 border-primary text-primary",
+            className: "border-b-2 border-primary pb-0 text-primary",
           }}
         >
           Subscription
         </Link>
         <Link
           to="/settings/settings"
-          className="text-semibold px-3 h-10 flex items-center box-border"
+          className="text-semibold px-3 h-10 flex items-center pb-[2px]"
           activeProps={{
-            className: "border-b-2 border-primary text-primary",
+            className: "border-b-2 border-primary pb-0 text-primary",
           }}
         >
           Settings
