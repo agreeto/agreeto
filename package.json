@@ -16,6 +16,7 @@
     "clean": "find . -name node_modules -o -name .next -o -name .turbo -name dist -o -name build -type d -prune | xargs rm -rf",
     "db-generate": "turbo db-generate",
     "db-migrate": "pnpm -F db db-migrate",
+    "db-up": "pnpm -F db db-up",
     "db-push": "turbo db-push",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
@@ -31,7 +32,7 @@
     "prettier": "^2.7.1",
     "prettier-plugin-tailwindcss": "^0.1.13",
     "tsc-files": "^1.1.3",
-    "turbo": "^1.6.2",
+    "turbo": "^1.6.3",
     "typescript": "^4.8.4"
   },
   "lint-staged": {
