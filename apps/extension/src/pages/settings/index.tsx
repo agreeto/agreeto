@@ -1,6 +1,6 @@
 import { Link, Outlet } from "@tanstack/react-router";
 
-export const Settings = () => {
+export const SettingsLayout = () => {
   return (
     <div className="w-full mx-2">
       <h2 className="text-xl font-bold text-gray-600 pt-3 pb-1 px-3">

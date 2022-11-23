@@ -6,7 +6,8 @@ import {
 } from "@tanstack/react-router";
 
 // import { trpcApi } from "~features/trpc/api/hooks";
-import { Settings } from "~pages/settings";
+import { SettingsLayout } from "~pages/settings";
+import { SettingsPage } from "~pages/settings/settings";
 import { Subscription } from "~pages/settings/subscription";
 
 // Create a memory history
@@ -23,7 +24,7 @@ const routeConfig = createRouteConfig().createChildren((createRoute) => [
   }),
   createRoute({
     path: "settings",
-    component: Settings,
+    component: SettingsLayout,
   }).createChildren((createRoute) => [
     createRoute({
       path: "subscription",
@@ -31,7 +32,7 @@ const routeConfig = createRouteConfig().createChildren((createRoute) => [
     }),
     createRoute({
       path: "settings",
-      component: () => <div>Settings</div>,
+      component: SettingsPage,
     }),
   ]),
 ]);
