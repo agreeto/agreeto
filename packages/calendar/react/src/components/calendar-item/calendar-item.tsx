@@ -228,8 +228,8 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
       });
 
       // FIXME: make typesafe
-      const eventColor = fullConfig.theme?.colors[account?.eventColor];
-      const textColorTw = fullConfig.theme?.textColor;
+      const themeColors = fullConfig.theme?.colors;
+      const eventColor = themeColors[account?.eventColor];
 
       // FIXME: isDeclined doesn't work for the WooSender API demo event
       const isDeclined = attendees?.some((a) => {
@@ -241,7 +241,6 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
       });
 
       // NEEDS_ACTION style
-      console.log(event);
       const attendeeMe = attendees?.find(
         (attendee) => attendee.email === account.email,
       );
@@ -249,17 +248,14 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
       const backgroundColor =
         attendeeMe?.responseStatus !== EventResponseStatus.ACCEPTED
           ? eventColor[3]
-          : eventColor[9];
+          : eventColor[7];
 
       const borderColor =
         attendeeMe?.responseStatus !== EventResponseStatus.ACCEPTED
-          ? eventColor[9]
+          ? eventColor[7]
           : eventColor[1];
 
-      const textColor =
-        attendeeMe?.responseStatus !== EventResponseStatus.ACCEPTED
-          ? eventColor[9]
-          : textColorTw.whiteA;
+      const textColor = eventColor[11];
 
       newEvents.push({
         id,

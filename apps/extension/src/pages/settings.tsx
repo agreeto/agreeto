@@ -16,7 +16,7 @@ export const Settings = () => {
   const utils = trpcApi.useContext();
   const { data: accounts } = trpcApi.account.me.useQuery();
   const { data: primaryAccount } = trpcApi.account.primary.useQuery();
-  const { mutate: changePrimary } = trpcApi.account.changePrimary.useMutation({
+  const { mutate: changePrimary } = trpcApi.user.changePrimary.useMutation({
     onSuccess() {
       utils.account.primary.invalidate();
     },

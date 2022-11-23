@@ -138,6 +138,14 @@ export const authOptions: NextAuthOptions = {
           accounts: true,
         },
       });
+      const dbAccount = await prisma.account.findUnique({
+        where: {
+          provider_providerAccountId: {
+            provider: account.provider,
+            providerAccountId: account.providerAccountId,
+          },
+        },
+      });
 
       await prisma.account.update({
         where: {
@@ -149,8 +157,14 @@ export const authOptions: NextAuthOptions = {
         data: {
           // Set email to the one from the oauth provider's profile
           email: profile.email,
-          // Set account to primary if it's the first one
-          isPrimary: !!(dbUser && dbUser.accounts.length <= 1),
+          // Set the user's primary account to dbAccount if it's not already
+          userPrimary: {
+            connect: {
+              // note (richard): the type is optional but the assumption is that NextAuth run adapter.linkAccount *before* event.linkAccount
+              // therefore assuming that one of the below should exist at runtime.
+              accountPrimaryId: dbUser?.accountPrimaryId || dbAccount?.id,
+            },
+          },
         },
       });
     },

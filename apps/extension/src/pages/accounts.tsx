@@ -47,9 +47,9 @@ export const Accounts = () => {
       </div>
       {/* the list of account cards */}
       <div className="flex flex-col gap-1">
-        {accounts?.map((account) => (
-          <AccountCard key={account.id} account={account} />
-        ))}
+        {accounts?.map((account) => {
+          return <AccountCard key={account.id} account={account} />;
+        })}
       </div>
     </div>
   );

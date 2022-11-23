@@ -37,7 +37,7 @@ const ConfirmationPane: React.FC<{
   }, [eventGroupId]);
 
   const { data: accounts } = trpc.account.me.useQuery();
-  const primaryAccount = accounts?.find((a) => a.isPrimary);
+  const primaryAccount = accounts?.find((a) => a.userIdPrimary);
 
   const { data: eventGroup } = trpc.eventGroup.byId.useQuery(
     { id: eventGroupId },
@@ -128,26 +128,26 @@ const ConfirmationPane: React.FC<{
   };
 
   return (
-    <div className="h-full bg-gray-100 px-10 py-8">
-      <div className="flex h-full flex-col justify-between">
+    <div className="h-full px-10 py-8 bg-gray-100">
+      <div className="flex flex-col justify-between h-full">
         {/* Top */}
         <div>
-          <div className="flex flex-1 justify-between">
+          <div className="flex justify-between flex-1">
             {/* Back icon */}
             <button
-              className="cursor-pointer rounded p-1 hover:bg-gray-200"
+              className="p-1 rounded cursor-pointer hover:bg-gray-200"
               onClick={() => changePane("action")}
             >
-              <IoChevronBackOutline className="text-neutral h-6 w-6" />
+              <IoChevronBackOutline className="w-6 h-6 text-neutral" />
             </button>
 
             {/* Close icon */}
             {(onClose || true) && (
               <button
-                className="cursor-pointer rounded bg-red-500 p-1 hover:bg-red-600"
+                className="p-1 bg-red-500 rounded cursor-pointer hover:bg-red-600"
                 onClick={() => onClose?.()}
               >
-                <IoClose className="h-6 w-6 text-white" />
+                <IoClose className="w-6 h-6 text-white" />
               </button>
             )}
           </div>
@@ -163,7 +163,7 @@ const ConfirmationPane: React.FC<{
           />
 
           {/* Events */}
-          <div className="max-h-56 space-y-4 overflow-auto pt-1">
+          <div className="pt-1 space-y-4 overflow-auto max-h-56">
             {eventGroup?.events
               ?.sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
               .map((event) => (
@@ -173,7 +173,7 @@ const ConfirmationPane: React.FC<{
 
           {/* Info */}
           {/* <div className="pt-4 leading-none text-center">
-            <span className="text-gray-300 font-medium text-2xs-05">
+            <span className="font-medium text-gray-300 text-2xs-05">
               {!eventGroup?.isSelectionDone &&
                 'Once you confirm a slot, other slots will be removed from your actual calendar(s)'}
             </span>
@@ -181,7 +181,7 @@ const ConfirmationPane: React.FC<{
 
           {/* Conference */}
           {eventGroup && !eventGroup.isSelectionDone && primaryAccount && (
-            <div className="overflow-visible pt-2">
+            <div className="pt-2 overflow-visible">
               <ConferenceElement
                 {...{
                   eventGroup,

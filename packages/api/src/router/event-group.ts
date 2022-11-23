@@ -73,7 +73,7 @@ export const eventGroupRouter = router({
       const accountEmails = accounts
         .map((a) => a.email)
         .filter((e): e is string => Boolean(e));
-      const primaryAccount = accounts.find((a) => a.isPrimary);
+      const primaryAccount = accounts.find((a) => a.userIdPrimary);
 
       if (!primaryAccount) {
         // Should not happen

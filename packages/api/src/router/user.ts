@@ -113,6 +113,19 @@ export const userRouter = router({
       return users;
     }),
 
+  changePrimary: privateProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.user.update({
+        where: { id: ctx.user.id },
+        data: { accountPrimary: { connect: { id: input.id } } },
+      });
+    }),
+
   // TODO: Do we need this, or does NextAuth handle this???
   // updateActiveAccounts: privateProcedure
   //   .input(z.object({ accounts: z.string().array() }))
