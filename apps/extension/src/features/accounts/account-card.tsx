@@ -63,11 +63,13 @@ const AccountCard: FC<{
             <div>
               <div className="flex justify-between">
                 {/* a div displaying the email on the left side and a conditional organizer badge on the right */}
-                <div className="text-sm font-normal">{account.email}</div>
+                <div className="text-sm font-normal leading-5">
+                  {account.email}
+                </div>
                 {primaryAccount?.id === account.id && (
                   <Tooltip.Root delayDuration={300}>
                     <Tooltip.Trigger asChild>
-                      <div className="px-2 py-1 text-xs text-white rounded bg-blue-9 cursor-help">
+                      <div className="px-2 py-0.5 text-xs text-white rounded bg-blue-9 cursor-help">
                         Organizer
                       </div>
                     </Tooltip.Trigger>
