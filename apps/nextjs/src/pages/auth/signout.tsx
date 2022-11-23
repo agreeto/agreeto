@@ -17,7 +17,7 @@ const Success: NextPage = () => {
       // alert extension
       chrome.runtime.sendMessage(
         clientEnv.NEXT_PUBLIC_EXTENSION_ID as string,
-        "signout",
+        { action: "signout" },
         (response) => {
           if (response.success) {
             // log out the apps/web using NextAuth

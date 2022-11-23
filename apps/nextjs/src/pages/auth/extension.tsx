@@ -27,7 +27,7 @@ const Extension: NextPage<
 
     chrome.runtime.sendMessage(
       clientEnv.NEXT_PUBLIC_EXTENSION_ID,
-      { accessToken },
+      { action: "signin", accessToken },
       (res) => {
         setIsLoadingExtension(false);
         if (res.success) {
