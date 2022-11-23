@@ -1,5 +1,6 @@
 import { transformer } from "@agreeto/api/transformer";
 import { TRPCError, initTRPC } from "@trpc/server";
+import { z } from "zod";
 
 const t = initTRPC.context().create({
   isServer: false,
@@ -22,6 +23,10 @@ export const chromeRouter = t.router({
     }
 
     return token.accessToken;
+  }),
+
+  openTab: t.procedure.input(z.string().url()).mutation(async ({ input }) => {
+    await chrome.tabs.create({ url: input });
   }),
 });
 

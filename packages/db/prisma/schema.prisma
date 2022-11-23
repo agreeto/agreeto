@@ -67,20 +67,19 @@ model Session {
 }
 
 model User {
-    id                       String      @id @default(cuid())
-    name                     String?
-    email                    String?     @unique
-    emailVerified            DateTime?
-    image                    String?
-    accounts                 Account[]
-    sessions                 Session[]
-    payments                 Payment[]
-    preference               Preference?
-    membership               Membership  @default(FREE)
-    paidUntil                Int? // in milliseconds
-    stripeCustomerId         String?
-    stripePlanId             String?
-    subscriptionCanceledDate Int?
+    id               String          @id @default(cuid())
+    name             String?
+    email            String?         @unique
+    emailVerified    DateTime?
+    image            String?
+    accounts         Account[]
+    sessions         Session[]
+    payments         Invoice[]
+    preference       Preference?
+    membership       Membership      @default(FREE)
+    hasTrialed       Boolean         @default(false)
+    stripeCustomer   StripeCustomer? @relation(fields: [stripeCustomerId], references: [id])
+    stripeCustomerId String?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
@@ -204,25 +203,94 @@ model Attendee {
     event Event? @relation(fields: [eventId], references: [id])
 }
 
-model Payment {
-    id                  String     @id @default(cuid())
-    email               String
-    userId              String
-    eventId             String
-    subscriptionId      String
-    customerId          String
-    membershipPlan      String
-    membership          Membership
-    membershipStartDate Int? // Shouldn't these be DateTime?
-    membershipEndDate   Int?
-    canceledDate        Int?
+// ======================================
+// End AgreeTo Specifics
+// ======================================
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
+// ======================================
+// Stripe Integration
+// ======================================
 
-    user User @relation(fields: [userId], references: [id])
+enum StripeSubscriptionStatus {
+    incomplete
+    incomplete_expired
+    trialing
+    active
+    past_due
+    canceled
+    unpaid
+}
+
+model StripeEvent {
+    id               String    @id @unique
+    api_version      String?
+    data             Json
+    request          Json?
+    type             String
+    object           String
+    account          String?
+    created          DateTime
+    livemode         Boolean
+    pending_webhooks Int
+    invoice          Invoice[]
+}
+
+model StripeCustomer {
+    id            String               @id @unique
+    name          String?
+    email         String?
+    phone         String?
+    address       Json?
+    balance       Int
+    description   String?
+    created       DateTime
+    currency      String?
+    delinquent    Boolean
+    livemode      Boolean
+    metadata      Json?
+    subscriptions StripeSubscription[]
+    user          User[]
+    invoice       Invoice[]
+}
+
+model StripeSubscription {
+    id                   String                   @id @unique
+    cancel_at_period_end Boolean
+    collection_method    String?
+    livemode             Boolean
+    metadata             Json?
+    start_date           DateTime?
+    status               StripeSubscriptionStatus
+    stripeCustomer       StripeCustomer?          @relation(fields: [stripeCustomerId], references: [id])
+    stripeCustomerId     String?
+    invoices             Invoice[]
+
+    current_period_start DateTime
+    current_period_end   DateTime
+    created              DateTime
+    canceled_at          DateTime?
+    ended_at             DateTime?
+    trial_end            DateTime?
+    trial_start          DateTime?
+}
+
+model Invoice {
+    id                   String     @id @default(cuid())
+    email                String
+    userId               String
+    stripeEventId        String
+    stripeSubscriptionId String
+    stripeCustomerId     String
+    membershipPlan       String
+    membership           Membership
+    created              DateTime
+
+    user         User               @relation(fields: [userId], references: [id])
+    event        StripeEvent        @relation(fields: [stripeEventId], references: [id])
+    subscription StripeSubscription @relation(fields: [stripeSubscriptionId], references: [id])
+    customer     StripeCustomer     @relation(fields: [stripeCustomerId], references: [id])
 }
 
 // ======================================
-// End AgreeTo Specifics
+// End Stripe Integration
 // ======================================

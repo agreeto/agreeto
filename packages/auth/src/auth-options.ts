@@ -1,4 +1,4 @@
-import { prisma } from "@agreeto/db";
+import { Membership, prisma } from "@agreeto/db";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
@@ -30,10 +30,15 @@ export const authOptions: NextAuthOptions = {
     ...PrismaAdapter(prisma),
     // Override the adapter to add `color` field
     async linkAccount(account) {
-      const currentAccounts = await prisma.account.findMany({
-        where: { userId: account.userId },
-        include: { color: true },
+      const user = await prisma.user.findUnique({
+        where: { id: account.userId },
+        include: { accounts: { include: { color: true } } },
       });
+      const currentAccounts = user?.accounts;
+
+      if (user?.membership === Membership.FREE && currentAccounts?.length) {
+        throw new Error("Only paid users can add more than one account");
+      }
 
       const colors = await prisma.accountColor.findMany({
         orderBy: { order: "asc" },
@@ -41,7 +46,7 @@ export const authOptions: NextAuthOptions = {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       let colorId = colors[0]!.id;
 
-      if (currentAccounts.length > 0) {
+      if (currentAccounts && currentAccounts.length > 0) {
         let assignedANewColor = false;
         colors.forEach((color) => {
           if (assignedANewColor) return;
@@ -154,5 +159,11 @@ export const authOptions: NextAuthOptions = {
         },
       });
     },
+  },
+
+  /** Pages used to override the default ones */
+  /** @see https://next-auth.js.org/configuration/pages */
+  pages: {
+    signIn: "/auth/signin",
   },
 };

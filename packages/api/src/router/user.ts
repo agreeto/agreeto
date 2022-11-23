@@ -29,6 +29,14 @@ export const userRouter = router({
     return user;
   }),
 
+  myAccounts: privateProcedure.query(async ({ ctx }) => {
+    const user = await ctx.prisma.user.findUnique({
+      where: { id: ctx.user.id },
+      include: { accounts: true },
+    });
+    return user;
+  }),
+
   byEmail: publicProcedure
     .input(z.object({ email: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -112,23 +120,4 @@ export const userRouter = router({
 
       return users;
     }),
-
-  // TODO: Do we need this, or does NextAuth handle this???
-  // updateActiveAccounts: privateProcedure
-  //   .input(z.object({ accounts: z.string().array() }))
-  //   .mutation(async ({ ctx, input }) => {
-  //     try {
-  //       await ctx.prisma.user.update({
-  //         where: { id: ctx.user.id },
-  //         data: {
-  //           activeAccounts: {
-  //             push: input.accounts,
-  //           },
-  //         },
-  //       });
-  //       return { success: true };
-  //     } catch {
-  //       return { success: false };
-  //     }
-  //   }),
 });

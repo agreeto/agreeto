@@ -1,3 +1,4 @@
+import { Membership } from "@agreeto/api/types";
 import { Button } from "@agreeto/ui";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
@@ -6,8 +7,11 @@ import { HiCheckCircle } from "react-icons/hi";
 
 import { trpcApi } from "~features/trpc/api/hooks";
 
+// import { client } from "~features/trpc/chrome/client";
+
 export const Settings = () => {
   const utils = trpcApi.useContext();
+  const { data: user } = trpcApi.user.me.useQuery();
   const { data: accounts } = trpcApi.account.me.useQuery();
   const { data: primaryAccount } = trpcApi.account.primary.useQuery();
   const { mutate: changePrimary } = trpcApi.account.changePrimary.useMutation({
@@ -15,6 +19,23 @@ export const Settings = () => {
       utils.account.primary.invalidate();
     },
   });
+  const { mutate: upgradeAccount } = trpcApi.stripe.checkout.create.useMutation(
+    {
+      async onSuccess({ checkoutUrl }) {
+        // Redirect to Stripe checkout
+        // client.openTab.mutate(checkoutUrl);
+        await chrome.tabs.create({ url: checkoutUrl });
+      },
+    },
+  );
+  const { mutate: createBillingPortalSession } =
+    trpcApi.stripe.subscription.createBillingPortalSession.useMutation({
+      async onSuccess({ url }) {
+        // Redirect to Stripe checkout
+        // client.openTab.mutate(checkoutUrl);
+        await chrome.tabs.create({ url });
+      },
+    });
 
   return (
     <div className="w-full">
@@ -33,6 +54,13 @@ export const Settings = () => {
         >
           Add Account
         </Button>
+        {user?.membership === Membership.FREE ? (
+          <Button onClick={() => upgradeAccount()}>Upgrade Account</Button>
+        ) : (
+          <Button onClick={() => createBillingPortalSession()}>
+            Manage Subscription
+          </Button>
+        )}
         <Button
           onClick={() => {
             window.open(`${process.env.PLASMO_PUBLIC_WEB_URL}/auth/signout`);
@@ -81,6 +109,16 @@ export const Settings = () => {
           <h3 className="text-lg font-bold">Primary Account</h3>
           <p>{primaryAccount.email}</p>
           <p>{primaryAccount.provider}</p>
+          <p>You&apos;re currently on the {user?.membership} plan.</p>
+          {user ? (
+            user.subscriptionCanceledDate ? (
+              <p>Expires at {user.paidUntil?.toDateString()}</p>
+            ) : (
+              <p>Next payment {user.paidUntil?.toDateString()}</p>
+            )
+          ) : (
+            <p>No active subscription</p>
+          )}
         </div>
       )}
     </div>
