@@ -13,10 +13,9 @@ import resolveConfig from "tailwindcss/resolveConfig";
 
 import { trpcApi } from "~features/trpc/api/hooks";
 
-// import type { IAccount } from "services/types";
 import tailwindConfig from "./../../../tailwind.config";
 
-type Account = RouterOutputs["account"]["me"][number];
+type Account = RouterOutputs["user"]["myAccounts"]["accounts"][number];
 
 const AccountCard: FC<{
   account: Account;
@@ -27,14 +26,19 @@ const AccountCard: FC<{
     ...tailwindConfig,
     content: ["./src/**/*.{html,js,ts,tsx}"],
   });
-  const themeColors = fullConfig.theme?.colors;
 
+  const themeColors = fullConfig.theme?.colors as Record<
+    EventColorRadix & string,
+    string
+  >;
+  const { data: primaryAccount } = trpcApi.account.primary.useQuery();
   const utils = trpcApi.useContext();
   const { mutateAsync: updateEventColor } =
     trpcApi.account.updateColor.useMutation({
       onSuccess() {
         utils.account.me.invalidate();
         utils.event.all.invalidate();
+        utils.user.myAccounts.invalidate();
       },
     });
   return (
@@ -46,8 +50,8 @@ const AccountCard: FC<{
           <div
             className="self-center w-10 h-10 leading-10 text-center rounded-full"
             style={{
-              backgroundColor: themeColors[account.eventColor][7],
-              color: themeColors[account.eventColor][11],
+              backgroundColor: themeColors?.[account.eventColor][7],
+              color: themeColors?.[account.eventColor][11],
             }}
           >
             {initials}
@@ -60,7 +64,7 @@ const AccountCard: FC<{
               <div className="flex justify-between">
                 {/* a div displaying the email on the left side and a conditional organizer badge on the right */}
                 <div className="text-sm font-normal">{account.email}</div>
-                {account.userPrimary?.accountPrimaryId === account.id && (
+                {primaryAccount?.id === account.id && (
                   <Tooltip.Root delayDuration={300}>
                     <Tooltip.Trigger asChild>
                       <div className="px-2 py-1 text-xs text-white rounded bg-blue-9 cursor-help">
@@ -161,7 +165,9 @@ const ActionsDropdownMenu = ({ account }: { account: Account }) => {
     },
   });
 
-  const isPrimary = account.userPrimary?.accountPrimaryId === account.id;
+  const { data: primaryAccount } = trpcApi.account.primary.useQuery();
+
+  const isPrimary = primaryAccount?.id === account.id;
 
   return (
     <DropdownMenu.Root>

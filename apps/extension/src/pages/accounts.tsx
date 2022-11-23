@@ -2,13 +2,11 @@ import { Membership } from "@agreeto/api/types";
 import { Button } from "@agreeto/ui";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import type { ReactNode } from "react";
-import React from "react";
 
 import AccountCard from "~features/accounts/account-card";
 import { trpcApi } from "~features/trpc/api/hooks";
 
 /**
- *
  * A container for a list of account cards with a CTA button on the top right.
  *
  * The CTA button is behind a paywall and only enabled for premium users.
@@ -16,8 +14,7 @@ import { trpcApi } from "~features/trpc/api/hooks";
  * @returns JSX.Element
  */
 export const Accounts = () => {
-  const { data: accounts } = trpcApi.account.me.useQuery();
-  const { data: user } = trpcApi.user.me.useQuery();
+  const { data: user } = trpcApi.user.myAccounts.useQuery();
 
   return (
     <div className="flex flex-col w-full h-full p-8 space-y-8">
@@ -47,9 +44,9 @@ export const Accounts = () => {
       </div>
       {/* the list of account cards */}
       <div className="flex flex-col gap-1">
-        {accounts?.map((account) => {
-          return <AccountCard key={account.id} account={account} />;
-        })}
+        {user?.accounts?.map((account) => (
+          <AccountCard key={account.id} account={account} />
+        ))}
       </div>
     </div>
   );

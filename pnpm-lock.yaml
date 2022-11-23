@@ -256,6 +256,7 @@ importers:
       '@agreeto/tsconfig': workspace:*
       '@azure/msal-node': ^1.12.1
       '@microsoft/microsoft-graph-client': ^3.0.3
+      '@microsoft/microsoft-graph-types-beta': 0.29.0-preview
       '@trpc/server': 10.0.0-rc.2
       googleapis: ^109.0.1
       superjson: 1.9.1
@@ -272,6 +273,7 @@ importers:
       zod: 3.19.1
     devDependencies:
       '@agreeto/tsconfig': link:../config/tsconfig
+      '@microsoft/microsoft-graph-types-beta': 0.29.0-preview
       typescript: 4.9.3
 
   packages/auth:
@@ -1720,6 +1722,10 @@ packages:
       tslib: 2.4.1
     dev: false
 
+  /@microsoft/microsoft-graph-types-beta/0.29.0-preview:
+    resolution: {integrity: sha512-83PCHDH7GxW8KM1J+MM6FPbaahIuj7VIgnY4UbMGQkkq2fBaHeKOmgjVbohvLVeIOOCTLmorPh6JtXH0VtFurA==}
+    dev: true
+
   /@microsoft/office-js/1.1.82:
     resolution: {integrity: sha512-GQUDz14CvVsaoouzVhX+1h3kDXXiOdlu2qAC28nOOQd2Z0PYvk7kIlnyVpjmsbbOAf8nah2tPq2XrvaupgpFAw==}
     engines: {node: '>=6.9.4'}
@@ -1935,7 +1941,7 @@ packages:
       '@prisma/client': '>=2.26.0 || >=3'
       next-auth: ^4
     dependencies:
-      next-auth: 4.15.0_azq6kxkn3od7qdylwkyksrwopy
+      next-auth: 4.15.0_bhgafntz2ozm43l35i5qtimxry
     dev: false
 
   /@next/env/12.3.1:
