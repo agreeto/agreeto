@@ -23,7 +23,7 @@ const features = [
   {
     text: "Multi-language support",
   },
-] as const;
+];
 
 type PricingCardProps = {
   plan: Exclude<Membership, "FREE" | "TRIAL">;
