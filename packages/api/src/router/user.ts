@@ -29,6 +29,55 @@ export const userRouter = router({
     return user;
   }),
 
+  subscription: privateProcedure.query(async ({ ctx }) => {
+    const stripeCustomer = await ctx.prisma.user
+      .findUnique({
+        where: { id: ctx.user.id },
+      })
+      .stripeCustomer();
+
+    const subscription = await ctx.prisma.stripeSubscription.findFirst({
+      where: {
+        stripeCustomerId: stripeCustomer?.id,
+      },
+      orderBy: {
+        current_period_end: "desc",
+      },
+    });
+
+    if (!subscription) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "No subscription found",
+      });
+    }
+
+    if (!["active", "trialing"].includes(subscription.status)) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "No active subscription found",
+      });
+    }
+
+    // TODO: Parse differently when other plans are added
+    const membership =
+      subscription.priceId === process.env.STRIPE_MONTHLY_PRICE_ID ||
+      subscription.priceId === process.env.STRIPE_ANNUAL_PRICE_ID;
+
+    const period =
+      subscription.priceId === process.env.STRIPE_MONTHLY_PRICE_ID
+        ? "monthly"
+        : "annual";
+
+    return {
+      id: subscription.id,
+      status: subscription.status,
+      current_period_end: subscription.current_period_end,
+      membership,
+      period: period,
+    };
+  }),
+
   myAccounts: privateProcedure.query(async ({ ctx }) => {
     const user = await ctx.prisma.user.findUnique({
       where: { id: ctx.user.id },

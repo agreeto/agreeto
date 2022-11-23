@@ -34,7 +34,7 @@ export const serverSchema = z.lazy(() =>
     STRIPE_WEBHOOK_SECRET: z.string(),
 
     STRIPE_MONTHLY_PRICE_ID: z.string(),
-    STRIPE_YEARLY_PRICE_ID: z.string(),
+    STRIPE_ANNUAL_PRICE_ID: z.string(),
   }),
 );
 

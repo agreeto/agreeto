@@ -264,6 +264,7 @@ model StripeSubscription {
     stripeCustomer       StripeCustomer?          @relation(fields: [stripeCustomerId], references: [id])
     stripeCustomerId     String?
     invoices             Invoice[]
+    priceId              String
 
     current_period_start DateTime
     current_period_end   DateTime
@@ -279,16 +280,16 @@ model Invoice {
     email                String
     userId               String
     stripeEventId        String
-    stripeSubscriptionId String
+    stripeSubscriptionId String?
     stripeCustomerId     String
     membershipPlan       String
     membership           Membership
     created              DateTime
 
-    user         User               @relation(fields: [userId], references: [id])
-    event        StripeEvent        @relation(fields: [stripeEventId], references: [id])
-    subscription StripeSubscription @relation(fields: [stripeSubscriptionId], references: [id])
-    customer     StripeCustomer     @relation(fields: [stripeCustomerId], references: [id])
+    user         User                @relation(fields: [userId], references: [id])
+    event        StripeEvent         @relation(fields: [stripeEventId], references: [id])
+    subscription StripeSubscription? @relation(fields: [stripeSubscriptionId], references: [id])
+    customer     StripeCustomer      @relation(fields: [stripeCustomerId], references: [id])
 }
 
 // ======================================

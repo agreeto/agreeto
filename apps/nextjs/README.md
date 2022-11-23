@@ -19,3 +19,6 @@ pnpm dev
 # or from repo root
 pnpm --filter nextjs dev
 ```
+
+**Note**: Open up another tab and run `pnpm --filter nextjs dev:stripe` to start listening to Stripe Webhook events. This requires the `stripe` CLI to be installed and added to your path.
+@see https://stripe.com/docs/stripe-cli
