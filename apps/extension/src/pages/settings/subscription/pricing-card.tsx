@@ -1,21 +1,10 @@
-// import logoIcon from "data-base64:~assets/icon512.png";
-import { Membership } from "@agreeto/api/types";
+import type { Membership } from "@agreeto/api/types";
 import { AgreeToLogo, Button } from "@agreeto/ui";
-import type { FC } from "react";
 import { HiCheckCircle } from "react-icons/hi";
 
 import { trpcApi } from "~features/trpc/api/hooks";
 
-type Props = {
-  plan: Extract<Membership, "PRO" | "PREMIUM">;
-  period: "monthly" | "annual";
-  onBuyClick?: () => void;
-};
-
-interface Feature {
-  text: string;
-}
-const features: Feature[] = [
+const features = [
   {
     text: "Select & share availability",
   },
@@ -34,10 +23,15 @@ const features: Feature[] = [
   {
     text: "Multi-language support",
   },
-];
+] as const;
 
-export const PricingCard: FC<Props> = ({ plan, period }) => {
-  const title = plan === Membership.PRO ? "Pro Plan" : "Premium Plan";
+type PricingCardProps = {
+  plan: Extract<Membership, "PRO" | "PREMIUM">;
+  period: "monthly" | "annual";
+  onBuyClick?: () => void;
+};
+
+export const PricingCard = ({ plan, period }: PricingCardProps) => {
   const price = period === "monthly" ? 6 : 48;
 
   const { mutate: createCheckoutSession } =
@@ -53,7 +47,9 @@ export const PricingCard: FC<Props> = ({ plan, period }) => {
       <AgreeToLogo className="h-20 w-20" />
 
       {/* Title */}
-      <h3 className="text-xl font-semibold">{title}</h3>
+      <h3 className="text-xl font-semibold capitalize">
+        {`${plan.toLocaleLowerCase} Plan`}
+      </h3>
 
       {/* Description */}
       <p className="text-sm break-words text-gray-600">
