@@ -1,4 +1,4 @@
-import { Outlet } from "@tanstack/react-location";
+import { Outlet } from "@tanstack/react-router";
 
 import { useStorage } from "@plasmohq/storage/hook";
 

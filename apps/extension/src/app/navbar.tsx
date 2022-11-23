@@ -1,5 +1,5 @@
 import { CalendarDaysIcon, Cog8ToothIcon } from "@heroicons/react/20/solid";
-import { Link } from "@tanstack/react-location";
+import { Link } from "@tanstack/react-router";
 
 export const Navbar = () => {
   return (
@@ -16,10 +16,10 @@ export const Navbar = () => {
           className="flex flex-col flex-1 gap-2 bg-white items-center"
           aria-label="Sidebar"
         >
-          <Link to="calendar">
+          <Link to="/calendar">
             <CalendarDaysIcon className="h-10 w-10 p-1 text-indigo-600 hover:text-indigo-700" />
           </Link>
-          <Link to="settings">
+          <Link to="/settings">
             <Cog8ToothIcon className="h-10 w-10 p-1 text-indigo-600 hover:text-indigo-700" />
           </Link>
         </nav>

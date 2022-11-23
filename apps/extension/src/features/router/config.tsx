@@ -1,39 +1,50 @@
 import Calendar from "@agreeto/calendar-react";
 import {
-  type ReactLocationOptions,
-  type Route,
   createMemoryHistory,
-} from "@tanstack/react-location";
+  createReactRouter,
+  createRouteConfig,
+} from "@tanstack/react-router";
 
-import { trpcApi } from "~features/trpc/api/hooks";
+// import { trpcApi } from "~features/trpc/api/hooks";
 import { Settings } from "~pages/settings";
+import { Subscription } from "~pages/settings/subscription";
 
 // Create a memory history
-export const reactLocationOptions: ReactLocationOptions = {
+export const reactLocationOptions = {
   history: createMemoryHistory({
     initialEntries: ["/calendar"], // Pass your initial url
   }),
 };
 
-// REVIEW (richard): this is not used anymore?
-export const getRoutes: () => Route[] = () => {
-  const utils = trpcApi.useContext();
-  return [
-    {
-      path: "calendar",
-      element: <Calendar />,
-    },
-    {
+const routeConfig = createRouteConfig().createChildren((createRoute) => [
+  createRoute({
+    path: "calendar",
+    component: Calendar,
+  }),
+  createRoute({
+    path: "settings",
+    component: Settings,
+  }).createChildren((createRoute) => [
+    createRoute({
+      path: "subscription",
+      component: Subscription,
+    }),
+    createRoute({
       path: "settings",
-      element: <Settings />,
-      // TODO: add account fetching to the settings route
-      async loader({ params: _p }) {
-        // console.log({ params });
-        // FIXME: Should prob not include all this information
-        utils.account.me.fetch();
-        return {};
-        // accounts: await utils.account.all.fetch()
-      },
-    },
-  ];
-};
+      component: () => <div>Settings</div>,
+    }),
+  ]),
+]);
+
+export const router = createReactRouter({
+  routeConfig,
+  history: createMemoryHistory({
+    initialEntries: ["/calendar"], // Pass your initial url
+  }),
+});
+
+declare module "@tanstack/react-router" {
+  interface RegisterRouter {
+    router: typeof router;
+  }
+}
