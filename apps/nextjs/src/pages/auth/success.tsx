@@ -18,7 +18,7 @@ const Success: NextPage = () => {
           <p className="pt-8 text-xl font-semibold text-green-600">
             You are successfully {isSignIn ? "logged in" : "signed out"}!
           </p>
-          <p className="mt-0 text-lg text-gray-600">
+          <p className="text-lg text-gray-600">
             {isSignIn
               ? "You can open your extension now."
               : "Use the extension to sign back in"}
