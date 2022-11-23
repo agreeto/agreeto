@@ -5,24 +5,12 @@ import { HiCheckCircle } from "react-icons/hi";
 import { trpcApi } from "~features/trpc/api/hooks";
 
 const features = [
-  {
-    text: "Select & share availability",
-  },
-  {
-    text: "Create & confirm Holds",
-  },
-  {
-    text: "2 Time Zones",
-  },
-  {
-    text: "3 Calendars",
-  },
-  {
-    text: "Add colleagues",
-  },
-  {
-    text: "Multi-language support",
-  },
+  { text: "Select & share availability" },
+  { text: "Create & confirm Holds" },
+  { text: "2 Time Zones" },
+  { text: "3 Calendars" },
+  { text: "Add colleagues" },
+  { text: "Multi-language support" },
 ];
 
 type PricingCardProps = {
