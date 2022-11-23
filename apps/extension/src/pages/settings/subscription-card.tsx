@@ -1,4 +1,4 @@
-import { Membership } from "@agreeto/api/types";
+import type { Membership } from "@agreeto/api/types";
 import { Button } from "@agreeto/ui";
 import type { FC } from "react";
 
@@ -13,7 +13,6 @@ export const SubscriptionCard: FC<SubscriptionCardProps> = ({
   membership,
   period,
 }) => {
-  const title = membership === Membership.PRO ? "Pro Plan" : "Premium Plan";
   const price = period === "monthly" ? 6 : 48;
 
   const { mutate: createBillingPortalSession } =
@@ -33,8 +32,8 @@ export const SubscriptionCard: FC<SubscriptionCardProps> = ({
         <div className="flex justify-between">
           <div>
             <div className="flex space-x-2 items-center">
-              <div className="bg-gray-900 text-white py-1 px-3 rounded text-sm">
-                {title}
+              <div className="bg-gray-900 text-white py-1 px-3 rounded text-sm capitalize">
+                {membership.toLowerCase()}
               </div>
               <div className="text-sm capitalize">{period}</div>
             </div>
@@ -45,10 +44,7 @@ export const SubscriptionCard: FC<SubscriptionCardProps> = ({
         </div>
 
         <div className="flex justify-between pt-12 items-end">
-          <Button
-            className="button w-60 block"
-            onClick={() => createBillingPortalSession()}
-          >
+          <Button className="w-60" onClick={() => createBillingPortalSession()}>
             Manage Subscription
           </Button>
         </div>

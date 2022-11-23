@@ -7,21 +7,30 @@ import { PricingCard } from "./pricing-card";
 import { SubscriptionCard } from "./subscription-card";
 
 export const Subscription = () => {
-  const { data: user } = trpcApi.user.me.useQuery();
   const { data: subscription } = trpcApi.user.subscription.useQuery();
 
   return (
-    <div>
-      {user && subscription ? (
+    <div className="p-4 w-60 mx-auto">
+      {false && subscription ? (
         <SubscriptionCard
-          membership={user.membership}
+          membership={subscription.membership}
           period={subscription.period}
         />
       ) : (
-        <Tabs.Root defaultValue="monthly">
-          <Tabs.List>
-            <Tabs.Trigger value="monthly">Monthly</Tabs.Trigger>
-            <Tabs.Trigger value="annual">Annual</Tabs.Trigger>
+        <Tabs.Root defaultValue="monthly" className="space-y-2">
+          <Tabs.List className="text-gray-600 text-sm w-full">
+            <Tabs.Trigger
+              className="px-3 w-1/2 py-1 border-y border-l radix-state-active:border-r rounded-l-md border-gray-500 radix-state-active:text-primary radix-state-active:border-primary"
+              value="monthly"
+            >
+              Monthly
+            </Tabs.Trigger>
+            <Tabs.Trigger
+              className="px-3 w-1/2 py-1 border-y border-r radix-state-active:border-l rounded-r-md border-gray-500 radix-state-active:text-primary radix-state-active:border-primary"
+              value="annual"
+            >
+              Annual
+            </Tabs.Trigger>
           </Tabs.List>
           <Tabs.Content value="monthly">
             <PricingCard period="monthly" plan={Membership.PRO} />

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { router, publicProcedure, privateProcedure } from "../trpc";
 import { getGoogleUsers } from "../external/google";
 import { EventResponseStatus, Membership } from "@agreeto/db";
+import { getMembershipFromPriceId } from "./stripe";
 
 export const userRouter = router({
   // TESTING PROCEDURE
@@ -61,8 +62,9 @@ export const userRouter = router({
 
     // TODO: Parse differently when other plans are added
     const membership =
-      subscription.priceId === process.env.STRIPE_MONTHLY_PRICE_ID ||
-      subscription.priceId === process.env.STRIPE_ANNUAL_PRICE_ID;
+      subscription.status === "trialing"
+        ? Membership.TRIAL
+        : getMembershipFromPriceId(subscription.priceId);
 
     const period =
       subscription.priceId === process.env.STRIPE_MONTHLY_PRICE_ID
@@ -74,7 +76,7 @@ export const userRouter = router({
       status: subscription.status,
       current_period_end: subscription.current_period_end,
       membership,
-      period: period,
+      period: period as "monthly" | "annual", // FIXME: Why is `as` needed
     };
   }),
 

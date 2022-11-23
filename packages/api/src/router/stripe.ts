@@ -8,7 +8,9 @@ export const stripe = new Stripe(process.env.STRIPE_SK as string, {
   apiVersion: "2022-11-15",
 });
 
-const getMembershipFromPriceId = (priceId: string | undefined): Membership => {
+export const getMembershipFromPriceId = (
+  priceId: string | undefined,
+): Membership => {
   switch (priceId) {
     case process.env.STRIPE_MONTHLY_PRICE_ID:
       return Membership.PRO;

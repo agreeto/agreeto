@@ -447,12 +447,14 @@ importers:
       '@tailwindcss/typography': ^0.5.7
       postcss: ^8.4.14
       tailwindcss: ^3.1.8
+      tailwindcss-radix: ^2.6.1
     devDependencies:
       '@tailwindcss/forms': 0.5.3_tailwindcss@3.1.8
       '@tailwindcss/line-clamp': 0.4.2_tailwindcss@3.1.8
       '@tailwindcss/typography': 0.5.7_tailwindcss@3.1.8
       postcss: 8.4.18
       tailwindcss: 3.1.8_postcss@8.4.18
+      tailwindcss-radix: 2.6.1
 
   packages/config/tsconfig:
     specifiers: {}
@@ -12376,6 +12378,10 @@ packages:
       csso: 4.2.0
       picocolors: 1.0.0
       stable: 0.1.8
+    dev: true
+
+  /tailwindcss-radix/2.6.1:
+    resolution: {integrity: sha512-ejh4BHkn/3g349l+JiEW6I4//uclU4nllEqnOK3/8zpORscIk9WbjLyYR2UzqwVRjjzgd72I/hMDJZm3+XO48w==}
     dev: true
 
   /tailwindcss/3.1.8_postcss@8.4.17:
