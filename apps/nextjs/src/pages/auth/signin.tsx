@@ -1,6 +1,4 @@
 import { signIn } from "next-auth/react";
-import Image from "next/image";
-import agreetoLogo from "../../assets/icon512.png";
 
 import { Button, GoogleLogo, MicrosoftLogo, Spinner } from "@agreeto/ui";
 import { type GetServerSideProps, type NextPage } from "next";
@@ -8,6 +6,8 @@ import { trpc } from "../../utils/trpc";
 import { Membership } from "@agreeto/api/types";
 import { useRouter } from "next/router";
 import { FaStripe } from "react-icons/fa";
+import { Card } from "../../components/card";
+import React from "react";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const searchParams = new URLSearchParams(ctx.req.url?.split("?")[1]);
@@ -45,7 +45,7 @@ const UpgradeContent = () => {
         <Button
           className="flex h-12 w-72 items-center justify-center gap-2"
           variant="glass"
-          onClick={() => upgrade()}
+          onClick={() => upgrade({ plan: Membership.PRO, period: "monthly" })}
         >
           <FaStripe className="h-8 w-8 text-[#6259FA]" />
           <span className="text-bold text-gray-900">Go Pro</span>
@@ -96,29 +96,20 @@ const SignInPage: NextPage = () => {
     user?.accounts.length >= 1;
 
   return (
-    <div className="flex h-screen items-center justify-center text-gray-600">
-      <div className="max-w-md space-y-4 rounded-xl px-16 py-12 text-center shadow-2xl">
-        <h1 className="text-3xl font-semibold">Welcome to AgreeTo</h1>
-        <div className="relative mx-auto h-24 w-24">
-          <Image src={agreetoLogo} alt="AgreeTo" layout="fill" />
+    <div className="flex h-screen items-center justify-center">
+      <Card disclaimer="By entering this website, I accept Privacy Policy and Terms and Conditions">
+        <div className="flex h-56 w-full flex-col items-center justify-center">
+          {isLoading ? (
+            <div className="h-12 w-12">
+              <Spinner />
+            </div>
+          ) : !forbidden ? (
+            <SignInContent />
+          ) : (
+            <UpgradeContent />
+          )}
         </div>
-
-        {isLoading ? (
-          <div className="my-8 mx-auto h-12 w-12">
-            <Spinner />
-          </div>
-        ) : !forbidden ? (
-          <SignInContent />
-        ) : (
-          <UpgradeContent />
-        )}
-
-        {/* Description */}
-        <div className="text-xs">
-          By entering this website, I accept Privacy Policy and Terms and
-          Conditions
-        </div>
-      </div>
+      </Card>
     </div>
   );
 };
