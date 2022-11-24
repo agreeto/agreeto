@@ -22,6 +22,7 @@ import { EventResponseStatus, Membership } from "@agreeto/api/types";
 import { eventMocks } from "./mock";
 import { ulid } from "ulid";
 import {
+  DIRECTORY_USER_COLORS,
   getDateLocale,
   getHourText,
   getPrimaryTimeZone,
@@ -275,7 +276,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
     });
 
     // Add events of directory users
-    directoryUsersWithEvents?.forEach(({ events: directoryEvents, color }) => {
+    directoryUsersWithEvents?.forEach(({ events: directoryEvents }) => {
       directoryEvents?.forEach((event) => {
         const { id, title, startDate, endDate } = event;
 
@@ -284,7 +285,8 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
           title: title,
           start: startDate,
           end: endDate,
-          backgroundColor: color,
+          // FIXME (richard): Define colors for directory users in a readonly array, unsure how to handle as there are so many anys here
+          backgroundColor: DIRECTORY_USER_COLORS[0],
           textColor: "white",
           borderColor: "transparent",
           extendedProps: {
