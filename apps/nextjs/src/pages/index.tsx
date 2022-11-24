@@ -1,7 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import { trpc } from "../utils/trpc";
-import { Button, Dialog } from "@agreeto/ui";
+import { Button } from "@agreeto/ui";
 
 const startDate = new Date("2021-01-01T00:00:00.000Z");
 const endDate = new Date("2022-12-31T23:59:59.999Z");
@@ -19,13 +19,7 @@ const Home: NextPage = () => {
       </Head>
       <main className="container mx-auto flex min-h-screen flex-col items-center justify-center gap-2">
         {/* SOME UI */}
-        <Dialog
-          trigger={<Button>Delete account</Button>}
-          variant="error"
-          title="Delete Account"
-          description="Are you sure you want to delete your account?"
-          actionLabel="Yes, delete"
-        />
+        <Button>Do not click</Button>
         {/* AUTHENTICATION STATUS */}
         {currentUser.data ? (
           <>
