@@ -1,5 +1,5 @@
 import { type NextPage } from "next";
-import { Card } from "../../components/card.jsx";
+import { Card } from "../../components/card";
 
 const Success: NextPage = () => {
   return (
