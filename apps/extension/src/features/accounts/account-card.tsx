@@ -1,10 +1,10 @@
 import type { RouterOutputs } from "@agreeto/api";
 import { EventColorRadix } from "@agreeto/api/types";
-import { AlertDialog, Button } from "@agreeto/ui";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { AlertDialog, Button, DropdownMenu } from "@agreeto/ui";
+// import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import * as Tooltip from "@radix-ui/react-tooltip";
-import type { FC } from "react";
+import type { FC, ReactNode } from "react";
 import React from "react";
 import { AiOutlineMore } from "react-icons/ai";
 import { HiCheckCircle, HiOutlineExclamation, HiTrash } from "react-icons/hi";
@@ -160,14 +160,8 @@ const ActionsDropdownMenu = ({ account }: { account: Account }) => {
       utils.user.me.invalidate();
     },
   });
-  const { mutate: removeAccount } = trpcApi.account.delete.useMutation({
-    onSuccess() {
-      utils.account.me.invalidate();
-    },
-  });
 
   const { data: primaryAccount } = trpcApi.account.primary.useQuery();
-
   const isPrimary = primaryAccount?.id === account.id;
 
   return (
@@ -182,69 +176,85 @@ const ActionsDropdownMenu = ({ account }: { account: Account }) => {
       </DropdownMenu.Trigger>
 
       <DropdownMenu.Portal>
-        <DropdownMenu.Content
-          className="absolute right-0 mt-2 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg w-52 ring-1 ring-black ring-opacity-5 focus:outline-none"
-          sideOffset={5}
-          side="left"
-          align="start"
-        >
+        <DropdownMenu.Content sideOffset={5} side="left" align="start">
           <DropdownMenu.Item asChild>
-            <button
-              className="flex items-center w-full px-4 py-3 space-x-2 font-medium border-b border-mauve-6 disabled:cursor-not-allowed disabled:opacity-50 enabled:hover:bg-gray-100"
+            <Button
+              variant="glass"
+              className="flex w-full leading-6 justify-evenly disabled:cursor-not-allowed disabled:opacity-50"
               disabled={isPrimary}
               onClick={() => changePrimary({ id: account.id })}
             >
               <HiCheckCircle className="w-4 h-4" />
               <div>Set as organizer</div>
-            </button>
+            </Button>
           </DropdownMenu.Item>
           <DropdownMenu.Item asChild>
-            <AlertDialog.Root>
-              <AlertDialog.Trigger asChild>
-                <button
-                  className="py-3 w-full px-4 text-[#D90026] font-medium flex space-x-2 items-center disabled:cursor-not-allowed disabled:opacity-50 hover:bg-gray-100"
-                  disabled={isPrimary}
-                  onClick={() => <></>}
-                >
-                  <HiTrash className="w-4 h-4" />
-                  <div>Remove account</div>
-                </button>
-              </AlertDialog.Trigger>
-              <AlertDialog.Body>
-                {/* dialog body */}
-                <div className="flex items-center justify-center p-3 mb-5 sm:flex sm:items-start">
-                  <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-red-100 rounded-full sm:mx-0 sm:h-10 sm:w-10">
-                    <HiOutlineExclamation className="w-5 h-5 stroke-red-9" />
-                  </div>
-                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <h3
-                      className="text-lg font-medium leading-6 text-gray-900"
-                      id="modal-title"
-                    >
-                      Are you sure you want to remove this account?
-                    </h3>
-                  </div>
-                </div>
-                {/* dialog footer */}
-                <div className="flex justify-end gap-6 p-3 bg-mauve-2">
-                  <AlertDialog.Cancel asChild>
-                    <Button variant="glass">Cancel</Button>
-                  </AlertDialog.Cancel>
-                  <AlertDialog.Action asChild>
-                    <Button
-                      variant="error"
-                      onClick={() => removeAccount({ id: account.id })}
-                    >
-                      Yes, remove
-                    </Button>
-                  </AlertDialog.Action>
-                </div>
-              </AlertDialog.Body>
-            </AlertDialog.Root>
+            <RemoveAccountAlertDialog account={account}>
+              <Button
+                variant="glass"
+                className="flex w-full leading-6 justify-evenly text-red-9 disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={isPrimary}
+              >
+                <HiTrash className="w-4 h-4" />
+                <div>Remove account</div>
+              </Button>
+            </RemoveAccountAlertDialog>
           </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
+  );
+};
+
+const RemoveAccountAlertDialog = ({
+  account,
+  children,
+}: {
+  account: Account;
+  children: ReactNode;
+}) => {
+  const utils = trpcApi.useContext();
+
+  const { mutate: removeAccount } = trpcApi.account.delete.useMutation({
+    onSuccess() {
+      utils.account.me.invalidate();
+    },
+  });
+
+  return (
+    <AlertDialog.Root>
+      <AlertDialog.Trigger asChild>{children}</AlertDialog.Trigger>
+      <AlertDialog.Body>
+        {/* dialog body */}
+        <div className="flex items-center justify-center p-3 mb-5 sm:flex sm:items-start">
+          <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-red-100 rounded-full sm:mx-0 sm:h-10 sm:w-10">
+            <HiOutlineExclamation className="w-5 h-5 stroke-red-9" />
+          </div>
+          <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+            <h3
+              className="text-lg font-medium leading-6 text-gray-900"
+              id="modal-title"
+            >
+              Are you sure you want to remove this account?
+            </h3>
+          </div>
+        </div>
+        {/* dialog footer */}
+        <div className="flex justify-end gap-6 p-3 bg-mauve-2">
+          <AlertDialog.Cancel asChild>
+            <Button variant="glass">Cancel</Button>
+          </AlertDialog.Cancel>
+          <AlertDialog.Action asChild>
+            <Button
+              variant="error"
+              onClick={() => removeAccount({ id: account.id })}
+            >
+              Yes, remove
+            </Button>
+          </AlertDialog.Action>
+        </div>
+      </AlertDialog.Body>
+    </AlertDialog.Root>
   );
 };
 export default AccountCard;

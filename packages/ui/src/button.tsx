@@ -39,13 +39,13 @@ export const Button = forwardRef<
       ref={ref}
       type="button"
       className={clsx(
-        "inline-flex items-center justify-center rounded-md border border-transparent px-3 py-2 text-sm font-medium leading-4  shadow-sm focus:outline-none",
+        "inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium leading-4  shadow-sm focus:outline-none",
         {
           "bg-primary text-white hover:bg-primary/80": variant === "primary",
           "border border-primary bg-white text-primary hover:border-mauve-8 hover:border-primary":
             variant === "outline",
           "bg-white text-primary hover:bg-primary/20": variant === "secondary",
-          "text-mauve border-mauve-6 bg-white hover:border-mauve-8":
+          "text-mauve bg-white hover:border-mauve-6 hover:bg-mauve-6 hover:opacity-20":
             variant === "glass",
           "bg-red-9 text-white hover:bg-red-10": variant === "error",
         },
