@@ -136,6 +136,7 @@ export const eventGroupRouter = router({
           promises.push(
             service
               .createEvent({
+                agreeToId: ev.id,
                 title: ev.title,
                 attendeeEmails: [...attendeeEmails],
                 startDate: ev.startDate,
