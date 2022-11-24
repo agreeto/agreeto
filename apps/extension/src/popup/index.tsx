@@ -3,8 +3,6 @@ import "@fullcalendar/common/main.css";
 import "@fullcalendar/timegrid/main.css";
 import "../style.css";
 
-// REVIEW (richard): I commented this out in calendar.tsx in calendar-react pkg because it broke the app, if needed we can uncomment this?
-// import "@agreeto/ui/dist/styles.css";
 import { Spinner } from "@agreeto/ui";
 import { Outlet, ReactLocation, Router } from "@tanstack/react-location";
 import React from "react";

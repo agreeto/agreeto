@@ -1,6 +1,5 @@
 import "@agreeto/tailwind-config";
-// REVIEW (richard): this breaks the extension tailwind classes as it gets imported after tailwind, see https://www.loom.com/share/486481862c044adc9b4e3ce29f87f062
-// import "@agreeto/ui/dist/styles.css";
+
 import "react-toastify/dist/ReactToastify.css";
 import { add, endOfWeek, startOfWeek } from "date-fns";
 import ActionPane from "./components/action-pane";
