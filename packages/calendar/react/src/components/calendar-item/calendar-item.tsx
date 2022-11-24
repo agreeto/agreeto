@@ -371,7 +371,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
 
       {/* Timezone title */}
       <div
-        className="absolute flex justify-around top-7"
+        className="absolute top-7 flex justify-around"
         style={{
           width: timeZones.length === 1 ? "64px" : "120px",
           left: timeZones.length === 1 ? "-14px" : "-8px",

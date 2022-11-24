@@ -128,26 +128,26 @@ const ConfirmationPane: React.FC<{
   };
 
   return (
-    <div className="h-full px-10 py-8 bg-gray-100">
-      <div className="flex flex-col justify-between h-full">
+    <div className="h-full bg-gray-100 px-10 py-8">
+      <div className="flex h-full flex-col justify-between">
         {/* Top */}
         <div>
-          <div className="flex justify-between flex-1">
+          <div className="flex flex-1 justify-between">
             {/* Back icon */}
             <button
-              className="p-1 rounded cursor-pointer hover:bg-gray-200"
+              className="cursor-pointer rounded p-1 hover:bg-gray-200"
               onClick={() => changePane("action")}
             >
-              <IoChevronBackOutline className="w-6 h-6 text-neutral" />
+              <IoChevronBackOutline className="text-neutral h-6 w-6" />
             </button>
 
             {/* Close icon */}
             {(onClose || true) && (
               <button
-                className="p-1 bg-red-500 rounded cursor-pointer hover:bg-red-600"
+                className="cursor-pointer rounded bg-red-500 p-1 hover:bg-red-600"
                 onClick={() => onClose?.()}
               >
-                <IoClose className="w-6 h-6 text-white" />
+                <IoClose className="h-6 w-6 text-white" />
               </button>
             )}
           </div>
@@ -163,7 +163,7 @@ const ConfirmationPane: React.FC<{
           />
 
           {/* Events */}
-          <div className="pt-1 space-y-4 overflow-auto max-h-56">
+          <div className="max-h-56 space-y-4 overflow-auto pt-1">
             {eventGroup?.events
               ?.sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
               .map((event) => (
@@ -181,7 +181,7 @@ const ConfirmationPane: React.FC<{
 
           {/* Conference */}
           {eventGroup && !eventGroup.isSelectionDone && primaryAccount && (
-            <div className="pt-2 overflow-visible">
+            <div className="overflow-visible pt-2">
               <ConferenceElement
                 {...{
                   eventGroup,

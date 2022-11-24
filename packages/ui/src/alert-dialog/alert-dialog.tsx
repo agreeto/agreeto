@@ -25,8 +25,8 @@ export const Description = AlertDialog.Description;
 
 export const Body = ({ children }: { children: ReactNode }) => (
   <AlertDialog.Portal>
-    <AlertDialog.Overlay className="fixed inset-0 transition-opacity bg-blackA-9 opacity-80" />
-    <AlertDialog.Content className="fixed w-3/5 -translate-x-1/2 -translate-y-1/2 bg-white rounded-md shadow-sm l-1/2 top-1/2 left-1/2 shadow-transparent">
+    <AlertDialog.Overlay className="fixed inset-0 bg-blackA-9 opacity-80 transition-opacity" />
+    <AlertDialog.Content className="l-1/2 fixed top-1/2 left-1/2 w-3/5 -translate-x-1/2 -translate-y-1/2 rounded-md bg-white shadow-sm shadow-transparent">
       {children}
     </AlertDialog.Content>
   </AlertDialog.Portal>

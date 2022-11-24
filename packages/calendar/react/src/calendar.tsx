@@ -112,7 +112,7 @@ const Calendar: React.FC<Props> = ({
   return (
     <div className="flex h-full">
       <div
-        className="p-8 space-y-4"
+        className="space-y-4 p-8"
         style={{
           width: openPane ? "calc(100% - 325px)" : "100%",
         }}

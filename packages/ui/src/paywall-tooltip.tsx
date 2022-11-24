@@ -13,13 +13,13 @@ export const PaywallTooltip: FC<{ children: ReactNode }> = ({ children }) => {
               className="mt-4 w-60 cursor-auto rounded border border-[#F9FAFA] bg-[#F9FAFA] p-4 text-left"
               style={{ boxShadow: "2px 4px 12px 2px #dbd9d9" }}
             >
-              <div className="text-sm font-semibold color-gray-900">
+              <div className="color-gray-900 text-sm font-semibold">
                 Unlock Multiple Calendars
               </div>
-              <div className="my-2 text-xs color-gray-900">
+              <div className="color-gray-900 my-2 text-xs">
                 This feature is part of the Pro Plan
               </div>
-              <div className="flex items-center justify-center w-full mt-5">
+              <div className="mt-5 flex w-full items-center justify-center">
                 <Button
                   className="py-1"
                   variant="outline"
