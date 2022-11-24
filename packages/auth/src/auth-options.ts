@@ -27,26 +27,6 @@ export const authOptions: NextAuthOptions = {
   /** @see https://next-auth.js.org/adapters/prisma */
   adapter: {
     ...PrismaAdapter(prisma),
-    // // Override the adapter to add `color` field
-    // async linkAccount(account) {
-    //   const newAccount = await prisma.account.create({
-    //     data: {
-    //       ...account,
-    //       userId: undefined,
-    //       user: {
-    //         connect: {
-    //           id: account.userId,
-    //         },
-    //       },
-    //       userPrimary: {
-    //         connect: {
-    //           id: account.userId,
-    //         },
-    //       },
-    //     },
-    //   });
-    //   return newAccount as unknown as AdapterAccount;
-    // },
   },
 
   /** Built in providers, adjusted to our needs */
@@ -120,5 +100,11 @@ export const authOptions: NextAuthOptions = {
         },
       });
     },
+  },
+
+  /** Pages used to override the default ones */
+  /** @see https://next-auth.js.org/configuration/pages */
+  pages: {
+    signIn: "/auth/signin",
   },
 };

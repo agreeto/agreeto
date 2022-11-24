@@ -22,12 +22,20 @@ export const serverSchema = z.lazy(() =>
       // @see https://next-auth.js.org/configuration/options#nextauth_url
       (str) => process.env.VERCEL_URL ?? str,
       // VERCEL_URL doesn't include the `https://` prefix and is thus not a valid z.url()
-      process.env.VERCEL_URL ? z.string() : z.string().url()
+      process.env.VERCEL_URL ? z.string() : z.string().url(),
     ),
     // REVIEW: What usecase is this for?
     // provided by vercel (therefore shouldn't throw during schema parsing)
     VERCEL_URL: z.string().url().optional(),
-  })
+
+    // Stripe Payments
+    STRIPE_PK: z.string(),
+    STRIPE_SK: z.string(),
+    STRIPE_WEBHOOK_SECRET: z.string(),
+
+    STRIPE_MONTHLY_PRICE_ID: z.string(),
+    STRIPE_YEARLY_PRICE_ID: z.string(),
+  }),
 );
 
 /**

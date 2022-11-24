@@ -1,5 +1,5 @@
-export const signIn = () => {
-  const signInUrl = `${process.env.PLASMO_PUBLIC_WEB_URL}/api/auth/signin`;
+const signIn = () => {
+  const signInUrl = `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/signin`;
   const callbackUrl = `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/extension`;
   window.open(
     `${signInUrl}?${new URLSearchParams({

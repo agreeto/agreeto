@@ -14,7 +14,6 @@ import { type ActionType } from "./components/action-pane/action-pane";
 import { type PLATFORM } from "@agreeto/calendar-core";
 import { trpc } from "./utils/trpc";
 import { useCalendarStore, useEventStore, useTZStore } from "./utils/store";
-import { Language, Membership } from "@agreeto/api/types";
 
 type Props = {
   onClose?: () => void;
@@ -87,26 +86,6 @@ const Calendar: React.FC<Props> = ({
       }, 10);
     }
   }, [renderKey, calendarRef]);
-
-  // FIXME: Maybe we should do this on server - check back when payment stuff is done
-  // Verify locale when membership changes
-  const { data: user } = trpc.user.me.useQuery();
-  const { data: preference } = trpc.preference.byCurrentUser.useQuery();
-  const { mutate: updatePreference } = trpc.preference.update.useMutation({
-    onSettled() {
-      utils.user.me.invalidate();
-      utils.preference.byCurrentUser.invalidate();
-    },
-  });
-  useEffect(() => {
-    if (user && user.membership === Membership.FREE) {
-      preference?.formatLanguage !== Language.EN &&
-        updatePreference({
-          formatLanguage: Language.EN,
-        });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
 
   return (
     <div className="flex h-full">

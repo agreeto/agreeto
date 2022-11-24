@@ -29,25 +29,11 @@ export const userRouter = router({
     return user;
   }),
 
-  // Get the current user with accounts
   myAccounts: privateProcedure.query(async ({ ctx }) => {
     const user = await ctx.prisma.user.findUnique({
       where: { id: ctx.user.id },
-      include: {
-        accounts: {
-          orderBy: {
-            email: "asc",
-          },
-        },
-      },
+      include: { accounts: true },
     });
-
-    if (!user || !user.accounts) {
-      throw new TRPCError({
-        code: "NOT_FOUND",
-        message: "User not found",
-      });
-    }
     return user;
   }),
 
@@ -132,23 +118,4 @@ export const userRouter = router({
         data: { accountPrimary: { connect: { id: input.id } } },
       });
     }),
-
-  // TODO: Do we need this, or does NextAuth handle this???
-  // updateActiveAccounts: privateProcedure
-  //   .input(z.object({ accounts: z.string().array() }))
-  //   .mutation(async ({ ctx, input }) => {
-  //     try {
-  //       await ctx.prisma.user.update({
-  //         where: { id: ctx.user.id },
-  //         data: {
-  //           activeAccounts: {
-  //             push: input.accounts,
-  //           },
-  //         },
-  //       });
-  //       return { success: true };
-  //     } catch {
-  //       return { success: false };
-  //     }
-  //   }),
 });
