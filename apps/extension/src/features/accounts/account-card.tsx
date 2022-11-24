@@ -1,7 +1,6 @@
 import type { RouterOutputs } from "@agreeto/api";
 import { EventColorRadix } from "@agreeto/api/types";
 import { AlertDialog, Button, DropdownMenu } from "@agreeto/ui";
-// import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import type { FC, ReactNode } from "react";
@@ -31,6 +30,7 @@ const AccountCard: FC<{
     string
   >;
   const { data: primaryAccount } = trpcApi.account.primary.useQuery();
+
   const utils = trpcApi.useContext();
   const { mutateAsync: updateEventColor } =
     trpcApi.account.updateColor.useMutation({
@@ -40,12 +40,12 @@ const AccountCard: FC<{
         utils.user.myAccounts.invalidate();
       },
     });
+
   return (
     <Tooltip.Provider>
       <div className="flex justify-between py-6 pr-6 space-x-4 border rounded-lg h-30 border-mauve-6 pl-9">
-        {/* Info */}
         <div className="flex w-full gap-4">
-          {/* Avatar */}
+          {/* Avatar w/ initials */}
           <div
             className="self-center w-10 h-10 leading-10 text-center rounded-full"
             style={{
@@ -56,12 +56,11 @@ const AccountCard: FC<{
             {initials}
           </div>
           {/* Email, Colors & Badges */}
-          {/* <div className="flex flex-grow"> */}
           <div className="flex flex-col items-start flex-grow px-10 ">
-            {/* this div makes sure that the children have the same width as determined by colors */}
+            {/* this div makes sure that the children have the same width as determined by colors radio group */}
             <div>
+              {/* Email and organizer badge */}
               <div className="flex justify-between">
-                {/* a div displaying the email on the left side and a conditional organizer badge on the right */}
                 <div className="text-sm font-normal leading-5">
                   {account.email}
                 </div>
@@ -89,6 +88,7 @@ const AccountCard: FC<{
                   </Tooltip.Root>
                 )}
               </div>
+              {/* Change account color action */}
               <RadioGroup.Root asChild defaultValue={account?.eventColor}>
                 <div className="flex pt-4 space-x-4">
                   {Object.values(EventColorRadix).map((eventColor, ix) => {
@@ -109,31 +109,10 @@ const AccountCard: FC<{
                         }}
                       >
                         <RadioGroup.Indicator asChild>
-                          <div className="absolute bottom-[2px] right-[2px] flex">
-                            <span className="inline-block w-3.5 h-3.5 -rotate-[140deg]">
-                              <div
-                                id="circle"
-                                className="absolute w-3.5 h-3.5 rounded-xl  left-[1px] top-[1px]"
-                                style={{
-                                  backgroundColor: themeColors[eventColor][11],
-                                }}
-                              ></div>
-                              <div
-                                id="checkmark-stem"
-                                className="w-[1px] h-[8px] absolute top-[5px] left-1.5"
-                                style={{
-                                  backgroundColor: themeColors[eventColor][7],
-                                }}
-                              ></div>
-                              <div
-                                id="checkmark-kick"
-                                className="w-[5px] h-[1px] absolute top-[4px] left-1.5"
-                                style={{
-                                  backgroundColor: themeColors[eventColor][7],
-                                }}
-                              ></div>
-                            </span>
-                          </div>
+                          <HiCheckCircle
+                            className="w-3.5 h-3.5 absolute bottom-[2px] right-[2px]"
+                            style={{ fill: themeColors[eventColor][11] }}
+                          />
                         </RadioGroup.Indicator>
                       </RadioGroup.Item>
                     );
@@ -142,15 +121,15 @@ const AccountCard: FC<{
               </RadioGroup.Root>
             </div>
           </div>
-          {/* Actions */}
-          <ActionsDropdownMenu account={account} />
+          {/* More Actions via dropdown */}
+          <MoreAccountActionsDropdownMenu account={account} />
         </div>
       </div>
     </Tooltip.Provider>
   );
 };
 
-const ActionsDropdownMenu = ({ account }: { account: Account }) => {
+const MoreAccountActionsDropdownMenu = ({ account }: { account: Account }) => {
   const utils = trpcApi.useContext();
 
   const { mutate: changePrimary } = trpcApi.user.changePrimary.useMutation({
@@ -168,7 +147,7 @@ const ActionsDropdownMenu = ({ account }: { account: Account }) => {
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
         <button
-          className="flex items-center self-center justify-center w-8 h-8 ml-auto cursor-pointer hover:bg-gray-100 hover:rounded-md"
+          className="flex items-center self-center justify-center w-8 h-8 ml-auto cursor-pointer hover:bg-mauve-3 hover:rounded-md"
           aria-label="Customise options"
         >
           <AiOutlineMore className="w-6 h-6" />
@@ -257,4 +236,5 @@ const RemoveAccountAlertDialog = ({
     </AlertDialog.Root>
   );
 };
+
 export default AccountCard;

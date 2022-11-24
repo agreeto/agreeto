@@ -2,6 +2,7 @@ import { Membership } from "@agreeto/api/types";
 import { Button, PaywallTooltip } from "@agreeto/ui";
 
 import AccountCard from "~features/accounts/account-card";
+import { signIn } from "~features/auth/sign-in";
 import { trpcApi } from "~features/trpc/api/hooks";
 
 /**
@@ -34,7 +35,7 @@ export const Accounts = () => {
           <Button // if on paid/trial, show a button to add an account
             className="w-48"
             variant="primary"
-            onClick={openNextAuthLoginPage}
+            onClick={signIn}
           >
             Add Account
           </Button>
@@ -47,19 +48,5 @@ export const Accounts = () => {
         ))}
       </div>
     </div>
-  );
-};
-
-/**
- * Opens a new tab on the nextjs web app to the NextAuth login screen.
- * If the user logs in with a new account, we link the accounts.
- */
-const openNextAuthLoginPage = () => {
-  window.open(
-    `${process.env.PLASMO_PUBLIC_WEB_URL}/api/auth/signin?${new URLSearchParams(
-      {
-        callbackUrl: `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/extension`,
-      },
-    )}`,
   );
 };
