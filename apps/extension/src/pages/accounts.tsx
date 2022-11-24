@@ -1,7 +1,5 @@
 import { Membership } from "@agreeto/api/types";
-import { Button } from "@agreeto/ui";
-import * as Tooltip from "@radix-ui/react-tooltip";
-import type { ReactNode } from "react";
+import { Button, PaywallTooltip } from "@agreeto/ui";
 
 import AccountCard from "~features/accounts/account-card";
 import { trpcApi } from "~features/trpc/api/hooks";
@@ -63,41 +61,5 @@ const openNextAuthLoginPage = () => {
         callbackUrl: `${process.env.PLASMO_PUBLIC_WEB_URL}/auth/extension`,
       },
     )}`,
-  );
-};
-
-const PaywallTooltip = ({ children }: { children: ReactNode }) => {
-  return (
-    <Tooltip.Provider>
-      <Tooltip.Root>
-        <Tooltip.Trigger asChild>{children}</Tooltip.Trigger>
-        <Tooltip.Portal>
-          <Tooltip.Content sideOffset={5} align="center" side="bottom">
-            <div
-              className="rounded border border-[#F9FAFA] p-4 w-60 bg-[#F9FAFA] text-left mt-4 cursor-auto"
-              style={{ boxShadow: "2px 4px 12px 2px #dbd9d9" }}
-            >
-              <div className="text-sm font-semibold color-gray-900">
-                Unlock Multiple Calendars
-              </div>
-              <div className="my-2 text-xs color-gray-900">
-                This feature is part of the Pro Plan
-              </div>
-              <div className="flex items-center justify-center w-full mt-5">
-                <Button
-                  className="py-1"
-                  variant="outline"
-                  // TODO: wait for pull#12 to be merged
-                  // onClick={() => onPageChange?.("settings")}
-                >
-                  Upgrade
-                </Button>
-              </div>
-            </div>
-            <Tooltip.Arrow className="fill-black" />
-          </Tooltip.Content>
-        </Tooltip.Portal>
-      </Tooltip.Root>
-    </Tooltip.Provider>
   );
 };
