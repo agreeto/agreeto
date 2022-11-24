@@ -1,14 +1,27 @@
 import type { RouterOutputs } from "@agreeto/api";
 import { EventColorRadix } from "@agreeto/api/types";
-import { AlertDialog, Button, DropdownMenu, themeColors } from "@agreeto/ui";
+import { AlertDialog, Button, DropdownMenu } from "@agreeto/ui";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import type { FC, ReactNode } from "react";
 import React from "react";
 import { AiOutlineMore } from "react-icons/ai";
 import { HiCheckCircle, HiOutlineExclamation, HiTrash } from "react-icons/hi";
+import resolveConfig from "tailwindcss/resolveConfig";
 
 import { trpcApi } from "~features/trpc/api/hooks";
+
+import tailwindConfig from "./../../../tailwind.config";
+
+const fullConfig = resolveConfig({
+  ...tailwindConfig,
+  content: ["./src/**/*.{html,js,ts,tsx}"],
+});
+
+export const themeColors = fullConfig.theme?.colors as Record<
+  EventColorRadix & string,
+  string
+>;
 
 type Account = RouterOutputs["user"]["myAccounts"]["accounts"][number];
 
@@ -17,7 +30,7 @@ const AccountCard: FC<{
 }> = ({ account }) => {
   const initials = account.email?.substring(0, 2).toLocaleUpperCase();
 
-  const { data: primaryAccount } = trpcApi.account.primary.useQuery();
+  const { data: user } = trpcApi.user.me.useQuery();
 
   const utils = trpcApi.useContext();
   const { mutateAsync: updateEventColor } =
@@ -26,6 +39,7 @@ const AccountCard: FC<{
         utils.account.me.invalidate();
         utils.event.all.invalidate();
         utils.user.myAccounts.invalidate();
+        utils.user.me.invalidate();
       },
     });
 
@@ -52,7 +66,7 @@ const AccountCard: FC<{
                 <div className="text-sm font-normal leading-5">
                   {account.email}
                 </div>
-                {primaryAccount?.id === account.id && (
+                {user?.accountPrimaryId === account.id && (
                   <Tooltip.Root delayDuration={300}>
                     <Tooltip.Trigger asChild>
                       <div className="px-2 py-0.5 text-xs text-white rounded bg-blue-9 cursor-help">
@@ -125,11 +139,15 @@ const MoreAccountActionsDropdownMenu = ({ account }: { account: Account }) => {
       utils.account.primary.invalidate();
       utils.account.me.invalidate();
       utils.user.me.invalidate();
+      utils.user.myAccounts.invalidate();
     },
   });
 
-  const { data: primaryAccount } = trpcApi.account.primary.useQuery();
-  const isPrimary = primaryAccount?.id === account.id;
+  const { data: user } = trpcApi.user.me.useQuery();
+  const isPrimary = user?.accountPrimaryId === account.id;
+
+  console.log("COMPAREMEEE");
+  console.log(user, account);
 
   return (
     <DropdownMenu.Root>
@@ -184,7 +202,8 @@ const RemoveAccountAlertDialog = ({
 
   const { mutate: removeAccount } = trpcApi.account.delete.useMutation({
     onSuccess() {
-      utils.account.me.invalidate();
+      utils.user.myAccounts.invalidate();
+      utils.account.primary.invalidate();
     },
   });
 

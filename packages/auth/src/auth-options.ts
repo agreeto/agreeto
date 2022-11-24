@@ -4,7 +4,6 @@ import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import AzureAdProvider from "next-auth/providers/azure-ad";
 import { azureScopes, googleScopes } from "./scopes";
-import { type AdapterAccount } from "next-auth/adapters";
 
 /**
  * The process.env is loaded from the Next.js application
@@ -28,51 +27,26 @@ export const authOptions: NextAuthOptions = {
   /** @see https://next-auth.js.org/adapters/prisma */
   adapter: {
     ...PrismaAdapter(prisma),
-    // Override the adapter to add `color` field
-    async linkAccount(account) {
-      const currentAccounts = await prisma.account.findMany({
-        where: { userId: account.userId },
-        include: { color: true },
-      });
-
-      const colors = await prisma.accountColor.findMany({
-        orderBy: { order: "asc" },
-      });
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      let colorId = colors[0]!.id;
-
-      if (currentAccounts.length > 0) {
-        let assignedANewColor = false;
-        colors.forEach((color) => {
-          if (assignedANewColor) return;
-          const foundColor = currentAccounts.find(
-            (a) => a.colorId === color.id,
-          );
-          if (!foundColor) {
-            colorId = color.id;
-            assignedANewColor = true;
-          }
-        });
-      }
-
-      const newAccount = await prisma.account.create({
-        data: {
-          ...account,
-          userId: undefined,
-          user: {
-            connect: {
-              id: account.userId,
-            },
-          },
-          color: {
-            connect: {
-              id: colorId,
-            },
-          },
-        },
-      });
-      return newAccount as unknown as AdapterAccount;
-    },
+    // // Override the adapter to add `color` field
+    // async linkAccount(account) {
+    //   const newAccount = await prisma.account.create({
+    //     data: {
+    //       ...account,
+    //       userId: undefined,
+    //       user: {
+    //         connect: {
+    //           id: account.userId,
+    //         },
+    //       },
+    //       userPrimary: {
+    //         connect: {
+    //           id: account.userId,
+    //         },
+    //       },
+    //     },
+    //   });
+    //   return newAccount as unknown as AdapterAccount;
+    // },
   },
 
   /** Built in providers, adjusted to our needs */
@@ -130,24 +104,10 @@ export const authOptions: NextAuthOptions = {
         return;
       }
 
-      const dbUser = await prisma.user.findUnique({
-        where: {
-          id: user.id,
-        },
-        include: {
-          accounts: true,
-        },
-      });
-      const dbAccount = await prisma.account.findUnique({
-        where: {
-          provider_providerAccountId: {
-            provider: account.provider,
-            providerAccountId: account.providerAccountId,
-          },
-        },
-      });
-
       await prisma.account.update({
+        include: {
+          userPrimary: true,
+        },
         where: {
           provider_providerAccountId: {
             provider: account.provider,
@@ -157,14 +117,6 @@ export const authOptions: NextAuthOptions = {
         data: {
           // Set email to the one from the oauth provider's profile
           email: profile.email,
-          // Set the user's primary account to dbAccount if it's not already
-          userPrimary: {
-            connect: {
-              // note (richard): the type is optional but the assumption is that NextAuth run adapter.linkAccount *before* event.linkAccount
-              // therefore assuming that one of the below should exist at runtime.
-              accountPrimaryId: dbUser?.accountPrimaryId || dbAccount?.id,
-            },
-          },
         },
       });
     },

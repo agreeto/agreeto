@@ -28,7 +28,6 @@ export const accountRouter = router({
           userId: ctx.user.id,
           email: { not: input.email },
         },
-        include: { color: true },
       });
     }),
 

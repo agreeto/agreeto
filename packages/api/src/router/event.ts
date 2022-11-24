@@ -2,7 +2,6 @@ import { router, privateProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { GoogleCalendarService } from "../services/google.calendar";
-
 import { EventResponseStatus, type Event } from "@agreeto/db";
 import { getCalendarService } from "../services/service-helpers";
 
@@ -15,7 +14,6 @@ export const eventRouter = router({
       const [accounts, userEvents] = await Promise.all([
         ctx.prisma.account.findMany({
           where: { userId: ctx.user.id },
-          include: { color: true },
         }),
         ctx.prisma.event.findMany({
           where: {
@@ -29,11 +27,7 @@ export const eventRouter = router({
             },
           },
           include: {
-            account: {
-              include: {
-                color: true,
-              },
-            },
+            account: true,
             attendees: true,
           },
         }),
@@ -43,14 +37,11 @@ export const eventRouter = router({
 
       const calendarEvents = await Promise.all(
         accounts.map(async (account) => {
-          console.log("INPUT?", input);
           const service = getCalendarService(account);
           const { events } = await service.getEvents(input);
-          console.log(events.length);
           return events.map((e) => ({
             ...e,
             account,
-            color: account.color.color,
           }));
         }),
       );
@@ -92,7 +83,6 @@ export const eventRouter = router({
         attendees: z.array(
           z.object({
             id: z.string(),
-            color: z.string(),
             name: z.string(),
             surname: z.string(),
             email: z.string(),
@@ -259,7 +249,6 @@ export const eventRouter = router({
         users: z
           .object({
             id: z.string(),
-            color: z.string(),
             name: z.string(),
             surname: z.string(),
             email: z.string(),
@@ -272,7 +261,6 @@ export const eventRouter = router({
     .query(async ({ ctx, input }) => {
       const accounts = await ctx.prisma.account.findMany({
         where: { userId: ctx.user.id },
-        include: { color: true },
       });
       const googleAccounts = accounts.filter(
         (account) => account.provider === "google",
@@ -306,11 +294,8 @@ export const eventRouter = router({
                   if (foundUser) {
                     foundUser.events = events.map((e) => ({
                       ...e,
-                      color: user.color,
                       account,
                     }));
-                    // FIXME: Assign random?
-                    foundUser.color = "#0165FF";
                   }
                 })
                 .catch((e) => console.error("Could not fetch user events", e)),

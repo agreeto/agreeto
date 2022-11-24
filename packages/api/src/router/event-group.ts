@@ -15,11 +15,7 @@ export const eventGroupRouter = router({
           deletedAt: null,
         },
         include: {
-          account: {
-            include: {
-              color: true,
-            },
-          },
+          account: true,
           events: {
             where: {
               deletedAt: null,

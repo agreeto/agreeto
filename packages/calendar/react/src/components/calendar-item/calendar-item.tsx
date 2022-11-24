@@ -30,7 +30,20 @@ import TimeZoneSelect from "./time-zone-select";
 
 import { trpc } from "../../utils/trpc";
 import { useCalendarStore, useEventStore, useTZStore } from "../../utils/store";
-import { themeColors } from "@agreeto/ui";
+import resolveConfig from "tailwindcss/resolveConfig";
+
+import tailwindConfig from "./../../../tailwind.config";
+import type { EventColorRadix } from "@agreeto/api/types";
+
+const fullConfig = resolveConfig({
+  ...tailwindConfig,
+  content: ["./src/**/*.{html,js,ts,tsx}"],
+});
+
+export const themeColors = fullConfig.theme?.colors as Record<
+  EventColorRadix & string,
+  string
+>;
 
 type Props = {
   onRefSettled: (ref: any) => void;

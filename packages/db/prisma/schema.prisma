@@ -19,7 +19,6 @@ datasource db {
 // ======================================
 model Account {
     id                String          @id @default(cuid())
-    colorId           String
     // Email is optional cause it's not set at login, but with a custom event
     // Meaning it is null initially, but should always be set after the first login
     email             String?
@@ -36,7 +35,6 @@ model Account {
     ext_expires_in    Int?
     eventGroups       EventGroup[]
     events            Event[]
-    color             AccountColor    @relation(fields: [colorId], references: [id])
     eventColor        EventColorRadix @default(value: violet)
 
     createdAt   DateTime @default(now())
@@ -60,17 +58,6 @@ enum EventColorRadix {
     yellow
     sky
     violet
-}
-
-model AccountColor {
-    id        String @id @default(cuid())
-    color     String
-    darkColor String
-    order     Int
-
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @default(now()) @updatedAt
-    accounts  Account[]
 }
 
 model Session {
