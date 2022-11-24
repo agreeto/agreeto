@@ -1,7 +1,6 @@
 import type { RouterOutputs } from "@agreeto/api";
 import { EventColorRadix } from "@agreeto/api/types";
-import { Button } from "@agreeto/ui";
-import * as AlertDialog from "@radix-ui/react-alert-dialog";
+import { AlertDialog, Button } from "@agreeto/ui";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import * as Tooltip from "@radix-ui/react-tooltip";
@@ -211,39 +210,36 @@ const ActionsDropdownMenu = ({ account }: { account: Account }) => {
                   <div>Remove account</div>
                 </button>
               </AlertDialog.Trigger>
-              <AlertDialog.Portal>
-                <AlertDialog.Overlay className="fixed inset-0 transition-opacity opacity-80 bg-blackA-9" />
-                <AlertDialog.Content className="fixed w-3/5 -translate-x-1/2 -translate-y-1/2 bg-white rounded-md shadow-sm top-1/2 left-1/2 shadow-transparent l-1/2">
-                  {/* dialog body */}
-                  <div className="flex items-center justify-center p-3 mb-5 sm:flex sm:items-start">
-                    <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-red-100 rounded-full sm:mx-0 sm:h-10 sm:w-10">
-                      <HiOutlineExclamation className="w-5 h-5 stroke-red-9" />
-                    </div>
-                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                      <h3
-                        className="text-lg font-medium leading-6 text-gray-900"
-                        id="modal-title"
-                      >
-                        Are you sure you want to remove this account?
-                      </h3>
-                    </div>
+              <AlertDialog.Body>
+                {/* dialog body */}
+                <div className="flex items-center justify-center p-3 mb-5 sm:flex sm:items-start">
+                  <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-red-100 rounded-full sm:mx-0 sm:h-10 sm:w-10">
+                    <HiOutlineExclamation className="w-5 h-5 stroke-red-9" />
                   </div>
-                  {/* dialog footer */}
-                  <div className="flex justify-end gap-6 p-3 bg-mauve-2">
-                    <AlertDialog.Cancel asChild>
-                      <Button variant="glass">Cancel</Button>
-                    </AlertDialog.Cancel>
-                    <AlertDialog.Action asChild>
-                      <Button
-                        variant="error"
-                        onClick={() => removeAccount({ id: account.id })}
-                      >
-                        Yes, remove
-                      </Button>
-                    </AlertDialog.Action>
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3
+                      className="text-lg font-medium leading-6 text-gray-900"
+                      id="modal-title"
+                    >
+                      Are you sure you want to remove this account?
+                    </h3>
                   </div>
-                </AlertDialog.Content>
-              </AlertDialog.Portal>
+                </div>
+                {/* dialog footer */}
+                <div className="flex justify-end gap-6 p-3 bg-mauve-2">
+                  <AlertDialog.Cancel asChild>
+                    <Button variant="glass">Cancel</Button>
+                  </AlertDialog.Cancel>
+                  <AlertDialog.Action asChild>
+                    <Button
+                      variant="error"
+                      onClick={() => removeAccount({ id: account.id })}
+                    >
+                      Yes, remove
+                    </Button>
+                  </AlertDialog.Action>
+                </div>
+              </AlertDialog.Body>
             </AlertDialog.Root>
           </DropdownMenu.Item>
         </DropdownMenu.Content>
@@ -251,5 +247,4 @@ const ActionsDropdownMenu = ({ account }: { account: Account }) => {
     </DropdownMenu.Root>
   );
 };
-
 export default AccountCard;

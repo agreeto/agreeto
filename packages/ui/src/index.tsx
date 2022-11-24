@@ -5,3 +5,4 @@ export * from "./logo";
 export * from "./modal";
 export * from "./spinner";
 export * from "./paywall-tooltip";
+export * as AlertDialog from "./alert-dialog";
