@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const radixColors = require("@radix-ui/colors");
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   // mode: "jit",
   darkMode: "class",
-  content: ["./**/*.{ts,tsx}"],
+  content: ["../../**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {

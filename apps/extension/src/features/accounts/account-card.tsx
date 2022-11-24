@@ -4,7 +4,6 @@ import { AlertDialog, Button, DropdownMenu } from "@agreeto/ui";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import type { FC, ReactNode } from "react";
-import React from "react";
 import { AiOutlineMore } from "react-icons/ai";
 import { HiCheckCircle, HiOutlineExclamation, HiTrash } from "react-icons/hi";
 import resolveConfig from "tailwindcss/resolveConfig";
@@ -145,7 +144,6 @@ const MoreAccountActionsDropdownMenu = ({ account }: { account: Account }) => {
 
   const { data: user } = trpcApi.user.me.useQuery();
   const isPrimary = user?.accountPrimaryId === account.id;
-
 
   return (
     <DropdownMenu.Root>
