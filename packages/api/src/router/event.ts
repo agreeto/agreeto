@@ -217,9 +217,9 @@ export const eventRouter = router({
         const updatePromise = (async () => {
           const accounts = await ctx.prisma.account.findMany({
             where: { userId: ctx.user.id },
-            include: { color: true },
+            include: { userPrimary: true },
           });
-          const primaryAccount = accounts.find((a) => a.userIdPrimary);
+          const primaryAccount = accounts.find((a) => Boolean(a.userPrimary));
           if (!primaryAccount) {
             throw new TRPCError({
               code: "BAD_REQUEST",

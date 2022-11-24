@@ -68,12 +68,12 @@ export const eventGroupRouter = router({
     .mutation(async ({ ctx, input }) => {
       const accounts = await ctx.prisma.account.findMany({
         where: { userId: ctx.user.id },
-        include: { color: true },
+        include: { userPrimary: true },
       });
       const accountEmails = accounts
         .map((a) => a.email)
         .filter((e): e is string => Boolean(e));
-      const primaryAccount = accounts.find((a) => a.userIdPrimary);
+      const primaryAccount = accounts.find((a) => Boolean(a.userPrimary));
 
       if (!primaryAccount) {
         // Should not happen
