@@ -30,9 +30,7 @@ import TimeZoneSelect from "./time-zone-select";
 
 import { trpc } from "../../utils/trpc";
 import { useCalendarStore, useEventStore, useTZStore } from "../../utils/store";
-import resolveConfig from "tailwindcss/resolveConfig";
-
-import tailwindConfig from "../../../tailwind.config.js";
+import { themeColors } from "@agreeto/ui";
 
 type Props = {
   onRefSettled: (ref: any) => void;
@@ -221,17 +219,8 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
     events.forEach((event) => {
       const { id, title, startDate, endDate, account, attendees } = event;
 
-      // style the events
-      const fullConfig = resolveConfig({
-        ...tailwindConfig,
-        content: ["./src/**/*.{html,js,ts,tsx}"],
-      });
-
-      // FIXME: make typesafe
-      const themeColors = fullConfig.theme?.colors;
       const eventColor = themeColors[account?.eventColor];
 
-      // FIXME: isDeclined doesn't work for the WooSender API demo event
       const isDeclined = attendees?.some((a) => {
         console.log(a);
         return (
@@ -382,7 +371,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
 
       {/* Timezone title */}
       <div
-        className="absolute top-7 flex justify-around"
+        className="absolute flex justify-around top-7"
         style={{
           width: timeZones.length === 1 ? "64px" : "120px",
           left: timeZones.length === 1 ? "-14px" : "-8px",

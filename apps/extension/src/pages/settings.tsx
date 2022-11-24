@@ -1,15 +1,10 @@
-import { Membership } from "@agreeto/api/types";
 import { Button } from "@agreeto/ui";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import * as Tabs from "@radix-ui/react-tabs";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import clsx from "clsx";
-import type { ReactNode } from "react";
 import React from "react";
 import { FaUser } from "react-icons/fa";
 import { HiCheckCircle } from "react-icons/hi";
 
-import AccountCard from "~features/accounts/account-card";
 import { trpcApi } from "~features/trpc/api/hooks";
 
 export const Settings = () => {
@@ -21,7 +16,6 @@ export const Settings = () => {
       utils.account.primary.invalidate();
     },
   });
-  const { data: user } = trpcApi.user.me.useQuery();
 
   return (
     <div className="w-full">

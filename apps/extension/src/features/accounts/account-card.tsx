@@ -1,17 +1,14 @@
 import type { RouterOutputs } from "@agreeto/api";
 import { EventColorRadix } from "@agreeto/api/types";
-import { AlertDialog, Button, DropdownMenu } from "@agreeto/ui";
+import { AlertDialog, Button, DropdownMenu, themeColors } from "@agreeto/ui";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import type { FC, ReactNode } from "react";
 import React from "react";
 import { AiOutlineMore } from "react-icons/ai";
 import { HiCheckCircle, HiOutlineExclamation, HiTrash } from "react-icons/hi";
-import resolveConfig from "tailwindcss/resolveConfig";
 
 import { trpcApi } from "~features/trpc/api/hooks";
-
-import tailwindConfig from "./../../../tailwind.config";
 
 type Account = RouterOutputs["user"]["myAccounts"]["accounts"][number];
 
@@ -20,15 +17,6 @@ const AccountCard: FC<{
 }> = ({ account }) => {
   const initials = account.email?.substring(0, 2).toLocaleUpperCase();
 
-  const fullConfig = resolveConfig({
-    ...tailwindConfig,
-    content: ["./src/**/*.{html,js,ts,tsx}"],
-  });
-
-  const themeColors = fullConfig.theme?.colors as Record<
-    EventColorRadix & string,
-    string
-  >;
   const { data: primaryAccount } = trpcApi.account.primary.useQuery();
 
   const utils = trpcApi.useContext();
