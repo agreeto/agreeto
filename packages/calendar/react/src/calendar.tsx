@@ -1,5 +1,6 @@
 import "@agreeto/tailwind-config";
-import "@agreeto/ui/dist/styles.css";
+// REVIEW (richard): this breaks the extension tailwind classes as it gets imported after tailwind, see https://www.loom.com/share/486481862c044adc9b4e3ce29f87f062
+// import "@agreeto/ui/dist/styles.css";
 import "react-toastify/dist/ReactToastify.css";
 import { add, endOfWeek, startOfWeek } from "date-fns";
 import ActionPane from "./components/action-pane";
@@ -111,7 +112,7 @@ const Calendar: React.FC<Props> = ({
   return (
     <div className="flex h-full">
       <div
-        className="space-y-4 p-8"
+        className="p-8 space-y-4"
         style={{
           width: openPane ? "calc(100% - 325px)" : "100%",
         }}
