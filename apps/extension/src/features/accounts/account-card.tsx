@@ -146,8 +146,6 @@ const MoreAccountActionsDropdownMenu = ({ account }: { account: Account }) => {
   const { data: user } = trpcApi.user.me.useQuery();
   const isPrimary = user?.accountPrimaryId === account.id;
 
-  console.log("COMPAREMEEE");
-  console.log(user, account);
 
   return (
     <DropdownMenu.Root>

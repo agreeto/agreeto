@@ -235,7 +235,6 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
       const eventColor = themeColors[account?.eventColor];
 
       const isDeclined = attendees?.some((a) => {
-        console.log(a);
         return (
           a.email === currentUser?.email &&
           a.responseStatus === EventResponseStatus.DECLINED

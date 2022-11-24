@@ -33,7 +33,6 @@ export const Button = forwardRef<
     variant?: "primary" | "secondary" | "glass" | "error" | "outline";
   } & React.ButtonHTMLAttributes<HTMLButtonElement>
 >(({ onClick, variant = "primary", children, className, ...props }, ref) => {
-  console.log("PROPSOPR", props);
   return (
     <button
       ref={ref}
