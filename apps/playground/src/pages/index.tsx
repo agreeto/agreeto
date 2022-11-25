@@ -1,4 +1,4 @@
-import { Button, Dialog } from "@agreeto/ui";
+import { Dialog } from "@agreeto/ui";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
@@ -38,12 +38,18 @@ const Home: NextPage = () => {
               </div>
             </Link>
             <Dialog
-              trigger={<Button variant="success">Delete account</Button>}
               variant="info"
-              title="Go for it!"
-              description="Are you sure you want to delete your account?"
-              actionLabel="Yes, confirm"
-            />
+              // title="Go for it!"
+              // description="Are you sure you want to delete your account?"
+              // actionLabel="Yes, confirm"
+            >
+              <Dialog.Trigger>Click Me!</Dialog.Trigger>
+              <Dialog.Title>Delete Account</Dialog.Title>
+              <Dialog.Description>
+                Are you sure you want to delete your account?
+              </Dialog.Description>
+              <Dialog.ActionButton>Yes, confirm mee </Dialog.ActionButton>
+            </Dialog>
           </div>
         </div>
       </main>
