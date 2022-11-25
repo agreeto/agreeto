@@ -1,4 +1,5 @@
-import { Dialog } from "@agreeto/ui";
+// import { Dialog } from "@agreeto/ui";
+import { AlertDialog } from "@agreeto/ui";
 import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
@@ -37,19 +38,35 @@ const Home: NextPage = () => {
                 to deploy it.
               </div>
             </Link>
-            <Dialog
-              variant="info"
-              // title="Go for it!"
-              // description="Are you sure you want to delete your account?"
-              // actionLabel="Yes, confirm"
-            >
-              <Dialog.Trigger>Click Me!</Dialog.Trigger>
-              <Dialog.Title>Delete Account</Dialog.Title>
-              <Dialog.Description>
-                Are you sure you want to delete your account?
-              </Dialog.Description>
-              <Dialog.ActionButton>Yes, confirm mee </Dialog.ActionButton>
-            </Dialog>
+            <AlertDialog.Root>
+              <AlertDialog.Trigger variant="primary">
+                Click Me!
+              </AlertDialog.Trigger>
+              <AlertDialog.Body variant="info">
+                {/* Header */}
+                <AlertDialog.Body.Header>
+                  <AlertDialog.Body.HeaderIcon variant="info" />
+                  <AlertDialog.Body.HeaderTitle>
+                    Dialog Title
+                  </AlertDialog.Body.HeaderTitle>
+                </AlertDialog.Body.Header>
+
+                {/* Description */}
+                <AlertDialog.Body.Description>
+                  Are you sure you want to delete your account?
+                </AlertDialog.Body.Description>
+
+                {/* Footer */}
+                <AlertDialog.Body.Footer>
+                  <AlertDialog.FooterCancel variant="glass">
+                    Cancel
+                  </AlertDialog.FooterCancel>
+                  <AlertDialog.FooterAction variant="primary">
+                    Yes, confirm me
+                  </AlertDialog.FooterAction>
+                </AlertDialog.Body.Footer>
+              </AlertDialog.Body>
+            </AlertDialog.Root>
           </div>
         </div>
       </main>
