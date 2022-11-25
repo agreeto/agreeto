@@ -22,6 +22,9 @@ export const Navbar = () => {
           <Link to="settings">
             <Cog8ToothIcon className="h-10 w-10 p-1 text-indigo-600 hover:text-indigo-700" />
           </Link>
+          <Link to="formatting">
+            <Cog8ToothIcon className="h-10 w-10 p-1 text-indigo-600 hover:text-indigo-700" />
+          </Link>
         </nav>
       </div>
     </div>

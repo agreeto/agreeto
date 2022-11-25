@@ -42,6 +42,9 @@ build
 # plasmo - https://www.plasmo.com
 .plasmo
 
+# IDE
+.vscode
+
 
 # bpp - http://bpp.browser.market/
 keys.json

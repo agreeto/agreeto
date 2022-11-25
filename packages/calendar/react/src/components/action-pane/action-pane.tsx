@@ -51,13 +51,22 @@ const ActionPane: FC<Props> = ({
   const [buttonType, setButtonType] = useState<ActionType>("Copy and Close");
 
   const { data: preference } = trpc.preference.byCurrentUser.useQuery();
+  const { data: formattings } = trpc.formatting.byCurrentUser.useQuery();
+  const formatting = formattings?.find(
+    (f) => f.language === preference?.formatLanguage,
+  );
+
   const { mutate: createEventGroup, isLoading: isCreatingEventGroup } =
     trpc.eventGroup.create.useMutation({
       onSuccess() {
         clearAttendees();
         utils.event.all.invalidate();
 
-        copyToClipboard(selectedSlots, preference);
+        copyToClipboard(selectedSlots, {
+          formatLanguage: preference?.formatLanguage,
+          copyTitle: formatting?.introSentence,
+          dateFormat: formatting?.dateFormat,
+        });
         toast("Saved and copied to clipboard!", {
           position: "bottom-center",
           hideProgressBar: true,
@@ -92,7 +101,11 @@ const ActionPane: FC<Props> = ({
 
     if (buttonType === "Copy and Close") {
       setTimeout(() => {
-        copyToClipboard(selectedSlots, preference);
+        copyToClipboard(selectedSlots, {
+          formatLanguage: preference?.formatLanguage,
+          copyTitle: formatting?.introSentence,
+          dateFormat: formatting?.dateFormat,
+        });
         toast("Saved and copied to clipboard!", {
           position: "bottom-center",
           hideProgressBar: true,
