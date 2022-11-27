@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { router, publicProcedure, privateProcedure } from "../trpc";
-import { getGoogleUsers } from "../external/google";
+import { getGoogleWorkspaceUsers } from "../external/google";
 import { EventResponseStatus, Membership } from "@agreeto/db";
 
 export const userRouter = router({
@@ -86,18 +86,27 @@ export const userRouter = router({
         where: { userId: ctx.user.id },
       });
 
-      const promises = accounts
-        .filter((account) => account.provider === "google")
-        .map((account) => {
-          return getGoogleUsers({
-            search: input.search,
-            accessToken: account.access_token,
-            refreshToken: account.refresh_token,
-          });
+      const promises = accounts.flatMap((account) => {
+        // if account is not google, skip
+        if (account.provider !== "google") return [];
+        // if no email is set for this account, skip
+        if (!account.email) return [];
+        // if account is not a workspace accoount, skip
+        if (/gmail.com|googlemail.com/.test(account.email || "")) return [];
+
+        // return the Workspace Admin API promise to fetch co-workers
+        return getGoogleWorkspaceUsers({
+          search: input.search,
+          accessToken: account.access_token,
+          refreshToken: account.refresh_token,
         });
+      });
 
       const users = (await Promise.all(promises))
-        .flatMap((u) => u)
+        .flatMap((u) => {
+          console.dir({ u });
+          return u;
+        })
         .map((u) => ({
           ...u,
           responseStatus: EventResponseStatus.TENTATIVE as EventResponseStatus,
@@ -105,7 +114,6 @@ export const userRouter = router({
 
       return users;
     }),
-
   changePrimary: privateProcedure
     .input(
       z.object({
