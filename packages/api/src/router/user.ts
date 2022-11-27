@@ -92,7 +92,7 @@ export const userRouter = router({
         // if no email is set for this account, skip
         if (!account.email) return [];
         // if account is not a workspace accoount, skip
-        if (/gmail.com|googlemail.com/.test(account.email || "")) return [];
+        if (/gmail.com|googlemail.com/.test(account.email)) return [];
 
         // return the Workspace Admin API promise to fetch co-workers
         return getGoogleWorkspaceUsers({
