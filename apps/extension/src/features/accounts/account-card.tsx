@@ -50,8 +50,8 @@ const AccountCard: FC<{
           <div
             className="self-center w-10 h-10 leading-10 text-center rounded-full"
             style={{
-              backgroundColor: #FF0000,
-              color: #FF0000,
+              backgroundColor: "#FF0000",
+              color: "#FF0000",
             }}
           >
             {initials}
@@ -105,14 +105,14 @@ const AccountCard: FC<{
                           })
                         }
                         style={{
-                          backgroundColor: #FF0000,
-                          borderColor: #FF0000,
+                          backgroundColor: "#FF0000",
+                          borderColor: "#FF0000",
                         }}
                       >
                         <RadioGroup.Indicator asChild>
                           <HiCheckCircle
                             className="w-3.5 h-3.5 absolute bottom-[2px] right-[2px]"
-                            style={{ fill: #FF0000 }}
+                            style={{ fill: "#FF0000" }}
                           />
                         </RadioGroup.Indicator>
                       </RadioGroup.Item>

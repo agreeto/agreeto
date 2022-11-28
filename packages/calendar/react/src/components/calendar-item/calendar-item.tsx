@@ -31,7 +31,6 @@ import TimeZoneSelect from "./time-zone-select";
 import { trpc } from "../../utils/trpc";
 import { useCalendarStore, useEventStore, useTZStore } from "../../utils/store";
 // import resolveConfig from "tailwindcss/resolveConfig";
-// // @ts-expect-error: REVIEW (richard): I don't know how to fix this type, tried adding "paths": { "taildwind.config.js": ["./tailwind.config.js"] } to tsconfig but didn't work
 // import * as tailwindConfig from "tailwind.config.js";
 
 // import type { EventColorUserRadix } from "@agreeto/api/types";
@@ -249,7 +248,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
     events.forEach((event) => {
       const { id, title, startDate, endDate, account, attendees } = event;
 
-      const eventColor = #FF0000;
+      const eventColor = "#FF0000";
 
       const isDeclined = attendees?.some((a) => {
         return (
@@ -302,8 +301,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
           start: startDate,
           end: endDate,
           // TODO: turn color into enum in Prisma
-          // @ts-expect-error: eventColor is currently a readonly property
-          backgroundColor: #FF0000,
+          backgroundColor: "#FF0000",
           textColor: "white",
           borderColor: "transparent",
           extendedProps: {
