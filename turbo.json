@@ -18,7 +18,7 @@
       "outputs": []
     },
     "typecheck": {
-      "dependsOn": ["^db-generate"],
+      "dependsOn": ["^db-generate", "^build"],
       "outputs": [],
       "cache": false
     }
