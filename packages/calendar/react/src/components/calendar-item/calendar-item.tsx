@@ -89,7 +89,7 @@ const CalendarItem: FC<Props> = ({ onRefSettled, onPageChange }) => {
     {
       startDate: period.startDate,
       endDate: period.endDate,
-      directoryUsers: attendees,
+      users: attendees,
     },
     {
       keepPreviousData: true,
@@ -280,8 +280,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
     });
 
     // Add events of directory users
-    directoryUsersWithEvents?.forEach(({ events: directoryEvents, user }) => {
-      const { eventColor } = user;
+    directoryUsersWithEvents?.forEach(({ events: directoryEvents, color }) => {
       directoryEvents?.forEach((event) => {
         const { title, startDate, endDate } = event;
 
@@ -289,9 +288,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
           title,
           start: startDate,
           end: endDate,
-          // TODO: turn color into enum in Prisma
-          // @ts-expect-error: eventColor is currently a readonly property
-          backgroundColor: themeColors[eventColor],
+          backgroundColor: themeColors[color],
           textColor: "white",
           borderColor: "transparent",
           extendedProps: {

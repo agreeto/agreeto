@@ -1,4 +1,5 @@
 import { type Account } from "@agreeto/db";
+import { EventColorDirectoryUserRadix } from "@agreeto/db/client-types";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { GoogleCalendarService } from "./google.calendar";
@@ -61,6 +62,7 @@ export const DirectoryUserEventSchema = z.object({
   // optional as per Google Calendar api schema
   title: z.string(),
   description: z.string(),
-  startDate: z.date(),
-  endDate: z.date(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+  color: z.nativeEnum(EventColorDirectoryUserRadix),
 });

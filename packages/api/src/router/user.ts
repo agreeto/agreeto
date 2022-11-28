@@ -5,6 +5,7 @@ import { getGoogleWorkspaceUsers } from "../external/google";
 
 import { EventResponseStatus, Membership } from "@agreeto/db";
 import { isGoogleWorkspaceAccount } from "../services/service-helpers";
+import { EventColorDirectoryUserRadix } from "@agreeto/db/client-types";
 
 export const userRouter = router({
   // TESTING PROCEDURE
@@ -82,6 +83,7 @@ export const userRouter = router({
     .input(
       z.object({
         search: z.string(),
+        occupiedColors: z.nativeEnum(EventColorDirectoryUserRadix).array(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -98,6 +100,18 @@ export const userRouter = router({
         });
       });
 
+      const colors = Object.values(EventColorDirectoryUserRadix);
+      const getAvailableColor = () => {
+        const availableColors = colors.filter(
+          (color) => !input.occupiedColors.includes(color),
+        );
+        const color =
+          availableColors[Math.floor(Math.random() * availableColors.length)];
+        // Fine to non-null assert here because we "know" there's at least one color in the enum
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return color ?? colors[0]!;
+      };
+
       const users = (await Promise.all(promises))
         .flatMap((u) => {
           console.dir({ u });
@@ -105,11 +119,13 @@ export const userRouter = router({
         })
         .map((u) => ({
           ...u,
+          color: getAvailableColor(),
           responseStatus: EventResponseStatus.TENTATIVE as EventResponseStatus,
         }));
 
       return users;
     }),
+
   changePrimary: privateProcedure
     .input(
       z.object({

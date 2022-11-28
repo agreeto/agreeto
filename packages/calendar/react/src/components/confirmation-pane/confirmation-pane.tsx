@@ -109,8 +109,9 @@ const ConfirmationPane: React.FC<{
       addConference,
       title,
       attendees: unknownAttendees.concat(
-        directoryUsersWithEvents.map(({ user: u }) => ({
+        directoryUsersWithEvents.map((u) => ({
           id: u.id,
+          color: u.color,
           name: u.name,
           surname: u.surname,
           email: u.email,

@@ -79,7 +79,7 @@ const AddUnknownAttendee: React.FC<{ text: string; clearText: () => void }> = ({
           name: text,
           surname: "",
           email: text,
-          // color: "#C4C4C4",
+          color: "brown",
           provider: "google",
           responseStatus: EventResponseStatus.NEEDS_ACTION,
         });
@@ -140,7 +140,7 @@ export const Attendees: React.FC<{
   // Fetch directory users from providers
   const { data: directoryUsers, isFetching: isLoadingUsers } =
     trpc.user.getFriends.useQuery(
-      { search: attendeeText },
+      { search: attendeeText, occupiedColors: attendees.map((a) => a.color) },
       {
         keepPreviousData: true,
         staleTime: 60 * 1000,
