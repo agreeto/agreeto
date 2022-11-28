@@ -8,7 +8,7 @@
   "prisma": {
     "schema": "packages/db/prisma/schema.prisma"
   },
-  "packageManager": "pnpm@7.13.0",
+  "packageManager": "pnpm@7.17.0",
   "scripts": {
     "prepare": "husky install",
     "preinstall": "npx only-allow pnpm",
