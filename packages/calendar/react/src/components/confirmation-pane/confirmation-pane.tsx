@@ -37,7 +37,7 @@ const ConfirmationPane: React.FC<{
   }, [eventGroupId]);
 
   const { data: accounts } = trpc.account.me.useQuery();
-  const primaryAccount = accounts?.find((a) => a.userIdPrimary);
+  const primaryAccount = accounts?.find((a) => Boolean(a.userPrimary));
 
   const { data: eventGroup } = trpc.eventGroup.byId.useQuery(
     { id: eventGroupId },
@@ -109,9 +109,8 @@ const ConfirmationPane: React.FC<{
       addConference,
       title,
       attendees: unknownAttendees.concat(
-        directoryUsersWithEvents.map((u) => ({
+        directoryUsersWithEvents.map(({ user: u }) => ({
           id: u.id,
-          color: u.color,
           name: u.name,
           surname: u.surname,
           email: u.email,

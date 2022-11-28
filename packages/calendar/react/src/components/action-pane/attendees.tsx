@@ -5,6 +5,10 @@ import { BiSearch } from "react-icons/bi";
 import { Float } from "@headlessui-float/react";
 import { trpc } from "../../utils/trpc";
 import { type RouterOutputs } from "@agreeto/api";
+import type {
+  EventColorUserRadix,
+  EventColorDirectoryUserRadix,
+} from "@agreeto/api/types";
 import { EventResponseStatus, Membership } from "@agreeto/api/types";
 import clsx from "clsx";
 import { DebouncedInput } from "./debounced-input";
@@ -12,9 +16,10 @@ import { z } from "zod";
 import { toast } from "react-toastify";
 import { useEventStore } from "../../utils/store";
 import { BiTrash } from "react-icons/bi";
+import { themeColors } from "../calendar-item/calendar-item";
 
 const SelectedAttendeeCard: React.FC<{
-  color: string;
+  color?: EventColorUserRadix & EventColorDirectoryUserRadix;
   email: string;
   deleteAttendee: () => void;
   hideDeleteButton: boolean;
@@ -25,8 +30,14 @@ const SelectedAttendeeCard: React.FC<{
         {/* Color and email */}
         <div className="flex items-center space-x-2">
           <div
-            className="h-3 w-3 rounded-full"
-            style={{ backgroundColor: color }}
+            className={"h-3 w-3 rounded-full"}
+            style={{
+              backgroundColor: color
+                ? // @ts-expect-error: possibly undefined, need to fix typesafety of themeColors object
+                  themeColors[color][7]
+                : // @ts-expect-error: possibly undefined, need to fix typesafety of themeColors object
+                  themeColors[mauve][7],
+            }}
           />
           <div className="text-xs">{email}</div>
         </div>
@@ -70,7 +81,7 @@ const AddUnknownAttendee: React.FC<{ text: string; clearText: () => void }> = ({
           name: text,
           surname: "",
           email: text,
-          color: "#C4C4C4",
+          // color: "#C4C4C4",
           provider: "google",
           responseStatus: EventResponseStatus.NEEDS_ACTION,
         });
@@ -131,7 +142,7 @@ export const Attendees: React.FC<{
   // Fetch directory users from providers
   const { data: directoryUsers, isFetching: isLoadingUsers } =
     trpc.user.getFriends.useQuery(
-      { search: attendeeText, occupiedColors: attendees.map((u) => u.color) },
+      { search: attendeeText },
       {
         keepPreviousData: true,
         staleTime: 60 * 1000,
@@ -147,14 +158,14 @@ export const Attendees: React.FC<{
           {!eventGroup?.isSelectionDone ? "Add attendees" : "Attendees"}
         </span>
       </div>
-
       <div className="max-h-36 space-y-1 overflow-auto py-1">
         {/* Selected attendees */}
         {attendees.map((attendee) => (
           <SelectedAttendeeCard
             {...{
               key: attendee.id,
-              color: attendee.color,
+              // REVIW (richard): What do we need this color for when adding attendees?
+              // color: attendee.color,
               email: attendee.email,
               hideDeleteButton: !!eventGroup?.isSelectionDone,
               deleteAttendee: () => removeAttendee(attendee.id),
@@ -163,11 +174,10 @@ export const Attendees: React.FC<{
         ))}
 
         {/* Unknown attendees */}
-        {unknownAttendees.map(({ email, color }) => (
+        {unknownAttendees.map(({ email }) => (
           <SelectedAttendeeCard
             {...{
               key: email,
-              color,
               email,
               hideDeleteButton: false,
               deleteAttendee: () => removeUnknownAttendee(email),

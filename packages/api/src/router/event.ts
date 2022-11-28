@@ -6,6 +6,7 @@ import type { Account } from "@agreeto/db";
 import { EventResponseStatus } from "@agreeto/db";
 import { DirectoryUserEventSchema } from "../services/service-helpers";
 import { getCalendarService } from "../services/service-helpers";
+import { EventColorDirectoryUserRadix } from "./../../types";
 
 export const eventRouter = router({
   // Get Accounts and AgreeTo Events
@@ -269,17 +270,11 @@ export const eventRouter = router({
       });
       const result: Array<{
         user: typeof input.directoryUsers[number] & {
-          eventColor: typeof availableColors;
+          eventColor: typeof directoryUserColors;
         };
         events: Array<z.infer<typeof DirectoryUserEventSchema>>;
       }> = [];
-      const availableColors = [
-        "green",
-        "red",
-        "blue",
-        "yellow",
-        "orange",
-      ] as const;
+      const directoryUserColors = z.nativeEnum(EventColorDirectoryUserRadix);
       // need the index to access the color later
       for (const [
         directoryUsersIndex,
@@ -315,9 +310,11 @@ export const eventRouter = router({
           user: {
             ...directoryUser,
             // can be undefined, shouldn't throw though because we limit the directoryUser input to max 5
-            // @ts-expect-error: not sure why this is complains about it possibly bein g a string? TODO: add zod validatoin
             eventColor:
-              availableColors[directoryUsersIndex] || availableColors[0],
+              // either the next color from the directoryUserColors enum or simply the first one
+              Object.values(directoryUserColors)[directoryUsersIndex] ||
+              // @ts-expect-error: not sure why this is complains about it possibly bein g a string? TODO: add zod validatoin
+              directoryUserColors[0],
           },
           events: z
             .array(DirectoryUserEventSchema)

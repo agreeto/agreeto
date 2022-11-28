@@ -5,11 +5,11 @@
 
 */
 -- CreateEnum
-CREATE TYPE "EventColorRadix" AS ENUM ('crimson', 'lime', 'yellow', 'sky', 'violet');
+CREATE TYPE "EventColorUserRadix" AS ENUM ('crimson', 'lime', 'yellow', 'sky', 'violet');
 
 -- AlterTable
 ALTER TABLE "Account" DROP COLUMN "eventColor",
-ADD COLUMN     "eventColor" "EventColorRadix" NOT NULL DEFAULT 'violet';
+ADD COLUMN     "eventColor" "EventColorUserRadix" NOT NULL DEFAULT 'violet';
 
 -- DropEnum
 DROP TYPE "RadixColor";

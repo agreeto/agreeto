@@ -18,24 +18,24 @@ datasource db {
 // Start Mostly Next-Auth.js
 // ======================================
 model Account {
-    id                String          @id @default(cuid())
+    id                String              @id @default(cuid())
     // Email is optional cause it's not set at login, but with a custom event
     // Meaning it is null initially, but should always be set after the first login
     email             String?
     provider          String
     type              String
     providerAccountId String
-    refresh_token     String          @db.Text
-    access_token      String          @db.Text
+    refresh_token     String              @db.Text
+    access_token      String              @db.Text
     expires_at        Int
     token_type        String
     scope             String
-    id_token          String?         @db.Text
+    id_token          String?             @db.Text
     session_state     String?
     ext_expires_in    Int?
     eventGroups       EventGroup[]
     events            Event[]
-    eventColor        EventColorRadix @default(value: violet)
+    eventColor        EventColorUserRadix @default(value: violet)
 
     createdAt   DateTime @default(now())
     updatedAt   DateTime @default(now()) @updatedAt
@@ -52,12 +52,22 @@ model Account {
 // The allowed colors for the account's event
 // as defined by radix-colors
 // ============================================
-enum EventColorRadix {
+enum EventColorUserRadix {
     crimson
     lime
     yellow
     sky
     violet
+
+    @@map("EventColorUserRadix")
+}
+
+enum EventColorDirectoryUserRadix {
+    orange
+    red
+    pink
+    tomato
+    brown
 }
 
 model Session {

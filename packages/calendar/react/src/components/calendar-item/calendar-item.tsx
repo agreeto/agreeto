@@ -22,7 +22,6 @@ import { EventResponseStatus, Membership } from "@agreeto/api/types";
 import { eventMocks } from "./mock";
 import { ulid } from "ulid";
 import {
-  DIRECTORY_USER_COLORS,
   getDateLocale,
   getHourText,
   getPrimaryTimeZone,
@@ -34,7 +33,7 @@ import { useCalendarStore, useEventStore, useTZStore } from "../../utils/store";
 import resolveConfig from "tailwindcss/resolveConfig";
 
 import tailwindConfig from "./../../../tailwind.config";
-import type { EventColorRadix } from "@agreeto/api/types";
+import type { EventColorUserRadix } from "@agreeto/api/types";
 
 const fullConfig = resolveConfig({
   ...tailwindConfig,
@@ -42,7 +41,7 @@ const fullConfig = resolveConfig({
 });
 
 export const themeColors = fullConfig.theme?.colors as Record<
-  EventColorRadix & string,
+  EventColorUserRadix & EventColorDirectoryUserRadix,
   string
 >;
 
@@ -85,7 +84,7 @@ const CalendarItem: FC<Props> = ({ onRefSettled, onPageChange }) => {
     {
       startDate: period.startDate,
       endDate: period.endDate,
-      users: attendees,
+      directoryUsers: attendees,
     },
     {
       keepPreviousData: true,
@@ -249,14 +248,19 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
 
       const backgroundColor =
         attendeeMe?.responseStatus !== EventResponseStatus.ACCEPTED
-          ? eventColor[3]
-          : eventColor[7];
+          ? // @ts-expect-error: Make themeColors typesafe
+            eventColor[3]
+          : // @ts-expect-error: Make themeColors typesafe
+            eventColor[7];
 
       const borderColor =
         attendeeMe?.responseStatus !== EventResponseStatus.ACCEPTED
-          ? eventColor[7]
-          : eventColor[1];
+          ? // @ts-expect-error: Make themeColors typesafe
+            eventColor[7]
+          : // @ts-expect-error: Make themeColors typesafe
+            eventColor[1];
 
+      // @ts-expect-error: Make themeColors typesafe
       const textColor = eventColor[11];
 
       newEvents.push({
@@ -276,17 +280,18 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
     });
 
     // Add events of directory users
-    directoryUsersWithEvents?.forEach(({ events: directoryEvents }) => {
+    directoryUsersWithEvents?.forEach(({ events: directoryEvents, user }) => {
+      const { eventColor } = user;
       directoryEvents?.forEach((event) => {
-        const { id, title, startDate, endDate } = event;
+        const { title, startDate, endDate } = event;
 
         newEvents.push({
-          id,
-          title: title,
+          title,
           start: startDate,
           end: endDate,
-          // FIXME (richard): Define colors for directory users in a readonly array, unsure how to handle as there are so many anys here
-          backgroundColor: DIRECTORY_USER_COLORS[0],
+          // TODO: turn color into enum in Prisma
+          // @ts-expect-error: eventColor is currently a readonly property
+          backgroundColor: themeColors[eventColor],
           textColor: "white",
           borderColor: "transparent",
           extendedProps: {

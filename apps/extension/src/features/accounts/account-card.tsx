@@ -1,5 +1,5 @@
 import type { RouterOutputs } from "@agreeto/api";
-import { EventColorRadix } from "@agreeto/api/types";
+import { EventColorUserRadix } from "@agreeto/api/types";
 import { Button, Dialog, DropdownMenu } from "@agreeto/ui";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import * as Tooltip from "@radix-ui/react-tooltip";
@@ -18,7 +18,7 @@ const fullConfig = resolveConfig({
 });
 
 export const themeColors = fullConfig.theme?.colors as Record<
-  EventColorRadix & string,
+  EventColorUserRadix & string,
   string
 >;
 
@@ -92,7 +92,7 @@ const AccountCard: FC<{
               {/* Change account color action */}
               <RadioGroup.Root asChild defaultValue={account?.eventColor}>
                 <div className="flex pt-4 space-x-4">
-                  {Object.values(EventColorRadix).map((eventColor, ix) => {
+                  {Object.values(EventColorUserRadix).map((eventColor, ix) => {
                     return (
                       <RadioGroup.Item
                         key={ix}

@@ -1,7 +1,7 @@
 import { router, privateProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { EventColorRadix } from "@agreeto/db";
+import { EventColorUserRadix } from "@agreeto/db";
 
 export const accountRouter = router({
   // Get the accounts for the current user
@@ -43,7 +43,7 @@ export const accountRouter = router({
     .input(
       z.object({
         id: z.string(),
-        eventColor: z.nativeEnum(EventColorRadix),
+        eventColor: z.nativeEnum(EventColorUserRadix),
       }),
     )
     .mutation(async ({ ctx, input }) => {
