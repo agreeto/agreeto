@@ -30,7 +30,15 @@ export const Button = forwardRef<
   {
     onClick?: () => void;
     children: ReactNode;
-    variant?: "primary" | "secondary" | "glass" | "error" | "outline";
+    variant?:
+      | "primary"
+      | "secondary"
+      | "glass"
+      | "error"
+      | "outline"
+      | "warning"
+      | "info"
+      | "success";
   } & React.ButtonHTMLAttributes<HTMLButtonElement>
 >(({ onClick, variant = "primary", children, className, ...props }, ref) => {
   return (
@@ -39,15 +47,17 @@ export const Button = forwardRef<
       type="button"
       className={clsx(
         "inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium leading-4  shadow-sm focus:outline-none",
-        {
-          "bg-primary text-white hover:bg-primary/80": variant === "primary",
-          "border border-primary bg-white text-primary hover:border-mauve-8 hover:border-primary":
-            variant === "outline",
-          "bg-white text-primary hover:bg-primary/20": variant === "secondary",
-          "text-mauve bg-white hover:border-mauve-6 hover:bg-mauve-3":
-            variant === "glass",
-          "bg-red-9 text-white hover:bg-red-10": variant === "error",
-        },
+
+        variant === "primary" && "bg-primary text-white hover:bg-primary/80",
+        variant === "outline" &&
+          "border border-primary bg-white text-primary hover:border-mauve-8 hover:border-primary",
+        variant === "secondary" && "bg-white text-primary hover:bg-primary/20",
+        variant === "glass" &&
+          "text-mauve bg-white hover:border-mauve-6 hover:bg-mauve-3",
+        variant === "error" && "bg-red-9 text-white hover:bg-red-10",
+        variant === "warning" && "bg-yellow-9 text-white hover:bg-yellow-10",
+        variant === "info" && "bg-blue-9 text-white hover:bg-blue-10",
+        variant === "success" && "bg-green-9 text-white hover:bg-green-10",
         className,
       )}
       {...props}
