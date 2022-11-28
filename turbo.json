@@ -1,7 +1,7 @@
 {
   "pipeline": {
     "db-generate": {
-      "cache": true
+      "cache": false
     },
     "db-push": {
       "cache": false
@@ -15,15 +15,16 @@
       "outputs": [".next/**", ".expo/**", ".plasmo/**", "build/**", "dist/**"]
     },
     "lint": {
-      "outputs": [],
-      "cache": false
+      "outputs": []
     },
     "typecheck": {
+      "dependsOn": ["^db-generate", "^build"],
       "outputs": [],
       "cache": false
     }
   },
   "globalEnv": [
+    "CI",
     "NODE_ENV",
     "NEXT_PUBLIC_PORT",
     "VERCEL",
