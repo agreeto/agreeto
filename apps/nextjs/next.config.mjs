@@ -11,6 +11,11 @@ import withTM from "next-transpile-modules";
 const config = {
   reactStrictMode: true,
   swcMinify: true,
+  // note (richard): I ran into a heap error building nextjs because of too little allocated memory
+  // the export NODE_OPTIONS=--max_old_space_size=4096 prefix made it work
+  experimental: {
+    esmExternals: false,
+  },
 };
 
 export default withTM([
