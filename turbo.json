@@ -23,6 +23,7 @@
     }
   },
   "globalEnv": [
+    "CI",
     "NODE_ENV",
     "NEXT_PUBLIC_PORT",
     "VERCEL",
