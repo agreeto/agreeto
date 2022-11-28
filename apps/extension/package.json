@@ -32,7 +32,6 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.6.0",
-    "tozod": "^3.0.0",
     "trpc-chrome": "^0.1.0",
     "@agreeto/ui": "workspace:*",
     "zod": "^3.18.0"
@@ -49,7 +48,6 @@
     "prettier": "2.7.1",
     "@agreeto/tailwind-config": "workspace:*",
     "tailwindcss": "^3.1.8",
-    "ts-to-zod": "^1.13.1",
     "@agreeto/tsconfig": "workspace:*",
     "typescript": "^4.8.4"
   },
