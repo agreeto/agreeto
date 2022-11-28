@@ -27,7 +27,7 @@ export const Subscription = () => {
             </Tabs.Trigger>
             <Tabs.Trigger
               className="px-3 w-1/2 py-1 border rounded-r-md border-l-transparent border-gray-500 radix-state-active:text-primary radix-state-active:border-primary"
-              value="annual"
+              value="annually"
             >
               Annual
             </Tabs.Trigger>
@@ -35,8 +35,8 @@ export const Subscription = () => {
           <Tabs.Content value="monthly">
             <PricingCard period="monthly" plan={Membership.PRO} />
           </Tabs.Content>
-          <Tabs.Content value="annual">
-            <PricingCard period="annual" plan={Membership.PRO} />
+          <Tabs.Content value="annually">
+            <PricingCard period="annually" plan={Membership.PRO} />
           </Tabs.Content>
         </Tabs.Root>
       )}

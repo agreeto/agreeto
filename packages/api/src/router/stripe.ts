@@ -14,7 +14,7 @@ export const getMembershipFromPriceId = (
   switch (priceId) {
     case process.env.STRIPE_MONTHLY_PRICE_ID:
       return Membership.PRO;
-    case process.env.STRIPE_ANNUAL_PRICE_ID:
+    case process.env.STRIPE_ANNUALLY_PRICE_ID:
       return Membership.PREMIUM;
     default:
       throw new TRPCError({
@@ -26,14 +26,14 @@ export const getMembershipFromPriceId = (
 
 const getStripePriceId = (
   membership: Membership,
-  period: "monthly" | "annual",
+  period: "monthly" | "annually",
 ) => {
   switch (period) {
     // TODO: Differentiate PRO and PREMIUM when PREMIUM is available
     case "monthly":
       return process.env.STRIPE_MONTHLY_PRICE_ID;
-    case "annual":
-      return process.env.STRIPE_ANNUAL_PRICE_ID;
+    case "annually":
+      return process.env.STRIPE_ANNUALLY_PRICE_ID;
     default:
       throw new TRPCError({
         code: "BAD_REQUEST",
@@ -184,7 +184,7 @@ export const stripeRouter = router({
       .input(
         z.object({
           plan: z.enum([Membership.PRO, Membership.PREMIUM]),
-          period: z.enum(["monthly", "annual"]),
+          period: z.enum(["monthly", "annually"]),
         }),
       )
       .mutation(async ({ ctx, input }) => {

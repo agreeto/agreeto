@@ -76,14 +76,14 @@ export const userRouter = router({
     const period =
       subscription.priceId === process.env.STRIPE_MONTHLY_PRICE_ID
         ? "monthly"
-        : "annual";
+        : "annually";
 
     return {
       id: subscription.id,
       status: subscription.status,
       current_period_end: subscription.current_period_end,
       membership,
-      period: period as "monthly" | "annual", // FIXME: Why is `as` needed
+      period: period as "monthly" | "annually", // FIXME: Why is `as` needed
     };
   }),
 

@@ -15,7 +15,7 @@ const features = [
 
 type PricingCardProps = {
   plan: Exclude<Membership, "FREE" | "TRIAL">;
-  period: "monthly" | "annual";
+  period: "monthly" | "annually";
   onBuyClick?: () => void;
 };
 

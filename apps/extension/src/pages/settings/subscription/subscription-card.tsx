@@ -6,7 +6,7 @@ import { trpcApi } from "~features/trpc/api/hooks";
 
 type SubscriptionCardProps = {
   membership: Membership;
-  period: "monthly" | "annual";
+  period: "monthly" | "annually";
 };
 
 export const SubscriptionCard: FC<SubscriptionCardProps> = ({
