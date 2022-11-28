@@ -105,23 +105,6 @@ export const Settings = () => {
           </DropdownMenu.Portal>
         </DropdownMenu.Root>
       </div>
-      {primaryAccount && (
-        <div className="p-2">
-          <h3 className="text-lg font-bold">Primary Account</h3>
-          <p>{primaryAccount.email}</p>
-          <p>{primaryAccount.provider}</p>
-          <p>You&apos;re currently on the {user?.membership} plan.</p>
-          {user ? (
-            user.subscriptionCanceledDate ? (
-              <p>Expires at {user.paidUntil?.toDateString()}</p>
-            ) : (
-              <p>Next payment {user.paidUntil?.toDateString()}</p>
-            )
-          ) : (
-            <p>No active subscription</p>
-          )}
-        </div>
-      )}
     </div>
   );
 };

@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@agreeto/api": "workspace:*",
-    "@agreeto/auth": "workspace:*",
     "@agreeto/calendar-react": "workspace:*",
     "@agreeto/ui": "workspace:*",
     "@fullcalendar/common": "^5.11.3",
@@ -40,14 +39,12 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.6.0",
     "react-outside-click-handler": "^1.3.0",
-    "tozod": "^3.0.0",
     "trpc-chrome": "^0.1.0",
     "webext-bridge": "^5.0.5",
     "zod": "^3.18.0"
   },
   "devDependencies": {
     "@agreeto/tailwind-config": "workspace:*",
-    "@agreeto/tsconfig": "workspace:*",
     "@plasmohq/prettier-plugin-sort-imports": "3.5.2",
     "@types/chrome": "^0.0.197",
     "@types/node": "^18.11.7",
@@ -58,7 +55,7 @@
     "postcss": "^8.4.14",
     "prettier": "2.7.1",
     "tailwindcss": "^3.1.8",
-    "ts-to-zod": "^1.13.1",
+    "@agreeto/tsconfig": "workspace:*",
     "typescript": "^4.8.4"
   },
   "manifest": {
