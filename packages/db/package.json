@@ -10,8 +10,7 @@
     "db-generate": "prisma generate",
     "db-push": "prisma db push",
     "db-migrate": "prisma migrate dev",
-    "db-down": "docker compose down",
-    "typecheck": "tsc --noEmit"
+    "db-down": "docker compose down"
   },
   "dependencies": {
     "@prisma/client": "^4.5.0",
