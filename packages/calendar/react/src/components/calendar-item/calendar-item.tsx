@@ -31,9 +31,26 @@ import TimeZoneSelect from "./time-zone-select";
 import { trpc } from "../../utils/trpc";
 import { useCalendarStore, useEventStore, useTZStore } from "../../utils/store";
 import resolveConfig from "tailwindcss/resolveConfig";
+// @ts-expect-error: REVIEW (richard): I don't know how to fix this type, tried adding "paths": { "taildwind.config.js": ["./tailwind.config.js"] } to tsconfig but didn't work
+import * as tailwindConfig from "tailwind.config.js";
 
-import tailwindConfig from "./../../../tailwind.config";
 import type { EventColorUserRadix } from "@agreeto/api/types";
+import {
+  // type EventColorUserRadix as TEventColorUserRadix,
+  type EventColorDirectoryUserRadix,
+} from "@agreeto/api/types";
+
+// ++++ START: This is a workaround for the issue with the import of tailwind.config.js
+// import radixColors from "@radix-ui/colors";
+// import { z } from "zod";
+// type T = any;
+// const colorThemes: Record<
+//   TEventColorUserRadix | EventColorDirectoryUserRadix,
+//   T
+// > = Object.values(z.nativeEnum(EventColorUserRadix)).map((c: TEventColorUserRadix | EventColorDirectoryUserRadix) => ({
+//   [c]: radixColors.crimson[""],
+// }));
+// ++++++++ END: This is a workaround for the issue with the import of tailwind.config.js
 
 const fullConfig = resolveConfig({
   ...tailwindConfig,
@@ -41,7 +58,7 @@ const fullConfig = resolveConfig({
 });
 
 export const themeColors = fullConfig.theme?.colors as Record<
-  EventColorUserRadix & EventColorDirectoryUserRadix,
+  EventColorUserRadix | EventColorDirectoryUserRadix | "mauve",
   string
 >;
 
@@ -248,19 +265,14 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
 
       const backgroundColor =
         attendeeMe?.responseStatus !== EventResponseStatus.ACCEPTED
-          ? // @ts-expect-error: Make themeColors typesafe
-            eventColor[3]
-          : // @ts-expect-error: Make themeColors typesafe
-            eventColor[7];
+          ? eventColor[3]
+          : eventColor[7];
 
       const borderColor =
         attendeeMe?.responseStatus !== EventResponseStatus.ACCEPTED
-          ? // @ts-expect-error: Make themeColors typesafe
-            eventColor[7]
-          : // @ts-expect-error: Make themeColors typesafe
-            eventColor[1];
+          ? eventColor[7]
+          : eventColor[1];
 
-      // @ts-expect-error: Make themeColors typesafe
       const textColor = eventColor[11];
 
       newEvents.push({

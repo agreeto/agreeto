@@ -33,10 +33,8 @@ const SelectedAttendeeCard: React.FC<{
             className={"h-3 w-3 rounded-full"}
             style={{
               backgroundColor: color
-                ? // @ts-expect-error: possibly undefined, need to fix typesafety of themeColors object
-                  themeColors[color][7]
-                : // @ts-expect-error: possibly undefined, need to fix typesafety of themeColors object
-                  themeColors[mauve][7],
+                ? themeColors[color][7]
+                : themeColors.mauve[7],
             }}
           />
           <div className="text-xs">{email}</div>
