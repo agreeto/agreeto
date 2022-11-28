@@ -49,6 +49,11 @@ jobs:
       - name: Check formatting
         run: pnpm format:check
 
+      # This shouldn't be necessary, it should happen automatically
+      # since it's part of the pipeline and the `typecheck` depends on it
+      - name: Generate prisma
+        run: pnpm db-generate
+
       - name: Build, lint and type-check
         run: pnpm turbo build lint typecheck
 
