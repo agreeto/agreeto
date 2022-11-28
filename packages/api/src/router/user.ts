@@ -1,9 +1,13 @@
+import { getGoogleUsers } from "../external/google";
+import { router, publicProcedure, privateProcedure } from "../trpc";
+import { getMembershipFromPriceId } from "./stripe";
+import {
+  EventResponseStatus,
+  Membership,
+  StripeSubscriptionStatus,
+} from "@agreeto/db";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { router, publicProcedure, privateProcedure } from "../trpc";
-import { getGoogleUsers } from "../external/google";
-import { EventResponseStatus, Membership } from "@agreeto/db";
-import { getMembershipFromPriceId } from "./stripe";
 
 export const userRouter = router({
   // TESTING PROCEDURE
@@ -53,7 +57,10 @@ export const userRouter = router({
       });
     }
 
-    if (!["active", "trialing"].includes(subscription.status)) {
+    if (
+      StripeSubscriptionStatus.active !== subscription.status &&
+      StripeSubscriptionStatus.trialing !== subscription.status
+    ) {
       throw new TRPCError({
         code: "NOT_FOUND",
         message: "No active subscription found",
@@ -62,7 +69,7 @@ export const userRouter = router({
 
     // TODO: Parse differently when other plans are added
     const membership =
-      subscription.status === "trialing"
+      subscription.status === StripeSubscriptionStatus.trialing
         ? Membership.TRIAL
         : getMembershipFromPriceId(subscription.priceId);
 
