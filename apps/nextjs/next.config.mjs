@@ -14,16 +14,9 @@ import withTM from "next-transpile-modules";
 const config = {
   reactStrictMode: true,
   swcMinify: true,
-  // note (richard): I ran into a heap error building nextjs because of too little allocated memory
-  // the export NODE_OPTIONS=--max_old_space_size=4096 prefix made it work
-  experimental: {
-    esmExternals: false,
-  },
+  // We lint & typecheck as a separate pipeline step, so we don't need to do it here.
+  eslint: { ignoreDuringBuilds: !!process.env.CI },
+  typescript: { ignoreBuildErrors: !!process.env.CI },
 };
 
-export default withTM([
-  "@agreeto/api",
-  "@agreeto/auth",
-  "@agreeto/db",
-  "@agreeto/ui",
-])(config);
+export default withTM(["@agreeto/api", "@agreeto/auth", "@agreeto/db"])(config);

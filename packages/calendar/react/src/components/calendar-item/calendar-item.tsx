@@ -18,6 +18,10 @@ import { getTimezoneOffset } from "date-fns-tz";
 import "./calendar-item.scss";
 import type { FC } from "react";
 import { useEffect, useRef } from "react";
+import type {
+  EventColorDirectoryUserRadix,
+  EventColorUserRadix,
+} from "@agreeto/api/types";
 import { EventResponseStatus, Membership } from "@agreeto/api/types";
 import { eventMocks } from "./mock";
 import { ulid } from "ulid";
@@ -50,22 +54,10 @@ import * as tailwindConfig from "../../../tailwind.config.cjs";
 // }));
 // ++++++++ END: This is a workaround for the issue with the import of tailwind.config.js
 
-<<<<<<< HEAD
-// const fullConfig = resolveConfig({
-//   ...tailwindConfig,
-//   content: ["./src/**/*.{html,js,ts,tsx}"],
-// });
-
-// export const themeColors = fullConfig.theme?.colors as Record<
-//   EventColorUserRadix | EventColorDirectoryUserRadix | "mauve",
-//   string
-// >;
-=======
 export const themeColors = tailwindConfig.theme?.colors as Record<
   EventColorUserRadix | EventColorDirectoryUserRadix | "mauve",
   string
 >;
->>>>>>> 2cc627a6f4ff54af003c985703663c3b9c2a8f6a
 
 type Props = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
