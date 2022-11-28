@@ -1,3 +1,5 @@
+# see https://github.com/t3-oss/create-t3-turbo/blob/main/.github/workflows/ci.yml
+
 name: CI
 
 on:
