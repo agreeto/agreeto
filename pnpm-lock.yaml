@@ -21,7 +21,6 @@ importers:
   apps/extension:
     specifiers:
       '@agreeto/api': workspace:*
-      '@agreeto/auth': workspace:*
       '@agreeto/tailwind-config': workspace:*
       '@agreeto/tsconfig': workspace:*
       '@agreeto/ui': workspace:*
@@ -46,7 +45,6 @@ importers:
       '@types/react-dom': ^18.0.8
       autoprefixer: ^10.4.7
       date-fns: ^2.29.3
-      duration: link:dayjs/plugin/duration
       plasmo: 0.55.0
       postcss: ^8.4.14
       prettier: 2.7.1
@@ -59,7 +57,6 @@ importers:
       zod: ^3.18.0
     dependencies:
       '@agreeto/api': link:../../packages/api
-      '@agreeto/auth': link:../../packages/auth
       '@agreeto/ui': link:../../packages/ui
       '@fullcalendar/common': 5.11.3
       '@fullcalendar/interaction': 5.11.3
@@ -76,7 +73,6 @@ importers:
       '@trpc/react-query': 10.0.0-rc.2_gbpiwntwg3r4esrcurtf5532ta
       '@trpc/server': 10.0.0-rc.2
       date-fns: 2.29.3
-      duration: link:dayjs/plugin/duration
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-icons: 4.6.0_react@18.2.0
