@@ -1,7 +1,7 @@
 {
   "pipeline": {
     "db-generate": {
-      "cache": true
+      "cache": false
     },
     "db-push": {
       "cache": false
@@ -15,8 +15,7 @@
       "outputs": [".next/**", ".expo/**", ".plasmo/**", "build/**", "dist/**"]
     },
     "lint": {
-      "outputs": [],
-      "cache": false
+      "outputs": []
     },
     "typecheck": {
       "outputs": [],
