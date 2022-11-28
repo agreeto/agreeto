@@ -18,13 +18,13 @@ export const SettingsLayout = () => {
           Subscription
         </Link>
         <Link
-          to="/settings/settings"
+          to="/settings/signout"
           className="text-semibold px-3 h-10 flex items-center pb-[2px]"
           activeProps={{
             className: "border-b-2 border-primary pb-0 text-primary",
           }}
         >
-          Settings
+          Sign Out
         </Link>
       </div>
 

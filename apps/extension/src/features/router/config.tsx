@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-router";
 
 import { SettingsLayout } from "~pages/settings/layout";
-import { SettingsPage } from "~pages/settings/settings";
+import { SignoutPage } from "~pages/settings/signout";
 import { Subscription } from "~pages/settings/subscription";
 
 const routeConfig = createRouteConfig().createChildren((createRoute) => [
@@ -27,8 +27,8 @@ const routeConfig = createRouteConfig().createChildren((createRoute) => [
       component: Subscription,
     }),
     createRoute({
-      path: "settings",
-      component: SettingsPage,
+      path: "signout",
+      component: SignoutPage,
     }),
   ]),
 ]);
