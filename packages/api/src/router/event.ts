@@ -52,28 +52,25 @@ export const eventRouter = router({
       // Merge events
       const allEvents = [...userEvents, ...calendarEvents.flat()];
 
-      // Deduplicate allEvents based on event.title, event.startDate and event.endDate
-      const dedupedEvents = allEvents.reduce((acc, event) => {
-        const existingEvent = acc.find(
-          (e) =>
-            e.title === event.title &&
-            e.startDate?.getTime() === event.startDate?.getTime() &&
-            e.endDate?.getTime() === event.endDate?.getTime(),
-        );
-        if (existingEvent) {
-          // If the event already exists, merge the attendees
-          existingEvent.attendees = [
-            ...(existingEvent.attendees || []),
-            ...(event.attendees || []),
-          ];
-        } else {
-          // If the event doesn't exist, add it to the accumulator
-          acc.push(event);
+      // Remove duplicate events
+      const addedEvents = new Map<string | undefined, boolean>();
+      const newEvents = allEvents.filter((event) => {
+        const { id, startDate, endDate, title } = event;
+        // TODO: Find a better way for composite key
+        // This composite key is used to avoid duplicate events which have the same name and date, but a different id
+        // Note: Having different ids occur when a user with multiple accounts creates an event. The reason for this is that
+        // we cannot update non-primary calender ids only by having them attendees
+        const compositeKey = `${title},${startDate},${endDate}`;
+        // If an event with the same is added before, just skip it to avoid duplicates
+        if (addedEvents.has(compositeKey) || addedEvents.has(id)) {
+          return false;
         }
-        return acc;
-      }, [] as typeof allEvents[number][]);
+        addedEvents.set(compositeKey, true);
+        addedEvents.set(id, true);
+        return true;
+      });
 
-      return dedupedEvents;
+      return newEvents;
     }),
 
   // Confirm an Event by Id
