@@ -18,6 +18,11 @@ jobs:
   check:
     runs-on: ubuntu-latest
 
+    env:
+      NEXT_PUBLIC_EXTENSION_ID: nonce
+      NEXT_PUBLIC_OUTLOOK_ADDIN_URL: https://localhost:8082
+      NEXT_PUBLIC_PORT: 3000
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
