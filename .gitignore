@@ -32,6 +32,7 @@ build
 
 # vercel
 .vercel
+next-env.d.ts
 
 # typescript
 *.tsbuildinfo

@@ -36,6 +36,7 @@ export const userRouter = router({
       where: { id: ctx.user.id },
       include: { accounts: true },
     });
+    if (!user) throw new TRPCError({ code: "NOT_FOUND" });
     return user;
   }),
 
