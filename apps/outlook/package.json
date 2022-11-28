@@ -11,7 +11,8 @@
     "build:manifest": "sed \"s/localhost:8082/outlook-one.vercel.app/g\" src/manifest.dev.xml > public/manifest.xml",
     "lint": "eslint src",
     "validate": "pnpm exec office-addin-manifest validate ./public/manifest.xml",
-    "debug": "pnpm exec office-addin-debugging start ./dist/manifest.xml"
+    "debug": "pnpm exec office-addin-debugging start ./dist/manifest.xml",
+    "typecheck": "tsc --noEmit"
   },
   "proxy": "http://localhost:3000",
   "dependencies": {
