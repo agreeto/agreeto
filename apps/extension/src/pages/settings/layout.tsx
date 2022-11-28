@@ -7,10 +7,7 @@ export const SettingsLayout = () => {
         Settings
       </h2>
 
-      <div
-        className="flex text-gray-600 gap-2"
-        style={{ boxShadow: "inset 0 -1px 0px 0px #d6d6d6" }}
-      >
+      <div className="flex text-gray-600 gap-2 shadow-[inset_0_-1px_0_0_#d6d6d6]">
         <Link
           to="/settings/subscription"
           className="text-semibold px-3 h-10 flex items-center pb-[2px]"
