@@ -167,7 +167,6 @@ importers:
   apps/outlook:
     specifiers:
       '@agreeto/api': workspace:*
-      '@agreeto/auth': workspace:*
       '@agreeto/tailwind-config': workspace:*
       '@agreeto/tsconfig': workspace:*
       '@microsoft/office-js': ^1.1.78
@@ -192,7 +191,6 @@ importers:
       vite-plugin-mkcert: ^1.6.0
     dependencies:
       '@agreeto/api': link:../../packages/api
-      '@agreeto/auth': link:../../packages/auth
       '@microsoft/office-js': 1.1.82
       '@tanstack/react-location': 3.7.4_biqbaboplfbrettd7655fr4n2y
       '@tanstack/react-query': 4.13.4_biqbaboplfbrettd7655fr4n2y
