@@ -2,7 +2,9 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { router, publicProcedure, privateProcedure } from "../trpc";
 import { getGoogleWorkspaceUsers } from "../external/google";
+
 import { EventResponseStatus, Membership } from "@agreeto/db";
+import { isGoogleWorkspaceAccount } from "../services/service-helpers";
 
 export const userRouter = router({
   // TESTING PROCEDURE
@@ -85,15 +87,8 @@ export const userRouter = router({
       const accounts = await ctx.prisma.account.findMany({
         where: { userId: ctx.user.id },
       });
-
       const promises = accounts.flatMap((account) => {
-        // if account is not google, skip
-        if (account.provider !== "google") return [];
-        // if no email is set for this account, skip
-        if (!account.email) return [];
-        // if account is not a workspace accoount, skip
-        if (/gmail.com|googlemail.com/.test(account.email)) return [];
-
+        if (!isGoogleWorkspaceAccount(account)) return [];
         // return the Workspace Admin API promise to fetch co-workers
         return getGoogleWorkspaceUsers({
           search: input.search,

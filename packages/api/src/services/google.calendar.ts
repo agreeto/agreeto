@@ -1,5 +1,6 @@
-import { type Event, EventResponseStatus, type Attendee } from "@agreeto/db";
+import { EventResponseStatus } from "@agreeto/db";
 import { type calendar_v3, google } from "googleapis";
+
 import { type ICreateEvent, type IGetEvents, type IUpdateEvent } from "./types";
 export class GoogleCalendarService {
   private accessToken: string;
@@ -32,7 +33,7 @@ export class GoogleCalendarService {
     description,
     attendees,
     extendedProperties,
-  }: calendar_v3.Schema$Event): Partial<Event & { attendees: Attendee[] }> {
+  }: calendar_v3.Schema$Event) {
     const extractResponse = (status: string | null | undefined) => {
       return status === "accepted"
         ? EventResponseStatus.ACCEPTED
@@ -82,10 +83,13 @@ export class GoogleCalendarService {
       orderBy: "startTime",
       maxResults: 100,
       singleEvents: true,
+      ...(startDate && {
+        timeMin: startDate.toISOString(),
+      }),
+      ...(endDate && {
+        timeMax: endDate.toISOString(),
+      }),
     };
-
-    if (startDate) params.timeMin = new Date(startDate).toISOString();
-    if (endDate) params.timeMax = new Date(endDate).toISOString();
 
     // Fetch events
     const response = await this.calendarClient.events.list(params);

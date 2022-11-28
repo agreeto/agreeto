@@ -2,7 +2,9 @@ import { router, privateProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { GoogleCalendarService } from "../services/google.calendar";
-import { EventResponseStatus, type Event } from "@agreeto/db";
+import type { Account } from "@agreeto/db";
+import { EventResponseStatus } from "@agreeto/db";
+import { DirectoryUserEventSchema } from "../services/service-helpers";
 import { getCalendarService } from "../services/service-helpers";
 
 export const eventRouter = router({
@@ -246,65 +248,92 @@ export const eventRouter = router({
       z.object({
         startDate: z.date(),
         endDate: z.date(),
-        users: z
+        directoryUsers: z
           .object({
             id: z.string(),
             name: z.string(),
             surname: z.string(),
             email: z.string(),
+            // TODO (richard): restrict this to be "google" only as we don't support other providers yet as per burak @link https://agreeto.slack.com/archives/D03N3PU7B9U/p1669627377503479
             provider: z.string(),
             // events: z.array(EventValidator.partial()).optional(),
           })
+          // TODO (richard): add a length limitation: maximum 5 users (we don't support more colors rn)
           .array(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const accounts = await ctx.prisma.account.findMany({
+      // get the user's connected accounts
+      const userAccounts = await ctx.prisma.account.findMany({
         where: { userId: ctx.user.id },
       });
-      const googleAccounts = accounts.filter(
-        (account) => account.provider === "google",
-      );
-
-      const result = [...input.users].map((u) => ({
-        ...u,
-        events: [] as Partial<Event>[],
-      }));
-      const promises: Promise<void>[] = [];
-
-      input.users
-        .filter((user) => user.provider === "google")
-        .forEach((user) => {
-          googleAccounts.forEach((account) => {
-            const google = new GoogleCalendarService(
-              account.access_token,
-              account.refresh_token,
-            );
-
-            promises.push(
-              google
-                .getEvents({
-                  startDate: input.startDate,
-                  endDate: input.endDate,
-                  email: user.email,
-                })
-                .then(({ events }) => {
-                  const foundUser = result.find((r) => r.id === user.id);
-
-                  if (foundUser) {
-                    foundUser.events = events.map((e) => ({
-                      ...e,
-                      account,
-                    }));
-                  }
-                })
-                .catch((e) => console.error("Could not fetch user events", e)),
-            );
-          });
+      const result: Array<{
+        user: typeof input.directoryUsers[number] & {
+          eventColor: typeof availableColors;
+        };
+        events: Array<z.infer<typeof DirectoryUserEventSchema>>;
+      }> = [];
+      const availableColors = [
+        "green",
+        "red",
+        "blue",
+        "yellow",
+        "orange",
+      ] as const;
+      // need the index to access the color later
+      for (const [
+        directoryUsersIndex,
+        directoryUser,
+      ] of input.directoryUsers.entries()) {
+        const userAccountOnSameDomain = userAccounts.find((userAccount) => {
+          // if the userAccount doesn't have an email set, it can't query the GCal API for events
+          if (!userAccount.email) return false;
+          // if the userAccount's email is not on the same domain as the directoryUser's email, the userAccount won't be allowed to query the GCal API for events of the directoryUser.
+          if (!isDomainEqual(userAccount.email, directoryUser.email))
+            return false;
+          return true;
         });
+        if (!userAccountOnSameDomain) {
+          throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: `User ${ctx.user.id} is not authorized to see ${directoryUser.email}'s events`,
+          });
+        }
 
-      await Promise.all(promises);
+        // now, we have a directoryUser and a userAccount on the same domain to fetch the events with, so let's fetch.
+        const google = new GoogleCalendarService(
+          userAccountOnSameDomain.access_token,
+          userAccountOnSameDomain.refresh_token,
+        );
 
+        const directoryUserEvents = await google.getEvents({
+          startDate: input.startDate,
+          endDate: input.endDate,
+          email: directoryUser.email,
+        });
+        result.push({
+          user: {
+            ...directoryUser,
+            // can be undefined, shouldn't throw though because we limit the directoryUser input to max 5
+            // @ts-expect-error: not sure why this is complains about it possibly bein g a string? TODO: add zod validatoin
+            eventColor:
+              availableColors[directoryUsersIndex] || availableColors[0],
+          },
+          events: z
+            .array(DirectoryUserEventSchema)
+            .parse(directoryUserEvents.events),
+        });
+      }
       return result;
     }),
 });
+
+/**
+ * Checks if the two emails are on the same domain
+ note (richard): didn't feel like implementing something via the browser's email validation regex, may need to revisit this for more robustness (subdomains etc)
+@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#basic_validation
+*/
+const isDomainEqual = (
+  email1: NonNullable<Account["email"]>,
+  email2: NonNullable<Account["email"]>,
+) => email1.split("@")[1] === email2.split("@")[1];
