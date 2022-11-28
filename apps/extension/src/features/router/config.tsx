@@ -5,17 +5,9 @@ import {
   createRouteConfig,
 } from "@tanstack/react-router";
 
-// import { trpcApi } from "~features/trpc/api/hooks";
 import { SettingsLayout } from "~pages/settings/layout";
 import { SettingsPage } from "~pages/settings/settings";
 import { Subscription } from "~pages/settings/subscription";
-
-// Create a memory history
-export const reactLocationOptions = {
-  history: createMemoryHistory({
-    initialEntries: ["/calendar"], // Pass your initial url
-  }),
-};
 
 const routeConfig = createRouteConfig().createChildren((createRoute) => [
   createRoute({
