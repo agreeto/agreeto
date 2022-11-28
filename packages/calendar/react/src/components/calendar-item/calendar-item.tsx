@@ -36,25 +36,14 @@ import { trpc } from "../../utils/trpc";
 import { useCalendarStore, useEventStore, useTZStore } from "../../utils/store";
 import * as tailwindConfig from "../../../tailwind.config.cjs";
 
-// import type { EventColorUserRadix } from "@agreeto/api/types";
-// import {
-//   // type EventColorUserRadix as TEventColorUserRadix,
-//   type EventColorDirectoryUserRadix,
-// } from "@agreeto/api/types";
+import resolveConfig from "tailwindcss/resolveConfig";
 
-// ++++ START: This is a workaround for the issue with the import of tailwind.config.js
-// import radixColors from "@radix-ui/colors";
-// import { z } from "zod";
-// type T = any;
-// const colorThemes: Record<
-//   TEventColorUserRadix | EventColorDirectoryUserRadix,
-//   T
-// > = Object.values(z.nativeEnum(EventColorUserRadix)).map((c: TEventColorUserRadix | EventColorDirectoryUserRadix) => ({
-//   [c]: radixColors.crimson[""],
-// }));
-// ++++++++ END: This is a workaround for the issue with the import of tailwind.config.js
+const fullConfig = resolveConfig({
+  ...tailwindConfig,
+  content: ["./src/**/*.{html,js,ts,tsx}"],
+});
 
-export const themeColors = tailwindConfig.theme?.colors as Record<
+export const themeColors = fullConfig.theme?.colors as Record<
   EventColorUserRadix | EventColorDirectoryUserRadix | "mauve",
   string
 >;
@@ -248,7 +237,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
     events.forEach((event) => {
       const { id, title, startDate, endDate, account, attendees } = event;
 
-      const eventColor = "#FF0000";
+      const eventColor = themeColors[account?.eventColor];
 
       const isDeclined = attendees?.some((a) => {
         return (
@@ -301,7 +290,8 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
           start: startDate,
           end: endDate,
           // TODO: turn color into enum in Prisma
-          backgroundColor: "#FF0000",
+          // @ts-expect-error: eventColor is currently a readonly property
+          backgroundColor: themeColors[eventColor],
           textColor: "white",
           borderColor: "transparent",
           extendedProps: {

@@ -16,7 +16,7 @@ import { z } from "zod";
 import { toast } from "react-toastify";
 import { useEventStore } from "../../utils/store";
 import { BiTrash } from "react-icons/bi";
-// import { themeColors } from "../calendar-item/calendar-item";
+import { themeColors } from "../calendar-item/calendar-item";
 
 const SelectedAttendeeCard: React.FC<{
   color?: EventColorUserRadix & EventColorDirectoryUserRadix;
@@ -32,7 +32,9 @@ const SelectedAttendeeCard: React.FC<{
           <div
             className={"h-3 w-3 rounded-full"}
             style={{
-              backgroundColor: color ? "#FF0000" : "#FF0000",
+              backgroundColor: color
+                ? themeColors[color][7]
+                : themeColors.mauve[7],
             }}
           />
           <div className="text-xs">{email}</div>

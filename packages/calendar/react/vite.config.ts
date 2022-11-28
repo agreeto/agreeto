@@ -17,10 +17,5 @@ export default defineConfig({
         },
       },
     },
-    // note (richard): vite choked on importing the module.exports() from tailwind so I had to define this here and include the below two things as well
-    // see: https://github.com/tailwindlabs/tailwindcss/discussions/3646#discussioncomment-826869
-    commonjsOptions: {
-      transformMixedEsModules: true,
-    },
   },
 });
