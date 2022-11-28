@@ -7,28 +7,11 @@ import { BiInfoCircle } from "react-icons/bi";
 import { HiCheckCircle } from "react-icons/hi";
 import clsx from "clsx";
 
-// ==============================
-// CUSTOM COMPONENTS
-// ==============================
-
-// export const Body = ({ children }: { children: ReactNode }) => (
-//   <AlertDialog.Portal>
-//     <AlertDialog.Overlay className="fixed inset-0 transition-opacity bg-blackA-9 opacity-80" />
-//     <AlertDialog.Content className="fixed w-3/5 -translate-x-1/2 -translate-y-1/2 bg-white rounded-md shadow-sm l-1/2 top-1/2 left-1/2 shadow-transparent">
-//       {children}
-//     </AlertDialog.Content>
-//   </AlertDialog.Portal>
-// );
-
-// ==============================
-// More complete dialog
-// ==============================
-
-export const Root = ({ children }: { children: ReactNode }) => {
+const Root = ({ children }: { children: ReactNode }) => {
   return <AlertDialog.Root>{children}</AlertDialog.Root>;
 };
 
-export const Trigger = ({
+const Trigger = ({
   children,
   ...props
 }: { children: ReactNode } & Parameters<typeof Button>[0]) => (
@@ -37,7 +20,7 @@ export const Trigger = ({
   </AlertDialog.Trigger>
 );
 
-export const DialogBody = ({
+const Body = ({
   children,
   variant,
 }: {
@@ -68,7 +51,7 @@ export const DialogBody = ({
 // ==============================
 // Dialog's Description
 // ==============================
-export const DialogDescription = ({ children }: { children: ReactNode }) => (
+const Description = ({ children }: { children: ReactNode }) => (
   <AlertDialog.Description className="mb-2 text-sm font-light text-gray-700">
     {children}
   </AlertDialog.Description>
@@ -81,12 +64,12 @@ const Header = ({ children }: { children: ReactNode }) => (
   // REVIEW (richard): removed ml-12 and m-2 because it's not needed?
   <div className="mb-1 flex items-center gap-2 font-bold">{children}</div>
 );
-const HeaderTitle = ({ children }: { children: ReactNode }) => (
+const Title = ({ children }: { children: ReactNode }) => (
   <AlertDialog.Title className="text-base font-medium text-gray-900">
     {children}
   </AlertDialog.Title>
 );
-const HeaderIcon = ({
+const Icon = ({
   variant,
 }: {
   variant: "error" | "warning" | "info" | "success";
@@ -115,10 +98,10 @@ const HeaderIcon = ({
 // ==============================
 // Dialog's Footer Bundle
 // ==============================
-export const Footer = ({ children }: { children: ReactNode }) => (
+const Footer = ({ children }: { children: ReactNode }) => (
   <div className="flex justify-end gap-6 bg-mauve-2 p-3">{children}</div>
 );
-export const FooterAction = ({
+const Action = ({
   children,
   ...props
 }: { children: ReactNode } & Parameters<typeof Button>[0]) => (
@@ -126,7 +109,7 @@ export const FooterAction = ({
     <Button {...props}>{children}</Button>
   </AlertDialog.Action>
 );
-export const FooterCancel = ({
+const Cancel = ({
   children,
   ...props
 }: { children: ReactNode } & Parameters<typeof Button>[0]) => (
@@ -135,19 +118,41 @@ export const FooterCancel = ({
   </AlertDialog.Cancel>
 );
 
-export const Body = Object.assign(DialogBody, {
-  Header: Header,
-  HeaderIcon: HeaderIcon,
-  HeaderTitle: HeaderTitle,
-  Description: DialogDescription,
-  Footer: Footer,
-  FooterAction: FooterAction,
-  FooterCancel: FooterCancel,
-});
-
+/**
+ * @example
+ * <Dialog>
+ *   <Dialog.Trigger variant="primary">
+ *     Open Dialog
+ *   </Dialog.Trigger>
+ *   <Dialog.Body variant="info">
+ *     <Dialog.Header>
+ *       <Dialog.Icon variant="info" />
+ *       <Dialog.Title>
+ *         Dialog Title
+ *       </Dialog.Title>
+ *     </Dialog.Header>
+ *     <Dialog.Description>
+ *       Are you sure you'd like to delete this item?
+ *     </Dialog.Description>
+ *     <Dialog.Footer>
+ *       <Dialog.Cancel variant="glass">
+ *         Cancel
+ *       </Dialog.Cancel>
+ *       <Dialog.Action variant="primary">
+ *         Yes, Delete
+ *       </Dialog.Action>
+ *     </Dialog.Footer>
+ *   </Dialog.Body>
+ * </Dialog>
+ */
 export const Dialog = Object.assign(Root, {
-  Trigger: Button,
-  Title: AlertDialog.Title,
-  Description: AlertDialog.Description,
-  ActionButton: Button,
+  Trigger,
+  Title,
+  Header,
+  Icon,
+  Body,
+  Description,
+  Footer,
+  Action,
+  Cancel,
 });
