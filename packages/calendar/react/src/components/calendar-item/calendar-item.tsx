@@ -30,9 +30,7 @@ import TimeZoneSelect from "./time-zone-select";
 
 import { trpc } from "../../utils/trpc";
 import { useCalendarStore, useEventStore, useTZStore } from "../../utils/store";
-import resolveConfig from "tailwindcss/resolveConfig";
-// @ts-expect-error: REVIEW (richard): I don't know how to fix this type, tried adding "paths": { "taildwind.config.js": ["./tailwind.config.js"] } to tsconfig but didn't work
-import * as tailwindConfig from "tailwind.config.js";
+import * as tailwindConfig from "../../../tailwind.config.cjs";
 
 import type { EventColorUserRadix } from "@agreeto/api/types";
 import {
@@ -52,22 +50,19 @@ import {
 // }));
 // ++++++++ END: This is a workaround for the issue with the import of tailwind.config.js
 
-const fullConfig = resolveConfig({
-  ...tailwindConfig,
-  content: ["./src/**/*.{html,js,ts,tsx}"],
-});
-
-export const themeColors = fullConfig.theme?.colors as Record<
+export const themeColors = tailwindConfig.theme?.colors as Record<
   EventColorUserRadix | EventColorDirectoryUserRadix | "mauve",
   string
 >;
 
 type Props = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onRefSettled: (ref: any) => void;
   onPageChange?: (page: string) => void;
 };
 
 const CalendarItem: FC<Props> = ({ onRefSettled, onPageChange }) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ref = useRef<any>(null);
   const enableMock = false;
 
@@ -111,7 +106,7 @@ const CalendarItem: FC<Props> = ({ onRefSettled, onPageChange }) => {
 
   useEffect(() => {
     if (ref) onRefSettled(ref);
-  }, [ref]);
+  }, [ref, onRefSettled]);
 
   const extractEventHours = (event: EventApi) => {
     if (event.start && event.end) {
@@ -363,8 +358,8 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
           scrollTime="08:00:00"
           nowIndicator
           timeZone={primaryTimeZone}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           eventOrder={(e1: any, e2: any) => {
-            // TODO: Why doesn't FullCalendar's type match here?
             if (e1?.extendedProps?.new) {
               return 1;
             }

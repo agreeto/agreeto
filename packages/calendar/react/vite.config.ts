@@ -24,14 +24,4 @@ export default defineConfig({
       transformMixedEsModules: true,
     },
   },
-  // same tw fix
-  resolve: {
-    alias: {
-      "tailwind.config.js": path.resolve(__dirname, "tailwind.config.js"),
-    },
-  },
-  // same tw fix
-  optimizeDeps: {
-    include: ["tailwind.config.js"],
-  },
 });
