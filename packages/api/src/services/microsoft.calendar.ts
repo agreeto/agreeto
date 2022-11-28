@@ -23,13 +23,13 @@ const EXTENDED_PROP_SEARCH =
 //   "String {66f5a359-4659-4830-9070-00047ec6ac6e} Name id";
 
 export class MicrosoftCalendarService {
-  private accessToken: string;
+  // private accessToken: string;
   private refreshToken: string;
   private graphClient: Client;
   private msalClient: msal.ConfidentialClientApplication;
 
   constructor(accessToken: string, refreshToken: string) {
-    this.accessToken = accessToken;
+    // this.accessToken = accessToken;
     this.refreshToken = refreshToken;
 
     this.msalClient = new msal.ConfidentialClientApplication({
