@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@agreeto/api": "workspace:*",
-    "@agreeto/auth": "workspace:*",
     "@agreeto/calendar-core": "workspace:*",
     "@agreeto/ui": "workspace:*",
     "@fullcalendar/daygrid": "^5.11.2",
@@ -31,7 +30,6 @@
     "copy-to-clipboard": "^3.3.2",
     "date-fns": "^2.29.3",
     "date-fns-tz": "^1.3.7",
-    "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.37",
     "react": "18.2.0",
@@ -48,7 +46,6 @@
     "@agreeto/tailwind-config": "workspace:*",
     "@agreeto/tsconfig": "workspace:*",
     "@types/chrome": "^0.0.197",
-    "@types/lodash": "^4.14.182",
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",
     "@types/react-outside-click-handler": "^1.3.1",

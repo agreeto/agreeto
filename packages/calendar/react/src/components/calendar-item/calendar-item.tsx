@@ -30,8 +30,7 @@ import TimeZoneSelect from "./time-zone-select";
 
 import { trpc } from "../../utils/trpc";
 import { useCalendarStore, useEventStore, useTZStore } from "../../utils/store";
-// import resolveConfig from "tailwindcss/resolveConfig";
-// import * as tailwindConfig from "tailwind.config.js";
+import * as tailwindConfig from "../../../tailwind.config.cjs";
 
 // import type { EventColorUserRadix } from "@agreeto/api/types";
 // import {
@@ -51,6 +50,7 @@ import { useCalendarStore, useEventStore, useTZStore } from "../../utils/store";
 // }));
 // ++++++++ END: This is a workaround for the issue with the import of tailwind.config.js
 
+<<<<<<< HEAD
 // const fullConfig = resolveConfig({
 //   ...tailwindConfig,
 //   content: ["./src/**/*.{html,js,ts,tsx}"],
@@ -60,13 +60,21 @@ import { useCalendarStore, useEventStore, useTZStore } from "../../utils/store";
 //   EventColorUserRadix | EventColorDirectoryUserRadix | "mauve",
 //   string
 // >;
+=======
+export const themeColors = tailwindConfig.theme?.colors as Record<
+  EventColorUserRadix | EventColorDirectoryUserRadix | "mauve",
+  string
+>;
+>>>>>>> 2cc627a6f4ff54af003c985703663c3b9c2a8f6a
 
 type Props = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onRefSettled: (ref: any) => void;
   onPageChange?: (page: string) => void;
 };
 
 const CalendarItem: FC<Props> = ({ onRefSettled, onPageChange }) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ref = useRef<any>(null);
   const enableMock = false;
 
@@ -110,7 +118,7 @@ const CalendarItem: FC<Props> = ({ onRefSettled, onPageChange }) => {
 
   useEffect(() => {
     if (ref) onRefSettled(ref);
-  }, [ref]);
+  }, [ref, onRefSettled]);
 
   const extractEventHours = (event: EventApi) => {
     if (event.start && event.end) {
@@ -361,8 +369,8 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
           scrollTime="08:00:00"
           nowIndicator
           timeZone={primaryTimeZone}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           eventOrder={(e1: any, e2: any) => {
-            // TODO: Why doesn't FullCalendar's type match here?
             if (e1?.extendedProps?.new) {
               return 1;
             }

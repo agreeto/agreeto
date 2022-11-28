@@ -1,5 +1,4 @@
 {
-  "extends": "plasmo/templates/tsconfig.base",
   "exclude": ["node_modules", "build", ".plasmo"],
   "include": ["./**/*.ts", "./**/*.tsx", "../../packages/auth/next-auth.d.ts"],
   "compilerOptions": {
