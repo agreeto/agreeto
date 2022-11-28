@@ -273,10 +273,7 @@ export const eventRouter = router({
       }> = [];
       const directoryUserColors = z.nativeEnum(EventColorDirectoryUserRadix);
       // need the index to access the color later
-      for (const [
-        directoryUsersIndex,
-        directoryUser,
-      ] of input.directoryUsers.entries()) {
+      Object.values(input.directoryUsers).forEach((directoryUser, index) => {
         const userAccountOnSameDomain = userAccounts.find((userAccount) => {
           // if the userAccount doesn't have an email set, it can't query the GCal API for events
           if (!userAccount.email) return false;
@@ -285,6 +282,7 @@ export const eventRouter = router({
             return false;
           return true;
         });
+
         if (!userAccountOnSameDomain) {
           throw new TRPCError({
             code: "UNAUTHORIZED",
@@ -298,35 +296,36 @@ export const eventRouter = router({
           userAccountOnSameDomain.refresh_token,
         );
 
-        const directoryUserEvents = await google.getEvents({
-          startDate: input.startDate,
-          endDate: input.endDate,
-          email: directoryUser.email,
-        });
-        result.push({
-          user: {
-            ...directoryUser,
-            // can be undefined, shouldn't throw though because we limit the directoryUser input to max 5
-            eventColor:
-              // either the next color from the directoryUserColors enum or simply the first one
-              Object.values(directoryUserColors)[directoryUsersIndex] ||
-              // @ts-expect-error: not sure why this is complains about it possibly bein g a string? TODO: add zod validatoin
-              directoryUserColors[0],
-          },
-          events: z
-            .array(DirectoryUserEventSchema)
-            .parse(directoryUserEvents.events),
-        });
-      }
+        google
+          .getEvents({
+            startDate: input.startDate,
+            endDate: input.endDate,
+            email: directoryUser.email,
+          })
+          .then(({ events }) => {
+            result.push({
+              user: {
+                ...directoryUser,
+                // can be undefined, shouldn't throw though because we limit the directoryUser input to max 5
+                eventColor:
+                  // either the next color from the directoryUserColors enum or simply the first one
+                  Object.values(directoryUserColors)[index] ||
+                  // @ts-expect-error: not sure why this is complains about it possibly bein g a string? TODO: add zod validatoin
+                  directoryUserColors[0],
+              },
+              events: z.array(DirectoryUserEventSchema).parse(events),
+            });
+          });
+      });
       return result;
     }),
 });
 
 /**
  * Checks if the two emails are on the same domain
- note (richard): didn't feel like implementing something via the browser's email validation regex, may need to revisit this for more robustness (subdomains etc)
-@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#basic_validation
-*/
+ * note (richard): didn't feel like implementing something via the browser's email validation regex, may need to revisit this for more robustness (subdomains etc)
+ * @link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#basic_validation
+ **/
 const isDomainEqual = (
   email1: NonNullable<Account["email"]>,
   email2: NonNullable<Account["email"]>,
