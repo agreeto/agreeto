@@ -1,10 +1,11 @@
+import { Card } from "../../components/card";
+import { clientEnv } from "../../env/schema.mjs";
 import { Button } from "@agreeto/ui";
 import { type NextPage } from "next";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { Card } from "../../components/card";
-import { clientEnv } from "../../env/schema.mjs";
+import { ToastContainer, toast } from "react-toastify";
 
 const Success: NextPage = () => {
   const { status } = useSession();
@@ -23,8 +24,10 @@ const Success: NextPage = () => {
             // log out the apps/web using NextAuth
             router.push("/auth/success?action=signout");
           } else {
-            // TODO: add error page, or just a toast?
-            // router.push("/auth/error");
+            toast("Something went wrong. Please try again.", {
+              type: "error",
+              position: "top-center",
+            });
           }
         },
       );
@@ -43,6 +46,7 @@ const Success: NextPage = () => {
           Sign Out
         </Button>
       </Card>
+      <ToastContainer />
     </div>
   );
 };
