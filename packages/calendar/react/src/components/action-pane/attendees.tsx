@@ -16,7 +16,7 @@ import { z } from "zod";
 import { toast } from "react-toastify";
 import { useEventStore } from "../../utils/store";
 import { BiTrash } from "react-icons/bi";
-import { themeColors } from "../calendar-item/calendar-item";
+// import { themeColors } from "../calendar-item/calendar-item";
 
 const SelectedAttendeeCard: React.FC<{
   color?: EventColorUserRadix & EventColorDirectoryUserRadix;
@@ -25,16 +25,14 @@ const SelectedAttendeeCard: React.FC<{
   hideDeleteButton: boolean;
 }> = ({ color, email, deleteAttendee, hideDeleteButton }) => {
   return (
-    <div className="group flex rounded px-2 py-1 text-sm text-gray-900 hover:bg-gray-200">
-      <div className="flex w-full items-center justify-between space-x-2">
+    <div className="flex px-2 py-1 text-sm text-gray-900 rounded group hover:bg-gray-200">
+      <div className="flex items-center justify-between w-full space-x-2">
         {/* Color and email */}
         <div className="flex items-center space-x-2">
           <div
             className={"h-3 w-3 rounded-full"}
             style={{
-              backgroundColor: color
-                ? themeColors[color][7]
-                : themeColors.mauve[7],
+              backgroundColor: color ? #FF0000 : #FF0000,
             }}
           />
           <div className="text-xs">{email}</div>
@@ -44,7 +42,7 @@ const SelectedAttendeeCard: React.FC<{
         {!hideDeleteButton && (
           <button
             onClick={deleteAttendee}
-            className="w-3 cursor-pointer opacity-0 group-hover:opacity-100"
+            className="w-3 opacity-0 cursor-pointer group-hover:opacity-100"
           >
             <BiTrash className="h-full text-gray-900 hover:text-gray-600" />
           </button>
@@ -61,7 +59,7 @@ const AddUnknownAttendee: React.FC<{ text: string; clearText: () => void }> = ({
   const addUnknownAttendee = useEventStore((s) => s.addUnknownAttendee);
   return (
     <div
-      className="cursor-pointer px-3 py-1 text-xs text-gray-600 hover:bg-gray-200"
+      className="px-3 py-1 text-xs text-gray-600 cursor-pointer hover:bg-gray-200"
       onClick={() => {
         // Check if email is valid, else show error-toast
         if (!z.string().email().safeParse(text).success) {
@@ -108,7 +106,7 @@ const AttendeeOptionCard: React.FC<{
 
   return (
     <div
-      className="cursor-pointer px-3 py-1 text-xs text-gray-600 hover:bg-gray-200"
+      className="px-3 py-1 text-xs text-gray-600 cursor-pointer hover:bg-gray-200"
       key={user.id}
       onClick={() => {
         addAttendee(user);
@@ -156,7 +154,7 @@ export const Attendees: React.FC<{
           {!eventGroup?.isSelectionDone ? "Add attendees" : "Attendees"}
         </span>
       </div>
-      <div className="max-h-36 space-y-1 overflow-auto py-1">
+      <div className="py-1 space-y-1 overflow-auto max-h-36">
         {/* Selected attendees */}
         {attendees.map((attendee) => (
           <SelectedAttendeeCard
@@ -214,7 +212,7 @@ export const Attendees: React.FC<{
               <div>
                 <label
                   onClick={() => isFree && setShowProTooltip(true)}
-                  className="relative flex h-8 w-full items-center justify-end rounded-sm px-1"
+                  className="relative flex items-center justify-end w-full h-8 px-1 rounded-sm"
                 >
                   <DebouncedInput
                     className={clsx(
@@ -230,11 +228,11 @@ export const Attendees: React.FC<{
                     value={attendeeText}
                   />
                   {/** Icon inside input field */}
-                  <div className="absolute mr-2 h-4 w-4">
+                  <div className="absolute w-4 h-4 mr-2">
                     {isLoadingUsers ? (
                       <Spinner />
                     ) : (
-                      <BiSearch className="h-4 w-4" />
+                      <BiSearch className="w-4 h-4" />
                     )}
                   </div>
                 </label>
@@ -250,7 +248,7 @@ export const Attendees: React.FC<{
                   This feature is part of the Pro Plan
                 </div>
                 <div
-                  className="mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border border-primary text-primary"
+                  className="flex items-center justify-center w-full h-8 mt-8 border rounded cursor-pointer border-primary text-primary"
                   onClick={() => onPageChange?.("settings")}
                 >
                   Upgrade
@@ -267,7 +265,7 @@ export const Attendees: React.FC<{
           {Boolean(isAttendeePopupOpen && directoryUsers) && (
             <div
               id="attendeePopup"
-              className="absolute z-10 mt-1 w-full rounded bg-white py-1 shadow-xl"
+              className="absolute z-10 w-full py-1 mt-1 bg-white rounded shadow-xl"
             >
               {attendeeText && (
                 <AddUnknownAttendee

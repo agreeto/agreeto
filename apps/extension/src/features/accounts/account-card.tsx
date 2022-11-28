@@ -6,21 +6,21 @@ import * as Tooltip from "@radix-ui/react-tooltip";
 import type { FC } from "react";
 import { AiOutlineMore } from "react-icons/ai";
 import { HiCheckCircle } from "react-icons/hi";
-import resolveConfig from "tailwindcss/resolveConfig";
+// import resolveConfig from "tailwindcss/resolveConfig";
 
 import { trpcApi } from "~features/trpc/api/hooks";
 
-import tailwindConfig from "./../../../tailwind.config";
+// import tailwindConfig from "./../../../tailwind.config";
 
-const fullConfig = resolveConfig({
-  ...tailwindConfig,
-  content: ["./src/**/*.{html,js,ts,tsx}"],
-});
+// const fullConfig = resolveConfig({
+//   ...tailwindConfig,
+//   content: ["./src/**/*.{html,js,ts,tsx}"],
+// });
 
-export const themeColors = fullConfig.theme?.colors as Record<
-  EventColorUserRadix & string,
-  string
->;
+// export const themeColors = fullConfig.theme?.colors as Record<
+//   EventColorUserRadix & string,
+//   string
+// >;
 
 type Account = RouterOutputs["user"]["myAccounts"]["accounts"][number];
 
@@ -50,8 +50,8 @@ const AccountCard: FC<{
           <div
             className="self-center w-10 h-10 leading-10 text-center rounded-full"
             style={{
-              backgroundColor: themeColors?.[account.eventColor][7],
-              color: themeColors?.[account.eventColor][11],
+              backgroundColor: #FF0000,
+              color: #FF0000,
             }}
           >
             {initials}
@@ -105,14 +105,14 @@ const AccountCard: FC<{
                           })
                         }
                         style={{
-                          backgroundColor: themeColors[eventColor][7],
-                          borderColor: themeColors[eventColor][11],
+                          backgroundColor: #FF0000,
+                          borderColor: #FF0000,
                         }}
                       >
                         <RadioGroup.Indicator asChild>
                           <HiCheckCircle
                             className="w-3.5 h-3.5 absolute bottom-[2px] right-[2px]"
-                            style={{ fill: themeColors[eventColor][11] }}
+                            style={{ fill: #FF0000 }}
                           />
                         </RadioGroup.Indicator>
                       </RadioGroup.Item>

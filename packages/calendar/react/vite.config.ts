@@ -20,18 +20,18 @@ export default defineConfig({
     },
     // note (richard): vite choked on importing the module.exports() from tailwind so I had to define this here and include the below two things as well
     // see: https://github.com/tailwindlabs/tailwindcss/discussions/3646#discussioncomment-826869
-    commonjsOptions: {
-      transformMixedEsModules: true,
-    },
+    // commonjsOptions: {
+    //   transformMixedEsModules: true,
+    // },
   },
   // same tw fix
-  resolve: {
-    alias: {
-      "tailwind.config.js": path.resolve(__dirname, "tailwind.config.js"),
-    },
-  },
+  // resolve: {
+  //   alias: {
+  //     "tailwind.config.js": path.resolve(__dirname, "tailwind.config.js"),
+  //   },
+  // },
   // same tw fix
-  optimizeDeps: {
-    include: ["tailwind.config.js"],
-  },
+  // optimizeDeps: {
+  //   include: ["tailwind.config.js"],
+  // },
 });

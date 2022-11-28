@@ -30,15 +30,15 @@ import TimeZoneSelect from "./time-zone-select";
 
 import { trpc } from "../../utils/trpc";
 import { useCalendarStore, useEventStore, useTZStore } from "../../utils/store";
-import resolveConfig from "tailwindcss/resolveConfig";
-// @ts-expect-error: REVIEW (richard): I don't know how to fix this type, tried adding "paths": { "taildwind.config.js": ["./tailwind.config.js"] } to tsconfig but didn't work
-import * as tailwindConfig from "tailwind.config.js";
+// import resolveConfig from "tailwindcss/resolveConfig";
+// // @ts-expect-error: REVIEW (richard): I don't know how to fix this type, tried adding "paths": { "taildwind.config.js": ["./tailwind.config.js"] } to tsconfig but didn't work
+// import * as tailwindConfig from "tailwind.config.js";
 
-import type { EventColorUserRadix } from "@agreeto/api/types";
-import {
-  // type EventColorUserRadix as TEventColorUserRadix,
-  type EventColorDirectoryUserRadix,
-} from "@agreeto/api/types";
+// import type { EventColorUserRadix } from "@agreeto/api/types";
+// import {
+//   // type EventColorUserRadix as TEventColorUserRadix,
+//   type EventColorDirectoryUserRadix,
+// } from "@agreeto/api/types";
 
 // ++++ START: This is a workaround for the issue with the import of tailwind.config.js
 // import radixColors from "@radix-ui/colors";
@@ -52,15 +52,15 @@ import {
 // }));
 // ++++++++ END: This is a workaround for the issue with the import of tailwind.config.js
 
-const fullConfig = resolveConfig({
-  ...tailwindConfig,
-  content: ["./src/**/*.{html,js,ts,tsx}"],
-});
+// const fullConfig = resolveConfig({
+//   ...tailwindConfig,
+//   content: ["./src/**/*.{html,js,ts,tsx}"],
+// });
 
-export const themeColors = fullConfig.theme?.colors as Record<
-  EventColorUserRadix | EventColorDirectoryUserRadix | "mauve",
-  string
->;
+// export const themeColors = fullConfig.theme?.colors as Record<
+//   EventColorUserRadix | EventColorDirectoryUserRadix | "mauve",
+//   string
+// >;
 
 type Props = {
   onRefSettled: (ref: any) => void;
@@ -249,7 +249,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
     events.forEach((event) => {
       const { id, title, startDate, endDate, account, attendees } = event;
 
-      const eventColor = themeColors[account?.eventColor];
+      const eventColor = #FF0000;
 
       const isDeclined = attendees?.some((a) => {
         return (
@@ -303,7 +303,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
           end: endDate,
           // TODO: turn color into enum in Prisma
           // @ts-expect-error: eventColor is currently a readonly property
-          backgroundColor: themeColors[eventColor],
+          backgroundColor: #FF0000,
           textColor: "white",
           borderColor: "transparent",
           extendedProps: {
@@ -402,7 +402,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
 
       {/* Timezone title */}
       <div
-        className="absolute top-7 flex justify-around"
+        className="absolute flex justify-around top-7"
         style={{
           width: timeZones.length === 1 ? "64px" : "120px",
           left: timeZones.length === 1 ? "-14px" : "-8px",
