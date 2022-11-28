@@ -50,7 +50,7 @@ jobs:
         run: pnpm format:check
 
       - name: Build, lint and type-check
-        run: pnpm turbo build lint type-check
+        run: pnpm turbo build lint typecheck
 
       # TODO: Maybe add manypkg later
       # - name: Check workspaces
