@@ -14,10 +14,9 @@ import withTM from "next-transpile-modules";
 const config = {
   reactStrictMode: true,
   swcMinify: true,
-  eslint: {
-    // We lint as a separate pipeline step, so we don't need to do it here.
-    ignoreDuringBuilds: !!process.env.CI,
-  },
+  // We lint & typecheck as a separate pipeline step, so we don't need to do it here.
+  eslint: { ignoreDuringBuilds: !!process.env.CI },
+  typescript: { ignoreBuildErrors: !!process.env.CI }
 };
 
 export default withTM([
