@@ -15,6 +15,7 @@ const config = {
   reactStrictMode: true,
   swcMinify: true,
   eslint: {
+    // We lint as a separate pipeline step, so we don't need to do it here.
     ignoreDuringBuilds: !!process.env.CI,
   },
 };
