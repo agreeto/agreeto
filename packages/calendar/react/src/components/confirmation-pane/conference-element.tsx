@@ -1,6 +1,8 @@
 import React from "react";
 import { type RouterOutputs } from "@agreeto/api";
 import { HiCheckCircle } from "react-icons/hi";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore - plasmo seems to care about this even if it shouldn't
 import googleMeetIcon from "../../assets/google-meet.svg";
 import { SiMicrosoftteams } from "react-icons/si";
 

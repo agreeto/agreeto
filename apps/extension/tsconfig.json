@@ -9,6 +9,7 @@
     "baseUrl": ".",
     "skipLibCheck": true,
     "strict": true,
+    "importsNotUsedAsValues": "preserve",
     "declaration": false,
     "declarationMap": false
   }
