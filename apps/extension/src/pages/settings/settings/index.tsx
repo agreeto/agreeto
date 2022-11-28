@@ -1,14 +1,11 @@
 import { Button } from "@agreeto/ui";
 
+import { signOut } from "~features/auth/sign-out";
+
 export const SettingsPage = () => {
   return (
     <div className="w-full">
-      <Button
-        className="w-32"
-        onClick={() => {
-          window.open(`${process.env.PLASMO_PUBLIC_WEB_URL}/auth/signout`);
-        }}
-      >
+      <Button className="w-32" onClick={signOut}>
         Sign Out
       </Button>
     </div>
