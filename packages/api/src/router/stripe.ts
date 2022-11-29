@@ -258,7 +258,6 @@ export const stripeRouter = router({
         const { object } = event.data;
         const { id } = object as Stripe.Customer;
 
-        console.log(event);
         // TODO: Prob make stripeCustomerId unique
         await ctx.prisma.user.updateMany({
           where: { stripeCustomerId: id },
