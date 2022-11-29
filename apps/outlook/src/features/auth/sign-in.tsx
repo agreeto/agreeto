@@ -13,10 +13,10 @@ export const signIn = () => {
 
 export const SignIn = () => {
   return (
-    <div className="grid w-full h-full space-y-2 place-content-center">
+    <div className="grid h-full w-full place-content-center space-y-2">
       <h1 className="text-2xl font-medium">Sign in to use the extension.</h1>
       <button
-        className="p-4 font-medium text-white bg-indigo-600 border-2 border-indigo-700 rounded-lg hover:bg-indigo-700"
+        className="rounded-lg border-2 border-indigo-700 bg-indigo-600 p-4 font-medium text-white hover:bg-indigo-700"
         onClick={signIn}
       >
         Sign In

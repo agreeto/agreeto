@@ -9,15 +9,19 @@
     "db-up": "docker compose up -d",
     "db-generate": "prisma generate",
     "db-push": "prisma db push",
-    "db-down": "docker compose down"
+    "db-migrate": "prisma migrate dev",
+    "db-down": "docker compose down",
+    "db-reset": "prisma db push --force-reset"
   },
   "dependencies": {
-    "@prisma/client": "^4.5.0"
+    "@prisma/client": "^4.5.0",
+    "@prisma/generator-helper": "^4.6.1",
+    "tsx": "^3.12.1"
   },
   "devDependencies": {
     "@agreeto/tsconfig": "workspace:*",
     "@types/node": "^18.11.7",
-    "prisma": "^4.5.0",
+    "prisma": "^4.6.1",
     "typescript": "^4.8.4"
   }
 }

@@ -1,7 +1,7 @@
-import React from "react"
+import React from "react";
 
-import { trpcApi } from "~features/trpc/api/hooks"
-import { storage } from "~features/trpc/chrome/storage"
+import { trpcApi } from "~features/trpc/api/hooks";
+import { storage } from "~features/trpc/chrome/storage";
 
 /**
  * Custom hook to get the accessToken from storage
@@ -9,27 +9,28 @@ import { storage } from "~features/trpc/chrome/storage"
  * @returns boolean whether the token is valid or not
  */
 export const useIsAuthed = () => {
-  const [isAuthed, setIsAuthed] = React.useState(false)
-  const [isLoading, setIsLoading] = React.useState(true)
+  const [isAuthed, setIsAuthed] = React.useState(false);
+  const [isAuthenticating, setisAuthenticating] = React.useState(true);
 
   const validateToken = trpcApi.session.validate.useMutation({
     onSuccess() {
-      setIsAuthed(true)
-      setIsLoading(false)
+      setIsAuthed(true);
     },
     onSettled() {
-      setIsLoading(false)
-    }
-  })
+      setisAuthenticating(false);
+    },
+    onError() {
+      setIsAuthed(false);
+    },
+  });
 
   // Validate the token on server
   React.useEffect(() => {
     storage.get("accessToken").then((token) => {
-      console.log(token)
-      validateToken.mutate({ token })
-    })
+      validateToken.mutate({ token });
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
 
-  return { isAuthed, isLoading }
-}
+  return { isAuthed, isAuthenticating };
+};

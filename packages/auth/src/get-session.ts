@@ -15,12 +15,12 @@ export const getServerSession = async (
         req: GetServerSidePropsContext["req"];
         res: GetServerSidePropsContext["res"];
       }
-    | { req: NextApiRequest; res: NextApiResponse }
+    | { req: NextApiRequest; res: NextApiResponse },
 ) => {
   const session = await unstable_getServerSession(
     ctx.req,
     ctx.res,
-    authOptions
+    authOptions,
   );
   if (session) {
     return session;
@@ -30,6 +30,7 @@ export const getServerSession = async (
   if (!sessionToken?.startsWith("Bearer ")) {
     return null;
   }
+
   const dbSession = await prisma.session.findUnique({
     where: {
       sessionToken: sessionToken.replace("Bearer ", ""),
@@ -41,6 +42,8 @@ export const getServerSession = async (
           email: true,
           name: true,
           image: true,
+          membership: true,
+          hasTrialed: true,
         },
       },
     },

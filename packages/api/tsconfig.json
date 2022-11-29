@@ -1,9 +1,7 @@
 {
   "extends": "@agreeto/tsconfig/test.json",
-  "include": [
-    "node_modules/@agreeto/auth/next-auth.d.ts",
-    "src",
-    "index.ts",
-    "transformer.ts"
-  ]
+  "compilerOptions": {
+    "target": "es2017"
+  },
+  "include": ["../auth/next-auth.d.ts", "src", "index.ts", "transformer.ts"]
 }

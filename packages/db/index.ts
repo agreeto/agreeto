@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 declare global {
   // allow global `var` declarations
@@ -6,11 +6,13 @@ declare global {
   var prisma: PrismaClient | undefined;
 }
 
+const LOG = false;
+
 export const prisma =
   global.prisma ||
   new PrismaClient({
     log:
-      process.env.NODE_ENV === "development"
+      LOG && process.env.NODE_ENV === "development"
         ? ["query", "error", "warn"]
         : ["error"],
   });
@@ -19,4 +21,6 @@ if (process.env.NODE_ENV !== "production") {
   global.prisma = prisma;
 }
 
-export type { User } from "@prisma/client";
+export type Prisma = typeof prisma;
+
+export * from "@prisma/client";

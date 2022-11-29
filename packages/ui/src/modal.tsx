@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import React from "react";
 
 type Props = {
@@ -47,18 +48,18 @@ export const Modal: React.FC<Props> = ({
     >
       <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
 
-      <div className="fixed z-10 inset-0 overflow-y-auto">
+      <div className="fixed inset-0 z-10 overflow-y-auto">
         <div
           id="agreeto-modal"
-          className="flex items-end sm:items-center justify-center min-h-full p-4 text-center sm:p-0"
+          className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0"
         >
-          <div className="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full">
+          <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               {/* Close icon */}
               {closeIconButton && (
                 <div className="flex justify-end">
                   <div
-                    className="cursor-pointer font-semibold bg-[#D90026] w-5 h-5 rounded-full text-white flex items-center justify-center text-xs"
+                    className="flex h-5 w-5 cursor-pointer items-center justify-center rounded-full bg-[#D90026] text-xs font-semibold text-white"
                     onClick={closeIconButton.onClick}
                   >
                     X
@@ -69,7 +70,7 @@ export const Modal: React.FC<Props> = ({
               {/* Body */}
               {customBody || (
                 <div className="sm:flex sm:items-start">
-                  <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                  <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
                     <svg
                       className="h-6 w-6 text-red-600"
                       xmlns="http://www.w3.org/2000/svg"
@@ -88,7 +89,7 @@ export const Modal: React.FC<Props> = ({
                   </div>
                   <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                     <h3
-                      className="text-lg leading-6 font-medium text-gray-900"
+                      className="text-lg font-medium leading-6 text-gray-900"
                       id="modal-title"
                     >
                       {title}
@@ -103,14 +104,22 @@ export const Modal: React.FC<Props> = ({
 
             {/* Footer */}
             {Boolean(primaryButton || cancelButton) && (
-              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+              <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                 {primaryButton && (
+                  // TODO: use button from ui lib
                   <button
                     onClick={primaryButton.onClick}
                     disabled={primaryButton.disabled}
-                    className={`button ml-3 ${
-                      primaryButton.type === "danger" ? "bg-red-600" : ""
-                    } ${primaryButton.className || ""}`}
+                    className={clsx(
+                      "mt-3 ml-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm",
+                      {
+                        "bg-red-600 hover:bg-red-500":
+                          primaryButton.type === "danger",
+                        "bg-primary hover:bg-primary/80":
+                          primaryButton.type === "primary",
+                      },
+                      primaryButton.className,
+                    )}
                   >
                     {primaryButton.text}
                   </button>
@@ -119,7 +128,7 @@ export const Modal: React.FC<Props> = ({
                   <button
                     onClick={cancelButton.onClick}
                     disabled={cancelButton.disabled}
-                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                    className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                   >
                     {cancelButton.text}
                   </button>

@@ -1,1 +1,8 @@
-module.exports = require("@agreeto/tailwind-config/postcss")
+// FIXME: I don't think this type is correct
+/** @type {import("postcss").ProcessOptions} */
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};

@@ -4,21 +4,23 @@
   "version": "0.0.0",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
-  "typings": "./dist/index.d.ts",
-  "files": [
-    "dist/**"
-  ],
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build:ui": "tsup",
     "build:tw": "tailwind -i ./src/styles.css -o ./dist/styles.css --minify",
-    "build": "run-p build:*",
+    "build": "run-s build:ui build:tw",
     "dev:ui": "tsup --watch",
     "dev:tw": "tailwind -i ./src/styles.css -o ./dist/styles.css --watch",
     "dev": "run-p dev:*",
     "lint": "eslint src"
   },
   "dependencies": {
-    "react-dom": "18.2.0"
+    "@radix-ui/react-alert-dialog": "^1.0.2",
+    "@radix-ui/react-dropdown-menu": "^1.0.0",
+    "@radix-ui/react-tooltip": "^1.0.2",
+    "clsx": "^1.2.1",
+    "react-dom": "18.2.0",
+    "react-icons": "^4.6.0"
   },
   "devDependencies": {
     "@agreeto/tailwind-config": "workspace:*",
@@ -29,6 +31,7 @@
     "eslint": "^8.26.0",
     "eslint-config-agreeto": "workspace:*",
     "npm-run-all": "^4.1.5",
+    "postcss": "^8.4.14",
     "react": "18.2.0",
     "tailwindcss": "^3.1.8",
     "tsup": "^6.4.0",

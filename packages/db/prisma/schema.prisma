@@ -5,37 +5,69 @@ generator client {
     provider = "prisma-client-js"
 }
 
+generator enums {
+    provider = "tsx ./prisma/enum-generator"
+}
+
 datasource db {
     provider = "postgresql"
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id      String @id @default(cuid())
-    title   String
-    content String
-    userId  String
-    user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
+// ======================================
+// Start Mostly Next-Auth.js
+// ======================================
 model Account {
-    id                String  @id @default(cuid())
-    userId            String
-    type              String
+    id                String              @id @default(cuid())
+    // Email is optional cause it's not set at login, but with a custom event
+    // Meaning it is null initially, but should always be set after the first login
+    email             String?
     provider          String
+    type              String
     providerAccountId String
-    refresh_token     String? @db.Text
-    access_token      String? @db.Text
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String? @db.Text
+    refresh_token     String              @db.Text
+    access_token      String              @db.Text
+    expires_at        Int
+    token_type        String
+    scope             String
+    id_token          String?             @db.Text
     session_state     String?
     ext_expires_in    Int?
+    eventGroups       EventGroup[]
+    events            Event[]
+    eventColor        EventColorUserRadix @default(value: violet)
 
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @default(now()) @updatedAt
+    // one user has many accounts
+    userId      String
+    user        User     @relation("UserToAccountMany", fields: [userId], references: [id], onDelete: Cascade)
+    // one user has one primaryAccount as the organiser of events; optional cause it's set with a custom events.linkAccount hook
+    userPrimary User?    @relation("UserToAccountPrimary")
 
     @@unique([provider, providerAccountId])
+}
+
+// ============================================
+// The allowed colors for the account's event
+// as defined by radix-colors
+// ============================================
+enum EventColorUserRadix {
+    crimson
+    lime
+    yellow
+    sky
+    violet
+
+    @@map("EventColorUserRadix")
+}
+
+enum EventColorDirectoryUserRadix {
+    orange
+    red
+    pink
+    tomato
+    brown
 }
 
 model Session {
@@ -47,14 +79,34 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    posts         Post[]
+    id                       String          @id @default(cuid())
+    name                     String?
+    email                    String?         @unique
+    emailVerified            DateTime?
+    image                    String?
+    sessions                 Session[]
+    preference               Preference?
+    // ================
+    // Stripe stuff
+    // ================
+    membership               Membership      @default(FREE)
+    paidUntil                Int? // in milliseconds
+    stripeCustomerId         String?
+    stripePlanId             String?
+    subscriptionCanceledDate Int?
+    payments                 Invoice[]
+    hasTrialed               Boolean         @default(false)
+    stripeCustomer           StripeCustomer? @relation(fields: [stripeCustomerId], references: [id])
+    // ================
+    // Stripe stuff
+    // ================
+    createdAt                DateTime        @default(now())
+    updatedAt                DateTime        @default(now()) @updatedAt
+    // one user has many accounts
+    accounts                 Account[]       @relation("UserToAccountMany")
+    // one user has one primaryAccount as the organiser of events; optional cause it's set with a custom events.linkAccount hook
+    accountPrimaryId         String?         @unique
+    accountPrimary           Account?        @relation("UserToAccountPrimary", fields: [accountPrimaryId], references: [id])
 }
 
 model VerificationToken {
@@ -64,3 +116,206 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
+
+// ======================================
+// End Mostly Next-Auth.js
+// ======================================
+
+// ======================================
+// Start Enums
+// ======================================
+
+enum Language {
+    EN
+    DE
+    IT
+    FR
+    ES
+}
+
+enum EventCalendarType {
+    BLOCKER
+}
+
+enum EventResponseStatus {
+    ACCEPTED
+    DECLINED
+    NEEDS_ACTION
+    TENTATIVE
+}
+
+enum Membership {
+    FREE
+    TRIAL
+    PRO
+    PREMIUM
+}
+
+// ======================================
+// End Enums
+// ======================================
+
+// ======================================
+// Start AgreeTo Specifics
+// ======================================
+
+model Preference {
+    id             String   @id @default(cuid())
+    userId         String   @unique
+    formatLanguage Language @default(EN)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    user User @relation(fields: [userId], references: [id])
+}
+
+model EventGroup {
+    id              String  @id @default(cuid())
+    userId          String
+    accountId       String
+    title           String
+    appointmentUrl  String?
+    events          Event[]
+    createBlocker   Boolean @default(false)
+    isSelectionDone Boolean @default(false)
+
+    deletedAt DateTime?
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @default(now()) @updatedAt
+
+    account Account @relation(fields: [accountId], references: [id])
+}
+
+model Event {
+    id              String            @id @default(cuid())
+    userId          String
+    providerEventId String?
+    eventGroupId    String
+    accountId       String
+    title           String
+    location        String?
+    description     String            @default("")
+    attendees       Attendee[]
+    calendarType    EventCalendarType @default(BLOCKER)
+    startDate       DateTime
+    endDate         DateTime
+    isAgreeToEvent  Boolean           @default(true)
+    isSelected      Boolean           @default(false)
+    hasConference   Boolean           @default(false)
+
+    deletedAt DateTime?
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @default(now()) @updatedAt
+
+    eventGroup EventGroup @relation(fields: [eventGroupId], references: [id])
+    account    Account    @relation(fields: [accountId], references: [id])
+
+    @@index([eventGroupId])
+}
+
+model Attendee {
+    id             String              @id @default(cuid())
+    eventId        String?
+    email          String
+    name           String
+    surname        String
+    provider       String
+    responseStatus EventResponseStatus
+    color          String?
+
+    event Event? @relation(fields: [eventId], references: [id])
+}
+
+// ======================================
+// End AgreeTo Specifics
+// ======================================
+
+// ======================================
+// Stripe Integration
+// ======================================
+
+enum StripeSubscriptionStatus {
+    incomplete
+    incomplete_expired
+    trialing
+    active
+    past_due
+    canceled
+    unpaid
+}
+
+model StripeEvent {
+    id               String    @id @unique
+    api_version      String?
+    data             Json
+    request          Json?
+    type             String
+    object           String
+    account          String?
+    created          DateTime
+    livemode         Boolean
+    pending_webhooks Int
+    invoice          Invoice[]
+}
+
+model StripeCustomer {
+    id            String               @id @unique
+    name          String?
+    email         String?
+    phone         String?
+    address       Json?
+    balance       Int
+    description   String?
+    created       DateTime
+    currency      String?
+    delinquent    Boolean
+    livemode      Boolean
+    metadata      Json?
+    subscriptions StripeSubscription[]
+    user          User[]
+    invoice       Invoice[]
+}
+
+model StripeSubscription {
+    id                   String                   @id @unique
+    cancel_at_period_end Boolean
+    collection_method    String?
+    livemode             Boolean
+    metadata             Json?
+    start_date           DateTime?
+    status               StripeSubscriptionStatus
+    stripeCustomer       StripeCustomer?          @relation(fields: [stripeCustomerId], references: [id])
+    stripeCustomerId     String?
+    invoices             Invoice[]
+    priceId              String
+
+    current_period_start DateTime
+    current_period_end   DateTime
+    created              DateTime
+    canceled_at          DateTime?
+    ended_at             DateTime?
+    trial_end            DateTime?
+    trial_start          DateTime?
+}
+
+model Invoice {
+    id                   String     @id @default(cuid())
+    email                String
+    userId               String
+    stripeEventId        String
+    stripeSubscriptionId String
+    stripeCustomerId     String
+    membershipPlan       String
+    membership           Membership
+    created              DateTime
+
+    user         User               @relation(fields: [userId], references: [id])
+    event        StripeEvent        @relation(fields: [stripeEventId], references: [id])
+    subscription StripeSubscription @relation(fields: [stripeSubscriptionId], references: [id])
+    customer     StripeCustomer     @relation(fields: [stripeCustomerId], references: [id])
+}
+
+// ======================================
+// End Stripe Integration
+// ======================================

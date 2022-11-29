@@ -6,5 +6,5 @@ export const openDialog = (url: string) =>
       width: 20,
       promptBeforeOpen: false,
     },
-    (res) => console.log(res)
+    (res) => console.log(res),
   );

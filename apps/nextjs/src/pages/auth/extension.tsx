@@ -1,69 +1,92 @@
 import {
-  type GetServerSidePropsContext,
+  type GetServerSideProps,
   type InferGetServerSidePropsType,
   type NextPage,
 } from "next";
 import { getToken } from "next-auth/jwt";
+import { Spinner } from "@agreeto/ui";
 
-// Router can by used in useEffect only (else useRouter instead) - see: https://github.com/vercel/next.js/issues/18127#issuecomment-988959843
-import Router from "next/router.js";
 import { useEffect, useState } from "react";
 import { env as clientEnv } from "../../env/client.mjs";
+import { Card } from "../../components/card";
 
 const Extension: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ accessToken }) => {
-  const [successExtension, setSuccessExtension] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isError, setIsError] = useState(false);
   const [isLoadingExtension, setIsLoadingExtension] = useState(false);
-  // const session = useSession();
 
   /**
-   * This effect does 3 thigns:
-   * 1. if nextauth is authenticated, send the accessToken to our extension
-   * 2. Update loading states while doing this do display them to the user in render
-   * 3. upon completion of extension messasging, redirect to success/error
+   * This effect sends the accessToken to the extension,
+   * awaits the response, and sets the state accordingly.
    */
   useEffect(() => {
-    // if (session.status !== "authenticated") return;
     if (!accessToken) return;
     setIsLoadingExtension(true);
+
     chrome.runtime.sendMessage(
       clientEnv.NEXT_PUBLIC_EXTENSION_ID,
-      { accessToken: accessToken },
-      (response) => {
-        setSuccessExtension(() => response);
-        setIsLoadingExtension(() => false);
-        if (response.success) {
-          Router.push("/auth/success");
+      { action: "signin", accessToken },
+      (res) => {
+        setIsLoadingExtension(false);
+        if (res.success) {
+          setIsSuccess(true);
+          setTimeout(() => {
+            close();
+          }, 2000);
         } else {
-          Router.push("/auth/error");
+          setIsError(true);
         }
-      }
+      },
     );
   }, [accessToken]);
 
-  /**
-   * 1. Display UI while checking the session
-   */
-  // this shouldn't happen?
-  if (!accessToken) return <div>Error! Something went wrong.</div>;
-
-  // -- nextauth is now authenticated 👇 --
-
-  /**
-   * 2. Display UI while messaging extension
-   */
-  // let's wait for our extension to respond successfully about our stored token
-  if (isLoadingExtension) return <div>Updating your extension...</div>;
-  // shit, the extension responded badly. :( and now?
-  if (!successExtension)
-    return <div>Error! Something went wrong at the last mile. </div>;
-  // ✅ successfully logged-in!
-  return <div>Successfully signed in!</div>;
+  return (
+    <div className="flex h-screen items-center justify-center">
+      <Card disclaimer="This page will close automatically">
+        {isLoadingExtension ? (
+          // We're still loading the response from the extension
+          <div>
+            <div className="h-12">
+              <Spinner />
+            </div>
+            <span className="text-gray-600">Verifying...</span>
+          </div>
+        ) : isSuccess ? (
+          // The extension responded with success
+          <div>
+            <p className="text-xl font-semibold text-green-600">
+              You are successfully logged in!
+            </p>
+            <p className="text-lg text-gray-600">
+              You can open your extension now.
+            </p>
+          </div>
+        ) : isError ? (
+          // The extension responded with an error
+          <div>
+            <p className="text-xl font-semibold text-red-600">
+              Something went wrong!
+            </p>
+            <p className="text-lg text-gray-600">Please try again.</p>
+          </div>
+        ) : (
+          // User came here without an accessToken
+          <div>
+            <p className="text-2xl text-gray-600">
+              Seems like you reached this page by mistake.
+            </p>
+          </div>
+        )}
+      </Card>
+    </div>
+  );
 };
 
-export async function getServerSideProps({ req }: GetServerSidePropsContext) {
-  /** A bit weird that we're calling a JWT function when using session strategy,
+export const getServerSideProps: GetServerSideProps = async ({ req }) => {
+  /**
+   * A bit weird that we're calling a JWT function when using session strategy,
    * but seems to work. Otherwise we'd need a db call to check if the session exists?
    */
   const sessionToken = await getToken({ req, raw: true });
@@ -73,6 +96,6 @@ export async function getServerSideProps({ req }: GetServerSidePropsContext) {
       accessToken: sessionToken,
     },
   };
-}
+};
 
 export default Extension;

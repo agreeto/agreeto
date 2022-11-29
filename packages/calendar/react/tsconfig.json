@@ -1,0 +1,13 @@
+{
+  "extends": "@agreeto/tsconfig/test.json",
+  "include": [
+    "../../auth/next-auth.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "vite.config.ts"
+  ],
+  "exclude": ["dist", "build"],
+  "compilerOptions": {
+    "types": ["chrome", "vite/client"]
+  }
+}

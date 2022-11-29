@@ -1,0 +1,9 @@
+{
+  "extends": "@agreeto/tsconfig/react-library.json",
+  "compilerOptions": {
+    "lib": ["dom", "es2015"],
+    "types": ["chrome"]
+  },
+  "include": ["src", "tsup.config.ts"],
+  "exclude": ["dist", "node_modules"]
+}

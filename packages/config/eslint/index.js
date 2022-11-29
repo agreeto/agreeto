@@ -22,6 +22,7 @@ const config = {
   },
   rules: {
     "@next/next/no-html-link-for-pages": "off",
+    "@next/next/no-img-element": "off",
     "react/jsx-key": "off",
     "@typescript-eslint/consistent-type-imports": "warn",
     "@typescript-eslint/no-unused-vars": [

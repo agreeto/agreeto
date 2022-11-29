@@ -1,52 +1,47 @@
-// FIXME: Why is Next lint rules slipping in here?
-
-/* eslint-disable @next/next/no-img-element */
-import { CalendarDaysIcon, Cog8ToothIcon } from "@heroicons/react/20/solid"
-import { Link } from "@tanstack/react-location"
+import { CalendarDaysIcon } from "@heroicons/react/20/solid";
+import { Link } from "@tanstack/react-router";
+import { AiOutlineEdit } from "react-icons/ai";
+import { BsGear } from "react-icons/bs";
+import { CgProfile } from "react-icons/cg";
 
 export const Navbar = () => {
   return (
-    <div className="flex flex-col flex-shrink pt-5 pb-4 overflow-y-auto bg-white border-r border-gray-200 divide-y">
-      <div className="flex items-center flex-shrink-0 px-4 space-y-5">
+    <div className="flex flex-col flex-1 h-full pb-4 overflow-y-auto bg-white border-r border-gray-200">
+      <div className="p-4 border-b">
         <img
-          className="w-auto h-8"
-          src="https://tailwindui.com/img/logos/mark.svg?color=blue&shade=600"
-          alt="Your Company"
+          className="w-8 h-8"
+          src="https://localhost:3000/icon512.png"
+          alt="AgreeTo"
         />
       </div>
-      <div className="flex flex-col flex-grow mt-5">
-        <nav
-          className="flex flex-col flex-1 gap-2 bg-white items-center"
-          aria-label="Sidebar">
-          <Link to="calendar">
-            <CalendarDaysIcon className="h-10 w-10 p-1 text-indigo-600 hover:text-indigo-700" />
-          </Link>
-          <Link to="settings">
-            <Cog8ToothIcon className="h-10 w-10 p-1 text-indigo-600 hover:text-indigo-700" />
-          </Link>
-          {/* {navigation.map((item) => (
-            <a
-              key={item.name}
-              href={item.href}
-              className={classNames(
-                item.current
-                  ? "bg-blue-50 border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-600 hover:bg-gray-50 hover:text-gray-900",
-                "group flex items-center px-3 py-2 text-sm font-medium border-l-4 grow-0 shrink-0"
-              )}>
-              <item.icon
-                className={classNames(
-                  item.current
-                    ? "text-blue-500"
-                    : "text-gray-400 group-hover:text-gray-500",
-                  "mr-3 flex-shrink-0 h-6 w-6"
-                )}
-                aria-hidden="true"
-              />
-            </a>
-          ))} */}
-        </nav>
-      </div>
+
+      {/* a vertical navbar containing icon buttons */}
+      <nav className="flex flex-col justify-around flex-1 py-8">
+        <Link
+          to="calendar"
+          className="flex items-center justify-center flex-1 h-16 px-4 text-indigo-9 hover:bg-indigo-2"
+        >
+          <CalendarDaysIcon className="w-6 h-6" />
+        </Link>
+        <Link
+          to="settings/subscription"
+          className="flex items-center justify-center flex-1 h-16 px-4 text-indigo-9 hover:bg-indigo-2"
+        >
+          <BsGear className="w-6 h-6" />
+        </Link>
+        <Link
+          to="accounts"
+          className="flex items-center justify-center flex-1 h-16 px-4 text-indigo-9 hover:bg-indigo-2"
+        >
+          <CgProfile className="w-6 h-6" />
+        </Link>
+        <Link
+          to="format"
+          className="flex items-center justify-center flex-1 h-16 px-4 text-indigo-9 hover:bg-indigo-2"
+        >
+          <AiOutlineEdit className="w-6 h-6" />
+        </Link>
+      </nav>
     </div>
-  )
-}
+  );
+};

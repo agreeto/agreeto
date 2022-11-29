@@ -1,9 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  mode: "jit",
+  // mode: "jit",
   darkMode: "class",
-  content: ["./**/*.{ts,tsx}"],
   theme: {
+    extend: {
+      colors: {
+        primary: "#0165FF",
+      },
+    },
     fontFamily: {
       sans: ["Inter", "sans-serif"],
       serif: ["Georgia", "serif"],
@@ -14,5 +18,7 @@ module.exports = {
     require("@tailwindcss/forms"),
     require("@tailwindcss/typography"),
     require("@tailwindcss/line-clamp"),
+    require("tailwindcss-radix"),
+    require("windy-radix-palette"),
   ],
 };

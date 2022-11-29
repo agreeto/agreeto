@@ -3,13 +3,12 @@ import { getToken } from "next-auth/jwt";
 import { env } from "../../env/client.mjs";
 
 const OutlookRedirect = () => {
+  // Should never be rendered
   return <div>Redirecting...</div>;
 };
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const sessionToken = await getToken({ req, raw: true });
-
-  console.log("sessionToken", sessionToken);
 
   const redirect = sessionToken
     ? "/signin-redirect.html"

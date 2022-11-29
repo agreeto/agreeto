@@ -1,14 +1,20 @@
 import { router } from "../trpc";
 
 import { accountRouter } from "./account";
-import { postRouter } from "./post";
+import { eventRouter } from "./event";
+import { eventGroupRouter } from "./event-group";
+import { preferenceRouter } from "./preference";
 import { sessionRouter } from "./session";
+import { stripeRouter } from "./stripe";
 import { userRouter } from "./user";
 
 export const appRouter = router({
   account: accountRouter,
-  post: postRouter,
+  event: eventRouter,
+  eventGroup: eventGroupRouter,
   session: sessionRouter,
+  stripe: stripeRouter,
+  preference: preferenceRouter,
   user: userRouter,
 });
 

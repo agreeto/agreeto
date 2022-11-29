@@ -23,6 +23,19 @@ jobs:
       NEXT_PUBLIC_OUTLOOK_ADDIN_URL: https://localhost:8082
       NEXT_PUBLIC_PORT: 3000
 
+      NEXTAUTH_URL: https://localhost:3000
+      NEXTAUTH_SECRET: supersecret
+      GOOGLE_ID: supersecret
+      GOOGLE_SECRET: supersecret
+      AZURE_AD_CLIENT_ID: supersecret
+      AZURE_AD_CLIENT_SECRET: supersecret
+
+      STRIPE_PK: public
+      STRIPE_SK: secret
+      STRIPE_WEBHOOK_SECRET: nonce
+      STRIPE_MONTHLY_PRICE_ID: nonce
+      STRIPE_ANNUALLY_PRICE_ID: nonce
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -59,7 +72,7 @@ jobs:
       - name: Generate prisma
         run: pnpm db-generate
 
-      - name: Build, lint and type-check
+      - name: Build, lint and typecheck
         run: pnpm turbo build lint typecheck
 
       # TODO: Maybe add manypkg later

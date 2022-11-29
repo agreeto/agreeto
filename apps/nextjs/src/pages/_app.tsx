@@ -1,8 +1,10 @@
-import { type AppType } from "next/app";
+import { trpc } from "../utils/trpc";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
-import { trpc } from "../utils/trpc";
+import { type AppType } from "next/app";
 import "../styles/globals.css";
+import "@agreeto/ui/dist/styles.css";
+import "react-toastify/dist/ReactToastify.css";
 
 const MyApp: AppType<{ session: Session }> = ({
   Component,
@@ -10,7 +12,7 @@ const MyApp: AppType<{ session: Session }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <Component {...pageProps} />;
+      <Component {...pageProps} />
     </SessionProvider>
   );
 };

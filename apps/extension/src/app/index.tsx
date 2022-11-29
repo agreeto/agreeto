@@ -1,23 +1,19 @@
-import { Outlet, ReactLocation, Router } from "@tanstack/react-location"
-import React from "react"
+import { Link, Outlet, RouterProvider } from "@tanstack/react-router";
 
-import { useIsAuthed } from "~features/auth/is-authed"
-import { SignIn } from "~features/auth/sign-in"
-import { getRoutes, reactLocationOptions } from "~features/router/config"
-import { TRPCProvider } from "~features/trpc/api/provider"
+import { useIsAuthed } from "~features/auth/is-authed";
+import { SignIn } from "~features/auth/sign-in";
+import { router } from "~features/router/config";
+import { TRPCProvider } from "~features/trpc/api/provider";
 
-import { Layout } from "./layout"
+import { Layout } from "./layout";
 
 const AppContent: React.FC = () => {
-  const isAuthed = useIsAuthed()
+  const isAuthed = useIsAuthed();
   // const utils = trpcApi.useContext()
 
-  const [location] = React.useState(
-    () => new ReactLocation(reactLocationOptions)
-  )
-
   return (
-    <Router location={location} routes={getRoutes()}>
+    <RouterProvider router={router}>
+      <Link to=""></Link>
       <div className="h-[600] w-[800]">
         {isAuthed ? (
           // Render app layout if user is authed
@@ -29,14 +25,14 @@ const AppContent: React.FC = () => {
           <SignIn />
         )}
       </div>
-    </Router>
-  )
-}
+    </RouterProvider>
+  );
+};
 
 export const App: React.FC = () => {
   return (
     <TRPCProvider>
       <AppContent />
     </TRPCProvider>
-  )
-}
+  );
+};

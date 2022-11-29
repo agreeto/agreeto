@@ -18,13 +18,11 @@ const location = new ReactLocation({
 export const App = () => {
   const { isAuthed, isAuthenticating } = useIsAuthed();
 
-  console.log("isAuthed", isAuthed);
-
   return (
     <Router routes={getRoutes()} location={location}>
       {isAuthenticating ? (
-        <div className="h-full w-full grid place-content-center">
-          <div className="h-12 w-12 rounded-full border-2 animate-pulse"></div>
+        <div className="grid h-full w-full place-content-center">
+          <div className="h-12 w-12 animate-pulse rounded-full border-2"></div>
         </div>
       ) : isAuthed ? (
         /** THE ACTUAL APP */
