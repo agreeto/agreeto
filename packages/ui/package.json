@@ -15,8 +15,12 @@
     "lint": "eslint src"
   },
   "dependencies": {
+    "@radix-ui/react-alert-dialog": "^1.0.2",
+    "@radix-ui/react-dropdown-menu": "^1.0.0",
+    "@radix-ui/react-tooltip": "^1.0.2",
     "clsx": "^1.2.1",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-icons": "^4.6.0"
   },
   "devDependencies": {
     "@agreeto/tailwind-config": "workspace:*",

@@ -1,6 +1,7 @@
 import { type Attendee } from "@agreeto/db";
 
 export interface ICreateEvent {
+  agreeToId: string;
   title: string;
   startDate: Date;
   endDate: Date;
