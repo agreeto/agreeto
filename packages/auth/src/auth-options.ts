@@ -16,10 +16,11 @@ if (
   !process.env.GOOGLE_ID ||
   !process.env.GOOGLE_SECRET ||
   !process.env.AZURE_AD_CLIENT_ID ||
-  !process.env.AZURE_AD_CLIENT_SECRET ||
-  !process.env.AZURE_AD_TENANT_ID
+  !process.env.AZURE_AD_CLIENT_SECRET
 ) {
-  throw new Error("NEXTAUTH_SECRET is not set");
+  throw new Error(
+    "[@agreeto/auth: auth-options.ts]: NEXTAUTH_SECRET, or another related secret is not set",
+  );
 }
 
 export const authOptions: NextAuthOptions = {
@@ -44,7 +45,6 @@ export const authOptions: NextAuthOptions = {
     AzureAdProvider({
       clientId: process.env.AZURE_AD_CLIENT_ID,
       clientSecret: process.env.AZURE_AD_CLIENT_SECRET,
-      // tenantId: process.env.AZURE_AD_TENANT_ID,
       authorization: {
         params: {
           access_type: "offline",
