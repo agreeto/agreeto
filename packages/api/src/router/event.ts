@@ -271,8 +271,6 @@ export const eventRouter = router({
       }));
       const promises: Promise<void>[] = [];
 
-      console.log("[event.directoryUsers] input", input);
-
       input.users.forEach((user) => {
         // Only work on Google accounts
         if (user.provider !== "google") return;
