@@ -25,9 +25,7 @@ if (
 export const authOptions: NextAuthOptions = {
   /** Use Prisma adapter to persist user information */
   /** @see https://next-auth.js.org/adapters/prisma */
-  adapter: {
-    ...PrismaAdapter(prisma),
-  },
+  adapter: PrismaAdapter(prisma),
 
   /** Built in providers, adjusted to our needs */
   /** @see https://next-auth.js.org/providers */
@@ -84,10 +82,14 @@ export const authOptions: NextAuthOptions = {
         return;
       }
 
+      // Grab user from DB, we need to read the accounts length to
+      // determine if this is the first account -> assign primary
+      const dbUser = await prisma.user.findUnique({
+        where: { id: user.id },
+        include: { accounts: true },
+      });
+
       await prisma.account.update({
-        include: {
-          userPrimary: true,
-        },
         where: {
           provider_providerAccountId: {
             provider: account.provider,
@@ -97,6 +99,11 @@ export const authOptions: NextAuthOptions = {
         data: {
           // Set email to the one from the oauth provider's profile
           email: profile.email,
+          // Set primary if this is the first account
+          userPrimary:
+            dbUser && dbUser.accounts.length <= 1
+              ? { connect: { id: dbUser.id } }
+              : undefined,
         },
       });
     },

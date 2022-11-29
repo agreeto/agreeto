@@ -1,6 +1,12 @@
 import type { RouterOutputs } from "@agreeto/api";
 import { EventColorUserRadix } from "@agreeto/api/types";
-import { Button, Dialog, DropdownMenu } from "@agreeto/ui";
+import {
+  Button,
+  Dialog,
+  DropdownMenu,
+  GoogleLogo,
+  MicrosoftLogo,
+} from "@agreeto/ui";
 import * as RadioGroup from "@radix-ui/react-radio-group";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import type { FC } from "react";
@@ -19,7 +25,7 @@ const fullConfig = resolveConfig({
 
 export const themeColors = fullConfig.theme?.colors as Record<
   EventColorUserRadix & string,
-  string
+  Record<number, string>
 >;
 
 type Account = RouterOutputs["user"]["myAccounts"]["accounts"][number];
@@ -50,8 +56,8 @@ const AccountCard: FC<{
           <div
             className="self-center w-10 h-10 leading-10 text-center rounded-full"
             style={{
-              backgroundColor: themeColors?.[account.eventColor][7],
-              color: themeColors?.[account.eventColor][11],
+              backgroundColor: themeColors[account.eventColor][7],
+              color: themeColors[account.eventColor][11],
             }}
           >
             {initials}
@@ -62,7 +68,12 @@ const AccountCard: FC<{
             <div>
               {/* Email and organizer badge */}
               <div className="flex justify-between">
-                <div className="text-sm font-normal leading-5">
+                <div className="text-sm font-normal leading-5 flex items-center gap-2">
+                  {account.provider === "google" ? (
+                    <GoogleLogo className="h-4 w-4" />
+                  ) : (
+                    <MicrosoftLogo className="h-4 w-4" />
+                  )}
                   {account.email}
                 </div>
                 {user?.accountPrimaryId === account.id && (
