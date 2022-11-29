@@ -60,8 +60,9 @@ jobs:
       - name: Generate prisma
         run: pnpm db-generate
 
-      - name: Build, lint and type-check
-        run: cp .env.example .env
+      - run: cp .env.example .env
+
+      - name: Build, lint and typecheck
         run: pnpm turbo build lint typecheck
 
       # TODO: Maybe add manypkg later
