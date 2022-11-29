@@ -211,7 +211,7 @@ export const eventRouter = router({
             where: { userId: ctx.user.id },
             include: { userPrimary: true },
           });
-          const primaryAccount = accounts.find((a) => Boolean(a.userPrimary));
+          const primaryAccount = accounts.find((a) => !!a.userPrimary);
           if (!primaryAccount) {
             throw new TRPCError({
               code: "BAD_REQUEST",

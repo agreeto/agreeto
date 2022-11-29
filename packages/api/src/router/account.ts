@@ -36,7 +36,8 @@ export const accountRouter = router({
       select: { accountPrimary: true },
       where: { id: ctx.user.id },
     });
-    return dbUser?.accountPrimary;
+    if (!dbUser) throw new TRPCError({ code: "NOT_FOUND" });
+    return dbUser.accountPrimary;
   }),
 
   updateColor: privateProcedure
