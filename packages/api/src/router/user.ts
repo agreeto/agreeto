@@ -113,10 +113,7 @@ export const userRouter = router({
       };
 
       const users = (await Promise.all(promises))
-        .flatMap((u) => {
-          console.dir({ u });
-          return u;
-        })
+        .flatMap((u) => u)
         .map((u) => ({
           ...u,
           color: getAvailableColor(),
