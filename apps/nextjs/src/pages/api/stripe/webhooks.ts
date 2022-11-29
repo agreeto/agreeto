@@ -37,9 +37,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       case "customer.deleted":
         await caller.stripe.webhooks.customer.deleted({ event });
         break;
-      case "customer.subscription.created":
-        await caller.stripe.webhooks.subscription.created({ event });
-        break;
       case "customer.subscription.updated":
         await caller.stripe.webhooks.subscription.updated({ event });
         break;
@@ -58,6 +55,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   } catch (cause) {
     // Error occured in the tRPC webhook handlers
     if (cause instanceof TRPCError) {
+      console.error(`Error in tRPC webhook handler for ${event.type}`, cause);
       const errorCode = getHTTPStatusCodeFromError(cause);
       res.status(errorCode).json({
         error: {

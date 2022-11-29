@@ -4,13 +4,12 @@ import "@fullcalendar/timegrid/main.css";
 import "../style.css";
 
 import { Spinner } from "@agreeto/ui";
-import { Outlet, ReactLocation, Router } from "@tanstack/react-location";
-import React from "react";
+import { Outlet, RouterProvider } from "@tanstack/react-router";
 
 import { Layout } from "~app/layout";
 import { useIsAuthed } from "~features/auth/is-authed";
 import { SignIn } from "~features/auth/sign-in";
-import { getRoutes, reactLocationOptions } from "~features/router/config";
+import { router } from "~features/router/config";
 import { TRPCProvider } from "~features/trpc//api/provider";
 
 /**
@@ -28,12 +27,8 @@ import { TRPCProvider } from "~features/trpc//api/provider";
 const PopupContent: React.FC = () => {
   const { isAuthed, isAuthenticating } = useIsAuthed();
 
-  const [location] = React.useState(
-    () => new ReactLocation(reactLocationOptions),
-  );
-
   return (
-    <Router routes={getRoutes()} location={location}>
+    <RouterProvider router={router}>
       {/* maximum size of popup */}
       <div className="w-[800] h-[600]">
         {isAuthenticating ? (
@@ -52,7 +47,7 @@ const PopupContent: React.FC = () => {
           <SignIn />
         )}
       </div>
-    </Router>
+    </RouterProvider>
   );
 };
 

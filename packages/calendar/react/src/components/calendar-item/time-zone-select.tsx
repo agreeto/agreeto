@@ -10,6 +10,7 @@ import { Membership } from "@agreeto/api/types";
 import { Float } from "@headlessui-float/react";
 import { trpc } from "../../utils/trpc";
 import { useTZStore } from "../../utils/store";
+import { type SharedRoutes } from "../../calendar";
 
 type Props = {
   value: string;
@@ -17,7 +18,7 @@ type Props = {
   type: "primary" | "secondary" | "addIcon";
   referenceDate?: Date;
 
-  onPageChange?: (page: string) => void;
+  onPageChange?: (page: SharedRoutes) => void;
 };
 
 const TimeZoneSelect: FC<Props> = ({
@@ -133,7 +134,7 @@ const TimeZoneSelect: FC<Props> = ({
             </div>
             <div
               className="mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border border-primary text-primary"
-              onClick={() => onPageChange?.("settings")}
+              onClick={() => onPageChange?.("/settings/subscription")}
             >
               Upgrade
             </div>

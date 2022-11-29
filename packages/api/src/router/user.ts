@@ -1,9 +1,13 @@
+import { router, publicProcedure, privateProcedure } from "../trpc";
+import { getMembershipFromPriceId } from "./stripe";
+import {
+  EventResponseStatus,
+  Membership,
+  StripeSubscriptionStatus,
+} from "@agreeto/db";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { router, publicProcedure, privateProcedure } from "../trpc";
 import { getGoogleWorkspaceUsers } from "../external/google";
-
-import { EventResponseStatus, Membership } from "@agreeto/db";
 import { isGoogleWorkspaceAccount } from "../services/service-helpers";
 import { EventColorDirectoryUserRadix } from "@agreeto/db/client-types";
 
@@ -30,6 +34,59 @@ export const userRouter = router({
       },
     });
     return user;
+  }),
+
+  subscription: privateProcedure.query(async ({ ctx }) => {
+    const stripeCustomer = await ctx.prisma.user
+      .findUnique({
+        where: { id: ctx.user.id },
+      })
+      .stripeCustomer();
+
+    const subscription = await ctx.prisma.stripeSubscription.findFirst({
+      where: {
+        stripeCustomerId: stripeCustomer?.id,
+      },
+      orderBy: {
+        current_period_end: "desc",
+      },
+    });
+
+    if (!subscription) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "No subscription found",
+      });
+    }
+
+    if (
+      StripeSubscriptionStatus.active !== subscription.status &&
+      StripeSubscriptionStatus.trialing !== subscription.status
+    ) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "No active subscription found",
+      });
+    }
+
+    // TODO: Parse differently when other plans are added
+    const membership =
+      subscription.status === StripeSubscriptionStatus.trialing
+        ? Membership.TRIAL
+        : getMembershipFromPriceId(subscription.priceId);
+
+    const period =
+      subscription.priceId === process.env.STRIPE_MONTHLY_PRICE_ID
+        ? "monthly"
+        : "annually";
+
+    return {
+      id: subscription.id,
+      status: subscription.status,
+      current_period_end: subscription.current_period_end,
+      membership,
+      period: period as "monthly" | "annually", // FIXME: Why is `as` needed
+    };
   }),
 
   myAccounts: privateProcedure.query(async ({ ctx }) => {

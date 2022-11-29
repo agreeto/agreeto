@@ -8,11 +8,13 @@ export const stripe = new Stripe(process.env.STRIPE_SK as string, {
   apiVersion: "2022-11-15",
 });
 
-const getMembershipFromPriceId = (priceId: string | undefined): Membership => {
+export const getMembershipFromPriceId = (
+  priceId: string | undefined,
+): Membership => {
   switch (priceId) {
     case process.env.STRIPE_MONTHLY_PRICE_ID:
       return Membership.PRO;
-    case process.env.STRIPE_YEARLY_PRICE_ID:
+    case process.env.STRIPE_ANNUALLY_PRICE_ID:
       return Membership.PREMIUM;
     default:
       throw new TRPCError({
@@ -20,6 +22,34 @@ const getMembershipFromPriceId = (priceId: string | undefined): Membership => {
         message: `Price ID ${priceId} not recognized`,
       });
   }
+};
+
+const getStripePriceId = (
+  membership: Membership,
+  period: "monthly" | "annually",
+) => {
+  switch (period) {
+    // TODO: Differentiate PRO and PREMIUM when PREMIUM is available
+    case "monthly":
+      return process.env.STRIPE_MONTHLY_PRICE_ID;
+    case "annually":
+      return process.env.STRIPE_ANNUALLY_PRICE_ID;
+    default:
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: `Period ${period} not recognized`,
+      });
+  }
+};
+
+const getPriceIdFromSubscription = (item: Stripe.Subscription["items"]) => {
+  const priceId = item.data[0]?.price.id;
+  if (!priceId)
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "No price ID found",
+    });
+  return priceId;
 };
 
 const stripeWHProcedure = publicProcedure
@@ -50,9 +80,6 @@ const stripeWHProcedure = publicProcedure
   .use(async ({ ctx, input, next }) => {
     console.log("Incoming Stripe Webhook", input.event);
 
-    // Let the handler run
-    const result = await next();
-
     // Log event to DB
     const { event } = input;
     await ctx.prisma.stripeEvent.create({
@@ -76,6 +103,10 @@ const stripeWHProcedure = publicProcedure
         },
       },
     });
+
+    // Let the handler run
+    const result = await next();
+
     return result;
   });
 
@@ -149,54 +180,63 @@ const getCustomerId = async (userId: string, prisma: Prisma) => {
 
 export const stripeRouter = router({
   checkout: router({
-    create: privateProcedure.mutation(async ({ ctx }) => {
-      const { customerId, user } = await getCustomerId(ctx.user.id, ctx.prisma);
+    create: privateProcedure
+      .input(
+        z.object({
+          plan: z.enum([Membership.PRO, Membership.PREMIUM]),
+          period: z.enum(["monthly", "annually"]),
+          success_url: z.string().optional(),
+        }),
+      )
+      .mutation(async ({ ctx, input }) => {
+        const { customerId, user } = await getCustomerId(
+          ctx.user.id,
+          ctx.prisma,
+        );
 
-      if (
-        // Checking the membership should be enough?
-        // user.stripeCustomer?.subscriptions.some(
-        //   (sub) => sub.status === "active",
-        // ) &&
-        user.membership !== Membership.FREE
-      ) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "User already has a paid membership",
-        });
-      }
+        if (
+          user.membership !== Membership.FREE &&
+          user.membership !== Membership.TRIAL
+        ) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "User already has a paid membership",
+          });
+        }
 
-      const session = await stripe.checkout.sessions.create({
-        customer: customerId,
-        client_reference_id: ctx.user.id,
-        payment_method_types: ["card"],
-        mode: "subscription",
-        line_items: [
-          {
-            price: process.env.STRIPE_MONTHLY_PRICE_ID,
-            quantity: 1,
+        const session = await stripe.checkout.sessions.create({
+          customer: customerId,
+          client_reference_id: ctx.user.id,
+          payment_method_types: ["card"],
+          mode: "subscription",
+          line_items: [
+            {
+              price: getStripePriceId(input.plan, input.period),
+              quantity: 1,
+            },
+          ],
+
+          success_url:
+            input.success_url ?? `${process.env.NEXTAUTH_URL}/payment/success`,
+          cancel_url: `${process.env.NEXTAUTH_URL}/payment/cancel`,
+          subscription_data: {
+            trial_period_days: !user.hasTrialed ? 7 : undefined,
+            metadata: {
+              userId: ctx.user.id,
+            },
           },
-        ],
-
-        success_url: `${process.env.NEXTAUTH_URL}/payment/success`,
-        cancel_url: `${process.env.NEXTAUTH_URL}/payment/cancel`,
-        subscription_data: {
-          trial_period_days: !user.hasTrialed ? 7 : undefined,
-          metadata: {
-            userId: ctx.user.id,
-          },
-        },
-        // allow starting trials without payment
-        payment_method_collection: "if_required",
-      });
-
-      if (!session || !session.url)
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to create Stripe checkout session",
+          // allow starting trials without payment
+          payment_method_collection: "if_required",
         });
 
-      return { checkoutUrl: session.url };
-    }),
+        if (!session || !session.url)
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to create Stripe checkout session",
+          });
+
+        return { checkoutUrl: session.url };
+      }),
   }),
 
   subscription: router({
@@ -218,7 +258,6 @@ export const stripeRouter = router({
         const { object } = event.data;
         const { id } = object as Stripe.Customer;
 
-        console.log(event);
         // TODO: Prob make stripeCustomerId unique
         await ctx.prisma.user.updateMany({
           where: { stripeCustomerId: id },
@@ -239,16 +278,54 @@ export const stripeRouter = router({
         const priceId = lineItem?.plan?.id;
         if (!priceId) throw new TRPCError({ code: "BAD_REQUEST" });
 
-        const membership =
-          priceId === process.env.STRIPE_MONTHLY_PRICE_ID
-            ? Membership.PRO
-            : Membership.PREMIUM;
+        const isTrial = subscription.status === "trialing";
+        const membership = isTrial
+          ? Membership.TRIAL
+          : getMembershipFromPriceId(priceId);
 
-        // Update the user's membership, and register the payment
-        await Promise.all([
+        // These queries are executed in order
+        await ctx.prisma.$transaction([
+          // First create the subscription in the db
+
+          ctx.prisma.stripeSubscription.create({
+            data: {
+              id: subscription.id,
+              cancel_at_period_end: subscription.cancel_at_period_end,
+              collection_method: subscription.collection_method,
+              livemode: subscription.livemode,
+              metadata: subscription.metadata,
+              start_date: new Date(subscription.start_date * 1000),
+              status: subscription.status,
+              stripeCustomer: {
+                connect: { id: subscription.customer as string },
+              },
+              priceId: getPriceIdFromSubscription(subscription.items),
+              current_period_start: new Date(
+                subscription.current_period_start * 1000,
+              ),
+              current_period_end: new Date(
+                subscription.current_period_end * 1000,
+              ),
+              created: new Date(subscription.created * 1000), // convert to milliseconds
+              canceled_at: subscription.canceled_at
+                ? new Date(subscription.canceled_at * 1000)
+                : null,
+              ended_at: subscription.ended_at
+                ? new Date(subscription.ended_at * 1000)
+                : null,
+              trial_start: subscription.trial_start
+                ? new Date(subscription.trial_start * 1000)
+                : null,
+              trial_end: subscription.trial_end
+                ? new Date(subscription.trial_end * 1000)
+                : null,
+            },
+          }),
           ctx.prisma.user.update({
             where: { id: userId },
             data: {
+              // consume trial
+              hasTrialed: isTrial || undefined,
               membership,
             },
           }),
@@ -274,62 +351,8 @@ export const stripeRouter = router({
 
     // Occurs whenever a source's details are changed
     subscription: router({
-      created: stripeWHProcedure.mutation(async ({ ctx, input }) => {
-        const subscription = input.event.data.object as Stripe.Subscription;
-        const { userId } = subscription.metadata;
-        const isTrial = subscription.status === "trialing";
+      // created: handled in invoice.paid
 
-        await Promise.all([
-          ctx.prisma.user.update({
-            where: { id: userId },
-            data: {
-              // consume trial
-              hasTrialed: isTrial || undefined,
-              membership: isTrial
-                ? Membership.TRIAL
-                : getMembershipFromPriceId(
-                    subscription.items.data[0]?.price.id,
-                  ),
-            },
-          }),
-          ctx.prisma.stripeSubscription.create({
-            data: {
-              id: subscription.id,
-              cancel_at_period_end: subscription.cancel_at_period_end,
-              collection_method: subscription.collection_method,
-              livemode: subscription.livemode,
-              metadata: subscription.metadata,
-              start_date: new Date(subscription.start_date * 1000),
-              status: subscription.status,
-              stripeCustomer: {
-                connect: { id: subscription.customer as string },
-              },
-              invoices: {
-                connect: { id: subscription.latest_invoice as string },
-              },
-              current_period_start: new Date(
-                subscription.current_period_start * 1000,
-              ),
-              current_period_end: new Date(
-                subscription.current_period_end * 1000,
-              ),
-              created: new Date(subscription.created * 1000), // convert to milliseconds
-              canceled_at: subscription.canceled_at
-                ? new Date(subscription.canceled_at * 1000)
-                : undefined,
-              ended_at: subscription.ended_at
-                ? new Date(subscription.ended_at * 1000)
-                : undefined,
-              trial_start: subscription.trial_start
-                ? new Date(subscription.trial_start * 1000)
-                : undefined,
-              trial_end: subscription.trial_end
-                ? new Date(subscription.trial_end * 1000)
-                : undefined,
-            },
-          }),
-        ]);
-      }),
       updated: stripeWHProcedure.mutation(async ({ ctx, input }) => {
         const subscription = input.event.data.object as Stripe.Subscription;
         const { userId } = subscription.metadata;

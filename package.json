@@ -10,6 +10,7 @@
     "db-migrate": "pnpm -F db db-migrate",
     "db-up": "pnpm -F db db-up",
     "db-push": "turbo db-push",
+    "db-reset": "pnpm -F db db-reset",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",

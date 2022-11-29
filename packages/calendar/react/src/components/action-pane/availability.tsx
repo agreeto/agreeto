@@ -21,12 +21,13 @@ import { useEventStore, useTZStore } from "../../utils/store";
 import clsx from "clsx";
 import { Spinner } from "@agreeto/ui";
 import { useState } from "react";
+import { type SharedRoutes } from "../../calendar";
 
 const getCountryCode = (lang: Language | undefined) =>
   lang === Language.EN ? "US" : lang;
 
 const Availability: React.FC<{
-  onPageChange?: (page: string) => void;
+  onPageChange?: (page: SharedRoutes) => void;
 }> = ({ onPageChange }) => {
   const utils = trpc.useContext();
 
@@ -121,7 +122,7 @@ const Availability: React.FC<{
             </div>
             <div
               className="mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border border-primary text-primary"
-              onClick={() => onPageChange?.("settings")}
+              onClick={() => onPageChange?.("/settings/subscription")}
             >
               Upgrade
             </div>

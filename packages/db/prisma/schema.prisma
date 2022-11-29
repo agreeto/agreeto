@@ -288,6 +288,7 @@ model StripeSubscription {
     stripeCustomer       StripeCustomer?          @relation(fields: [stripeCustomerId], references: [id])
     stripeCustomerId     String?
     invoices             Invoice[]
+    priceId              String
 
     current_period_start DateTime
     current_period_end   DateTime

@@ -47,7 +47,6 @@ export const Button = forwardRef<
       type="button"
       className={clsx(
         "inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium leading-4  shadow-sm focus:outline-none",
-
         variant === "primary" && "bg-primary text-white hover:bg-primary/80",
         variant === "outline" &&
           "border border-primary bg-white text-primary hover:border-mauve-8 hover:border-primary",

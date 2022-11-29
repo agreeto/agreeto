@@ -42,8 +42,8 @@ importers:
       '@radix-ui/react-separator': ^1.0.1
       '@radix-ui/react-tabs': ^1.0.1
       '@radix-ui/react-tooltip': ^1.0.2
-      '@tanstack/react-location': ^3.7.4
       '@tanstack/react-query': ^4.13.0
+      '@tanstack/react-router': ^0.0.1-beta.25
       '@trpc/client': ^10.0.0
       '@trpc/react-query': ^10.0.0
       '@trpc/server': ^10.0.0
@@ -84,8 +84,8 @@ importers:
       '@radix-ui/react-separator': 1.0.1_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-tabs': 1.0.1_biqbaboplfbrettd7655fr4n2y
       '@radix-ui/react-tooltip': 1.0.2_2zx2umvpluuhvlq44va5bta2da
-      '@tanstack/react-location': 3.7.4_biqbaboplfbrettd7655fr4n2y
       '@tanstack/react-query': 4.16.1_biqbaboplfbrettd7655fr4n2y
+      '@tanstack/react-router': 0.0.1-beta.25_biqbaboplfbrettd7655fr4n2y
       '@trpc/client': 10.4.1_@trpc+server@10.4.1
       '@trpc/react-query': 10.4.1_ptpgoviylwbqyngs2ahluodk3i
       '@trpc/server': 10.4.1
@@ -145,6 +145,7 @@ importers:
       react: 18.2.0
       react-dom: 18.2.0
       react-icons: ^4.6.0
+      react-toastify: ^9.0.8
       tailwindcss: ^3.1.8
       typescript: ^4.8.4
       zod: ^3.18.0
@@ -167,6 +168,7 @@ importers:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-icons: 4.6.0_react@18.2.0
+      react-toastify: 9.1.1_biqbaboplfbrettd7655fr4n2y
       zod: 3.19.1
     devDependencies:
       '@agreeto/tailwind-config': link:../../packages/config/tailwind
@@ -471,6 +473,7 @@ importers:
       '@tailwindcss/typography': ^0.5.7
       postcss: ^8.4.14
       tailwindcss: ^3.1.8
+      tailwindcss-radix: ^2.6.1
       windy-radix-palette: ^0.3.0
     devDependencies:
       '@radix-ui/colors': 0.1.8
@@ -479,6 +482,7 @@ importers:
       '@tailwindcss/typography': 0.5.8_tailwindcss@3.2.4
       postcss: 8.4.19
       tailwindcss: 3.2.4_postcss@8.4.19
+      tailwindcss-radix: 2.6.1
       windy-radix-palette: 0.3.0_mvcr4ym64jspnkumvjqznijcra
 
   packages/config/tsconfig:
@@ -4571,6 +4575,34 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       use-sync-external-store: 1.2.0_react@18.2.0
+    dev: false
+
+  /@tanstack/react-router/0.0.1-beta.25_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-tSiQ0dtcv4s8lNudmM6Al1BYfyejecP9W6mvqtdQnAtPNy9jWy7+gZJtHpGL7SV/sMo8BLtMvBaAXXa5o6L/Ig==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: '>=16'
+      react-dom: '>=16'
+    dependencies:
+      '@babel/runtime': 7.20.1
+      '@tanstack/router-core': 0.0.1-beta.25_biqbaboplfbrettd7655fr4n2y
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      use-sync-external-store: 1.2.0_react@18.2.0
+    dev: false
+
+  /@tanstack/router-core/0.0.1-beta.25_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-utAIyocaqO72HvyRIC4E00kUZbQLId2+rYOv80UJMqQPqtVlq9RK9e7pzu4+UKSkjrgiIe2R/8zu+flbVyPB3w==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: '>=16'
+      react-dom: '>=16'
+    dependencies:
+      '@babel/runtime': 7.20.1
+      history: 5.3.0
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      tiny-invariant: 1.3.1
     dev: false
 
   /@tootallnate/once/1.1.2:
@@ -12548,6 +12580,10 @@ packages:
       stable: 0.1.8
     dev: true
 
+  /tailwindcss-radix/2.6.1:
+    resolution: {integrity: sha512-ejh4BHkn/3g349l+JiEW6I4//uclU4nllEqnOK3/8zpORscIk9WbjLyYR2UzqwVRjjzgd72I/hMDJZm3+XO48w==}
+    dev: true
+
   /tailwindcss/3.2.4_postcss@8.4.19:
     resolution: {integrity: sha512-AhwtHCKMtR71JgeYDaswmZXhPcW9iuI9Sp2LvZPo9upDZ7231ZJ7eA9RaURbhpXGVlrjX4cFNlB4ieTetEb7hQ==}
     engines: {node: '>=12.13.0'}
@@ -12696,6 +12732,10 @@ packages:
       globalyzer: 0.1.0
       globrex: 0.1.2
     dev: true
+
+  /tiny-invariant/1.3.1:
+    resolution: {integrity: sha512-AD5ih2NlSssTCwsMznbvwMZpJ1cbhkGd2uueNxzv2jDlEeZdU04JQfRnggJQ8DrcVBGjAsCKwFBbDlVNtEMlzw==}
+    dev: false
 
   /tiny-uid/1.1.2:
     resolution: {integrity: sha512-0beRFXR+fv4C40ND2PqgNjq6iyB1dKXciKJjslLw0kPYCcR82aNd2b+Tt2yy06LimIlvtoehgvrm/fUZCutSfg==}

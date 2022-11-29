@@ -1,13 +1,12 @@
 import { signIn } from "next-auth/react";
-import Image from "next/image";
-import agreetoLogo from "../../assets/icon512.png";
-
 import { Button, GoogleLogo, MicrosoftLogo, Spinner } from "@agreeto/ui";
 import { type GetServerSideProps, type NextPage } from "next";
 import { trpc } from "../../utils/trpc";
 import { Membership } from "@agreeto/api/types";
 import { useRouter } from "next/router";
 import { FaStripe } from "react-icons/fa";
+import { Card } from "../../components/card";
+import { appRouter, createContext } from "@agreeto/api";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const searchParams = new URLSearchParams(ctx.req.url?.split("?")[1]);
@@ -18,15 +17,44 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const fromOAuth =
     origin?.includes("google") ||
     origin?.includes("live") ||
-    origin?.includes("microsoft");
+    origin?.includes("microsoft") ||
+    origin?.includes("stripe");
 
-  // Redirect to the callbackUrl if we're coming from an OAuth provider
+  // This means we have completed the sign in flow
   if (fromOAuth && callbackUrl) {
+    // @ts-expect-error - Not sure how to type this to accept GetServerSidePropsContext across packages - but they are compatible
+    const trpcCtx = await createContext(ctx);
+    const caller = appRouter.createCaller(trpcCtx);
+
+    // Check if user signed in for the first time,
+    // if so, redirect to starting a trial
+    if (
+      trpcCtx?.user?.membership === "FREE" &&
+      !trpcCtx?.user?.hasTrialed &&
+      !origin?.includes("stripe")
+    ) {
+      const { checkoutUrl } = await caller.stripe.checkout.create({
+        plan: "PRO",
+        period: "monthly",
+        // come back here after checkout is complete to finish the sign in flow
+        success_url: `https://${ctx.req.headers.host}/${ctx.req.url}`,
+      });
+      return { redirect: { destination: checkoutUrl, permanent: false } };
+    }
+
+    // Else, redirect to the callbackUrl
     return { redirect: { destination: callbackUrl, permanent: false } };
   }
+
+  // Here we are coming straight from the app, and should
+  // continue the sign in flow
   return { props: {} };
 };
 
+/**
+ * This protects the page if the user manually inputs the URL
+ * in the browser, even though they're on the FREE plan.
+ */
 const UpgradeContent = () => {
   const router = useRouter();
   const { mutate: upgrade } = trpc.stripe.checkout.create.useMutation({
@@ -45,7 +73,7 @@ const UpgradeContent = () => {
         <Button
           className="flex h-12 w-72 items-center justify-center gap-2"
           variant="glass"
-          onClick={() => upgrade()}
+          onClick={() => upgrade({ plan: Membership.PRO, period: "monthly" })}
         >
           <FaStripe className="h-8 w-8 text-[#6259FA]" />
           <span className="text-bold text-gray-900">Go Pro</span>
@@ -96,29 +124,20 @@ const SignInPage: NextPage = () => {
     user?.accounts.length >= 1;
 
   return (
-    <div className="flex h-screen items-center justify-center text-gray-600">
-      <div className="max-w-md space-y-4 rounded-xl px-16 py-12 text-center shadow-2xl">
-        <h1 className="text-3xl font-semibold">Welcome to AgreeTo</h1>
-        <div className="relative mx-auto h-24 w-24">
-          <Image src={agreetoLogo} alt="AgreeTo" layout="fill" />
+    <div className="flex h-screen items-center justify-center">
+      <Card disclaimer="By entering this website, I accept Privacy Policy and Terms and Conditions">
+        <div className="flex h-56 w-full flex-col items-center justify-center">
+          {isLoading ? (
+            <div className="h-12 w-12">
+              <Spinner />
+            </div>
+          ) : !forbidden ? (
+            <SignInContent />
+          ) : (
+            <UpgradeContent />
+          )}
         </div>
-
-        {isLoading ? (
-          <div className="my-8 mx-auto h-12 w-12">
-            <Spinner />
-          </div>
-        ) : !forbidden ? (
-          <SignInContent />
-        ) : (
-          <UpgradeContent />
-        )}
-
-        {/* Description */}
-        <div className="text-xs">
-          By entering this website, I accept Privacy Policy and Terms and
-          Conditions
-        </div>
-      </div>
+      </Card>
     </div>
   );
 };

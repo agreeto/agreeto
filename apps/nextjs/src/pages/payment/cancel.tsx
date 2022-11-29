@@ -1,23 +1,20 @@
 import { type NextPage } from "next";
-import Image from "next/image";
+import { Card } from "../../components/card";
 
-const Success: NextPage = () => {
+const Cancel: NextPage = () => {
   return (
-    <div className="h-screen pt-16 text-center text-xl font-semibold">
-      <div className="my-16 flex items-center justify-center">
-        <div className="relative h-20 w-20">
-          <Image src="/icon512.png" alt="AgreeTo" layout="fill" />
+    <div className="flex h-screen items-center justify-center">
+      <Card title="Payment Cancelled" disclaimer="You can close this window.">
+        <div>
+          <p className="text-xl font-semibold text-green-600">
+            Whoops, looks like you cancelled your payment.
+          </p>
+          <p className="text-lg text-gray-600">
+            If it was unintentional, please try again via the extension.
+          </p>
         </div>
-        <h1 className="ml-2 text-4xl font-semibold text-primary">AgreeTo</h1>
-      </div>
-      <p className="text-2xl text-red-600">
-        Whoops, looks like you cancelled your payment.
-      </p>
-      <br />
-      <p className="text-lg text-gray-600">
-        If it was unintentional, please try again via the extension.
-      </p>
+      </Card>
     </div>
   );
 };
-export default Success;
+export default Cancel;

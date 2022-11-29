@@ -33,11 +33,12 @@ import { trpc } from "../../utils/trpc";
 import { useCalendarStore, useEventStore, useTZStore } from "../../utils/store";
 import { themeColors } from "../../utils/colors";
 import clsx from "clsx";
+import { type SharedRoutes } from "../../calendar";
 
 type Props = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onRefSettled: (ref: any) => void;
-  onPageChange?: (page: string) => void;
+  onPageChange?: (page: SharedRoutes) => void;
 };
 
 const CalendarItem: FC<Props> = ({ onRefSettled, onPageChange }) => {

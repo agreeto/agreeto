@@ -1,5 +1,5 @@
 import { CalendarDaysIcon } from "@heroicons/react/20/solid";
-import { Link } from "@tanstack/react-location";
+import { Link } from "@tanstack/react-router";
 import { AiOutlineEdit } from "react-icons/ai";
 import { BsGear } from "react-icons/bs";
 import { CgProfile } from "react-icons/cg";
@@ -24,7 +24,7 @@ export const Navbar = () => {
           <CalendarDaysIcon className="w-6 h-6" />
         </Link>
         <Link
-          to="settings"
+          to="settings/subscription"
           className="flex items-center justify-center flex-1 h-16 px-4 text-indigo-9 hover:bg-indigo-2"
         >
           <BsGear className="w-6 h-6" />
