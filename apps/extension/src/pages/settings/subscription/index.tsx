@@ -7,7 +7,10 @@ import { PricingCard } from "./pricing-card";
 import { SubscriptionCard } from "./subscription-card";
 
 export const Subscription = () => {
-  const { data: subscription } = trpcApi.user.subscription.useQuery();
+  const { data: subscription, isLoading } =
+    trpcApi.user.subscription.useQuery();
+
+  if (isLoading) return null;
 
   return (
     <div className="p-4 w-full max-w-md mx-auto">

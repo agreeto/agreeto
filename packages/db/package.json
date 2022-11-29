@@ -10,7 +10,8 @@
     "db-generate": "prisma generate",
     "db-push": "prisma db push",
     "db-migrate": "prisma migrate dev",
-    "db-down": "docker compose down"
+    "db-down": "docker compose down",
+    "db-reset": "prisma db push --force-reset"
   },
   "dependencies": {
     "@prisma/client": "^4.5.0",

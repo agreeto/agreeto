@@ -195,11 +195,8 @@ export const stripeRouter = router({
         );
 
         if (
-          // Checking the membership should be enough?
-          // user.stripeCustomer?.subscriptions.some(
-          //   (sub) => sub.status === "active",
-          // ) &&
-          user.membership !== Membership.FREE
+          user.membership !== Membership.FREE &&
+          user.membership !== Membership.TRIAL
         ) {
           throw new TRPCError({
             code: "BAD_REQUEST",

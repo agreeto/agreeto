@@ -28,7 +28,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
     // Check if user signed in for the first time,
     // if so, redirect to starting a trial
-    if (trpcCtx?.user?.membership === "FREE" && !trpcCtx?.user?.hasTrialed) {
+    if (
+      trpcCtx?.user?.membership === "FREE" &&
+      !trpcCtx?.user?.hasTrialed &&
+      !origin?.includes("stripe")
+    ) {
       const { checkoutUrl } = await caller.stripe.checkout.create({
         plan: "PRO",
         period: "monthly",
