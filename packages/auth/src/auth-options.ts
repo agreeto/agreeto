@@ -55,10 +55,6 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
-  /** Secret used to encrypt and hash tokens */
-  /** @see https://next-auth.js.org/configuration/options#secret */
-  secret: process.env.NEXTAUTH_SECRET,
-
   /** Callbacks used to control actions */
   /** @see https://next-auth.js.org/configuration/callbacks */
   callbacks: {
