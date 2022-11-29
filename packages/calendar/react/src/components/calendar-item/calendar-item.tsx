@@ -18,10 +18,7 @@ import { getTimezoneOffset } from "date-fns-tz";
 import "./calendar-item.scss";
 import type { FC } from "react";
 import { useEffect, useRef } from "react";
-import type {
-  EventColorDirectoryUserRadix,
-  EventColorUserRadix,
-} from "@agreeto/api/types";
+
 import { EventResponseStatus, Membership } from "@agreeto/api/types";
 import { eventMocks } from "./mock";
 import { ulid } from "ulid";
@@ -34,19 +31,7 @@ import TimeZoneSelect from "./time-zone-select";
 
 import { trpc } from "../../utils/trpc";
 import { useCalendarStore, useEventStore, useTZStore } from "../../utils/store";
-import * as tailwindConfig from "../../../tailwind.config.cjs";
-
-import resolveConfig from "tailwindcss/resolveConfig";
-
-const fullConfig = resolveConfig({
-  ...tailwindConfig,
-  content: ["./src/**/*.{html,js,ts,tsx}"],
-});
-
-export const themeColors = fullConfig.theme?.colors as Record<
-  EventColorUserRadix | EventColorDirectoryUserRadix | "mauve",
-  string
->;
+import { themeColors } from "../../utils/colors";
 
 type Props = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -288,7 +273,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
           title,
           start: startDate,
           end: endDate,
-          backgroundColor: themeColors[color],
+          backgroundColor: themeColors[color][7],
           textColor: "white",
           borderColor: "transparent",
           extendedProps: {
@@ -297,6 +282,8 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
         });
       });
     });
+
+    console.log([...newEvents, ...selectedSlots]);
 
     return [...newEvents, ...selectedSlots];
   };

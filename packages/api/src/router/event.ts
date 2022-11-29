@@ -256,7 +256,6 @@ export const eventRouter = router({
             surname: z.string(),
             email: z.string(),
             provider: z.string(),
-            // events: z.array(EventValidator.partial()).optional(),
           })
           .array(),
       }),

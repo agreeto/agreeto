@@ -16,10 +16,13 @@ import { z } from "zod";
 import { toast } from "react-toastify";
 import { useEventStore } from "../../utils/store";
 import { BiTrash } from "react-icons/bi";
-import { themeColors } from "../calendar-item/calendar-item";
+import { themeColors, unknownColorName } from "../../utils/colors";
 
 const SelectedAttendeeCard: React.FC<{
-  color?: EventColorUserRadix & EventColorDirectoryUserRadix;
+  color:
+    | EventColorUserRadix
+    | EventColorDirectoryUserRadix
+    | typeof unknownColorName;
   email: string;
   deleteAttendee: () => void;
   hideDeleteButton: boolean;
@@ -32,9 +35,7 @@ const SelectedAttendeeCard: React.FC<{
           <div
             className={"h-3 w-3 rounded-full"}
             style={{
-              backgroundColor: color
-                ? themeColors[color][7]
-                : themeColors.mauve[7],
+              backgroundColor: themeColors[color][7],
             }}
           />
           <div className="text-xs">{email}</div>
@@ -79,7 +80,10 @@ const AddUnknownAttendee: React.FC<{ text: string; clearText: () => void }> = ({
           name: text,
           surname: "",
           email: text,
-          color: "brown",
+          // Escape hatch to not have to modify types just to get typescript
+          // to accept our unknown color. We don't want the unknown color to be
+          // selectable on the backend, thus we don't add it to the enum.
+          color: unknownColorName as "red",
           provider: "google",
           responseStatus: EventResponseStatus.NEEDS_ACTION,
         });
@@ -163,7 +167,7 @@ export const Attendees: React.FC<{
             {...{
               key: attendee.id,
               // REVIW (richard): What do we need this color for when adding attendees?
-              // color: attendee.color,
+              color: attendee.color,
               email: attendee.email,
               hideDeleteButton: !!eventGroup?.isSelectionDone,
               deleteAttendee: () => removeAttendee(attendee.id),
@@ -176,6 +180,7 @@ export const Attendees: React.FC<{
           <SelectedAttendeeCard
             {...{
               key: email,
+              color: unknownColorName,
               email,
               hideDeleteButton: false,
               deleteAttendee: () => removeUnknownAttendee(email),
