@@ -10,12 +10,9 @@ export const Subscription = () => {
   const { data: subscription } = trpcApi.user.subscription.useQuery();
 
   return (
-    <div className="p-4 w-60 mx-auto">
+    <div className="p-4 w-full max-w-md mx-auto">
       {subscription ? (
-        <SubscriptionCard
-          membership={subscription.membership}
-          period={subscription.period}
-        />
+        <SubscriptionCard subscription={subscription} />
       ) : (
         <Tabs.Root defaultValue="monthly" className="space-y-2">
           <Tabs.List className="text-gray-600 text-sm w-full">
