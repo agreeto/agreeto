@@ -7,6 +7,7 @@ import {
 
 import { trpcApi } from "~features/trpc/api/hooks";
 import { Accounts } from "~pages/accounts";
+import { Formatting } from "~pages/formatting";
 import { Settings } from "~pages/settings";
 
 // Create a memory history
@@ -39,6 +40,16 @@ export const getRoutes: () => Route[] = () => {
     {
       path: "accounts",
       element: <Accounts />,
+      // TODO: add account fetching to the settings route
+      async loader({ params: _p }) {
+        // FIXME: Should prob not include all this information
+        utils.account.me.fetch();
+        return {};
+      },
+    },
+    {
+      path: "formatting",
+      element: <Formatting />,
       // TODO: add account fetching to the settings route
       async loader({ params: _p }) {
         // FIXME: Should prob not include all this information

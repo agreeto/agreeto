@@ -14,7 +14,6 @@
     "@agreeto/api": "workspace:*",
     "@agreeto/calendar-core": "workspace:*",
     "@agreeto/calendar-react": "workspace:*",
-    "@agreeto/shared": "workspace:*",
     "@agreeto/ui": "workspace:*",
     "@fullcalendar/common": "^5.11.3",
     "@fullcalendar/interaction": "^5.11.3",

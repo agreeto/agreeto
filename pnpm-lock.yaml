@@ -25,7 +25,6 @@ importers:
       '@agreeto/api': workspace:*
       '@agreeto/calendar-core': workspace:*
       '@agreeto/calendar-react': workspace:*
-      '@agreeto/shared': workspace:*
       '@agreeto/tailwind-config': workspace:*
       '@agreeto/tsconfig': workspace:*
       '@agreeto/ui': workspace:*
@@ -73,7 +72,6 @@ importers:
       '@agreeto/api': link:../../packages/api
       '@agreeto/calendar-core': link:../../packages/calendar/core
       '@agreeto/calendar-react': link:../../packages/calendar/react
-      '@agreeto/shared': link:../../packages/shared
       '@agreeto/ui': link:../../packages/ui
       '@fullcalendar/common': 5.11.3
       '@fullcalendar/interaction': 5.11.3
@@ -325,6 +323,7 @@ importers:
   packages/calendar/core:
     specifiers:
       '@agreeto/api': workspace:*
+      '@agreeto/ui': workspace:*
       '@fullcalendar/react': ^5.11.2
       '@types/chrome': ^0.0.197
       '@types/lodash': ^4.14.182
@@ -337,6 +336,7 @@ importers:
       zustand: ^4.1.4
     dependencies:
       '@agreeto/api': link:../../api
+      '@agreeto/ui': link:../../ui
       '@types/lodash': 4.14.186
       copy-to-clipboard: 3.3.2
       date-fns: 2.29.3
@@ -507,17 +507,6 @@ importers:
       '@agreeto/tsconfig': link:../config/tsconfig
       '@types/node': 18.11.7
       prisma: 4.7.0
-      typescript: 4.8.4
-
-  packages/shared:
-    specifiers:
-      '@types/node': ^18.11.7
-      tsx: ^3.12.1
-      typescript: ^4.8.4
-    dependencies:
-      tsx: 3.12.1
-    devDependencies:
-      '@types/node': 18.11.7
       typescript: 4.8.4
 
   packages/ui:
