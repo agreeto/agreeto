@@ -36,6 +36,10 @@ const routeConfig = createRouteConfig().createChildren((createRoute) => [
     path: "accounts",
     component: Accounts,
   }),
+  createRoute({
+    path: "format",
+    component: () => <>Add Format Here</>,
+  }),
 ]);
 
 export const router = createReactRouter({
