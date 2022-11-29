@@ -68,11 +68,11 @@ const AccountCard: FC<{
             <div>
               {/* Email and organizer badge */}
               <div className="flex justify-between">
-                <div className="text-sm font-normal leading-5 flex items-center gap-2">
+                <div className="flex items-center gap-2 text-sm font-normal leading-5">
                   {account.provider === "google" ? (
-                    <GoogleLogo className="h-4 w-4" />
+                    <GoogleLogo className="w-4 h-4" />
                   ) : (
-                    <MicrosoftLogo className="h-4 w-4" />
+                    <MicrosoftLogo className="w-4 h-4" />
                   )}
                   {account.email}
                 </div>
@@ -207,8 +207,13 @@ const RemoveAccountAlertDialog = ({
 
   return (
     <Dialog>
-      <Dialog.Trigger variant="glass" disabled={isPrimary}>
-        Click Me!
+      <Dialog.Trigger
+        disabled={isPrimary}
+        variant="glass"
+        className="flex w-full leading-6 text-red-7 justify-evenly disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        <HiCheckCircle className="w-4 h-4" />
+        <div>Remove Account</div>
       </Dialog.Trigger>
       <Dialog.Body variant="error">
         {/* Header */}
