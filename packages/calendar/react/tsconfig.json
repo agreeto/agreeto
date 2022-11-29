@@ -1,12 +1,10 @@
 {
   "extends": "@agreeto/tsconfig/test.json",
   "include": [
-    "node_modules/@agreeto/auth/next-auth.d.ts",
+    "../../auth/next-auth.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "vite.config.ts",
-    "../core/src/redux/store.ts",
-    "../core/src/helpers/date.ts"
+    "vite.config.ts"
   ],
   "exclude": ["dist", "build"],
   "compilerOptions": {

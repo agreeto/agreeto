@@ -37,7 +37,7 @@ const ConfirmationPane: React.FC<{
   }, [eventGroupId]);
 
   const { data: accounts } = trpc.account.me.useQuery();
-  const primaryAccount = accounts?.find((a) => a.isPrimary);
+  const primaryAccount = accounts?.find((a) => Boolean(a.userPrimary));
 
   const { data: eventGroup } = trpc.eventGroup.byId.useQuery(
     { id: eventGroupId },
@@ -173,7 +173,7 @@ const ConfirmationPane: React.FC<{
 
           {/* Info */}
           {/* <div className="pt-4 leading-none text-center">
-            <span className="text-gray-300 font-medium text-2xs-05">
+            <span className="font-medium text-gray-300 text-2xs-05">
               {!eventGroup?.isSelectionDone &&
                 'Once you confirm a slot, other slots will be removed from your actual calendar(s)'}
             </span>

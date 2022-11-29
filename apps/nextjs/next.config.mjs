@@ -16,12 +16,7 @@ const config = {
   swcMinify: true,
   // We lint & typecheck as a separate pipeline step, so we don't need to do it here.
   eslint: { ignoreDuringBuilds: !!process.env.CI },
-  typescript: { ignoreBuildErrors: !!process.env.CI }
+  typescript: { ignoreBuildErrors: !!process.env.CI },
 };
 
-export default withTM([
-  "@agreeto/api",
-  "@agreeto/auth",
-  "@agreeto/db",
-  "@agreeto/ui",
-])(config);
+export default withTM(["@agreeto/api", "@agreeto/auth", "@agreeto/db"])(config);

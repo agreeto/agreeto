@@ -1,29 +1,47 @@
-import { CalendarDaysIcon, Cog8ToothIcon } from "@heroicons/react/20/solid";
+import { CalendarDaysIcon } from "@heroicons/react/20/solid";
 import { Link } from "@tanstack/react-location";
+import { AiOutlineEdit } from "react-icons/ai";
+import { BsGear } from "react-icons/bs";
+import { CgProfile } from "react-icons/cg";
 
 export const Navbar = () => {
   return (
-    <div className="flex flex-col flex-1 pb-4 overflow-y-auto bg-white border-r border-gray-200 h-full">
+    <div className="flex flex-col flex-1 h-full pb-4 overflow-y-auto bg-white border-r border-gray-200">
       <div className="p-4 border-b">
         <img
-          className="h-8 w-8"
+          className="w-8 h-8"
           src="https://localhost:3000/icon512.png"
           alt="AgreeTo"
         />
       </div>
-      <div className="flex flex-col flex-grow">
-        <nav
-          className="flex flex-col flex-1 gap-2 bg-white items-center"
-          aria-label="Sidebar"
+
+      {/* a vertical navbar containing icon buttons */}
+      <nav className="flex flex-col justify-around flex-1 py-8">
+        <Link
+          to="calendar"
+          className="flex items-center justify-center flex-1 h-16 px-4 text-indigo-9 hover:bg-indigo-2"
         >
-          <Link to="calendar">
-            <CalendarDaysIcon className="h-10 w-10 p-1 text-indigo-600 hover:text-indigo-700" />
-          </Link>
-          <Link to="settings">
-            <Cog8ToothIcon className="h-10 w-10 p-1 text-indigo-600 hover:text-indigo-700" />
-          </Link>
-        </nav>
-      </div>
+          <CalendarDaysIcon className="w-6 h-6" />
+        </Link>
+        <Link
+          to="settings"
+          className="flex items-center justify-center flex-1 h-16 px-4 text-indigo-9 hover:bg-indigo-2"
+        >
+          <BsGear className="w-6 h-6" />
+        </Link>
+        <Link
+          to="accounts"
+          className="flex items-center justify-center flex-1 h-16 px-4 text-indigo-9 hover:bg-indigo-2"
+        >
+          <CgProfile className="w-6 h-6" />
+        </Link>
+        <Link
+          to="format"
+          className="flex items-center justify-center flex-1 h-16 px-4 text-indigo-9 hover:bg-indigo-2"
+        >
+          <AiOutlineEdit className="w-6 h-6" />
+        </Link>
+      </nav>
     </div>
   );
 };

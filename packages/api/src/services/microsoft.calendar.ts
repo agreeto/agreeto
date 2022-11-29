@@ -2,13 +2,9 @@ import { type Event, EventResponseStatus, type Attendee } from "@agreeto/db";
 import { type ICreateEvent, type IGetEvents, type IUpdateEvent } from "./types";
 import { Client } from "@microsoft/microsoft-graph-client";
 import * as msal from "@azure/msal-node";
+import { type Event as MicrosoftEvent } from "@microsoft/microsoft-graph-types-beta";
 import { azureScopes } from "@agreeto/auth";
 import { TRPCError } from "@trpc/server";
-
-// TODO: For interfaces, check https://www.npmjs.com/package/@microsoft/microsoft-graph-types-beta?activeTab=readme
-export interface MicrosoftEvent {
-  [key: string]: any;
-}
 
 export type MicrosoftMeetingProviders =
   | "skypeForConsumer"
@@ -19,8 +15,8 @@ export type MicrosoftMeetingProviders =
 // Read here: https://docs.microsoft.com/en-us/graph/api/singlevaluelegacyextendedproperty-get?view=graph-rest-1.0&tabs=javascript
 const EXTENDED_PROP_SEARCH =
   "String {66f5a359-4659-4830-9070-00047ec6ac6e} Name isAgreeToEvent";
-// const EXTENDED_PROP_ID_SEARCH =
-//   "String {66f5a359-4659-4830-9070-00047ec6ac6e} Name id";
+const EXTENDED_PROP_ID_SEARCH =
+  "String {66f5a359-4659-4830-9070-00047ec6ac6e} Name id";
 
 export class MicrosoftCalendarService {
   // private accessToken: string;
@@ -76,7 +72,7 @@ export class MicrosoftCalendarService {
     attendees,
     singleValueExtendedProperties,
   }: MicrosoftEvent): Partial<Event & { attendees: Attendee[] }> {
-    const extractResponse = (status: string) => {
+    const extractResponse = (status: string | null | undefined) => {
       return status === "accepted"
         ? EventResponseStatus.ACCEPTED
         : status === "declined"
@@ -86,30 +82,33 @@ export class MicrosoftCalendarService {
         : EventResponseStatus.NEEDS_ACTION;
     };
 
+    const isAgreeToEvent = singleValueExtendedProperties?.some(
+      (p) => p.id === EXTENDED_PROP_SEARCH && p.value === "true",
+    );
     // Get agreeToId from extended props if possible
-    // const agreeToId = singleValueExtendedProperties?.find(
-    //   (p: any) => p.id === EXTENDED_PROP_ID_SEARCH,
-    // );
+    const agreeToId = singleValueExtendedProperties?.find(
+      (p) => p.id === EXTENDED_PROP_ID_SEARCH,
+    )?.value;
 
     return {
-      // id: id,
+      id: agreeToId ?? id,
       providerEventId: id,
       title: subject || "-",
-      description: body.content || "",
-      startDate: new Date(`${start.dateTime}+00:00`),
-      endDate: new Date(`${end.dateTime}+00:00`),
-      isAgreeToEvent: singleValueExtendedProperties?.some(
-        (p: any) => p.id === EXTENDED_PROP_SEARCH && p.value === "true",
-      ),
+      description: body?.content || "",
+      startDate: new Date(`${start?.dateTime}+00:00`),
+      endDate: new Date(`${end?.dateTime}+00:00`),
+      isAgreeToEvent,
       attendees: !attendees
         ? []
-        : attendees.map((a: any) => ({
-            id: a.emailAddress.address,
-            email: a.emailAddress.address,
-            name: a.emailAddress.name || "",
+        : attendees.map((a) => ({
+            id: a.emailAddress?.address ?? "",
+            color: null,
+            eventId: agreeToId ?? (id as string),
+            email: a.emailAddress?.address ?? "",
+            name: a.emailAddress?.name ?? "",
             surname: "",
             provider: "azure-ad",
-            responseStatus: extractResponse(a.status.response),
+            responseStatus: extractResponse(a.status?.response),
           })),
     };
   }
@@ -127,14 +126,14 @@ export class MicrosoftCalendarService {
 
     try {
       // Fetch events
-      const response = await this.graphClient
+      const response = (await this.graphClient
         .api("/me/calendarview")
         .query(params)
         // .expand(
         //   `singleValueExtendedProperties($filter=(id eq '${EXTENDED_PROP_SEARCH}') or (id eq '${EXTENDED_PROP_ID_SEARCH}'))`,
         // )
         .top(100)
-        .get();
+        .get()) as { value?: MicrosoftEvent[] };
 
       return {
         rawData: response,
@@ -151,7 +150,7 @@ export class MicrosoftCalendarService {
   }
 
   async createEvent({
-    // id,
+    agreeToId,
     title,
     startDate,
     endDate,
@@ -171,16 +170,16 @@ export class MicrosoftCalendarService {
         emailAddress: { address: email, name: email },
         type: "required",
       })),
-      // singleValueExtendedProperties: [
-      //   {
-      //     id: EXTENDED_PROP_SEARCH,
-      //     value: "true",
-      //   },
-      //   {
-      //     id: EXTENDED_PROP_ID_SEARCH,
-      //     value: id,
-      //   },
-      // ],
+      singleValueExtendedProperties: [
+        {
+          id: EXTENDED_PROP_SEARCH,
+          value: "true",
+        },
+        {
+          id: EXTENDED_PROP_ID_SEARCH,
+          value: agreeToId,
+        },
+      ],
     };
 
     try {

@@ -18,44 +18,56 @@ datasource db {
 // Start Mostly Next-Auth.js
 // ======================================
 model Account {
-    id                String       @id @default(cuid())
-    userId            String
-    colorId           String
+    id                String              @id @default(cuid())
     // Email is optional cause it's not set at login, but with a custom event
     // Meaning it is null initially, but should always be set after the first login
     email             String?
     provider          String
     type              String
     providerAccountId String
-    refresh_token     String       @db.Text
-    access_token      String       @db.Text
+    refresh_token     String              @db.Text
+    access_token      String              @db.Text
     expires_at        Int
     token_type        String
     scope             String
-    id_token          String?      @db.Text
+    id_token          String?             @db.Text
     session_state     String?
     ext_expires_in    Int?
-    isPrimary         Boolean      @default(false)
-    user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
     eventGroups       EventGroup[]
     events            Event[]
-    color             AccountColor @relation(fields: [colorId], references: [id])
+    eventColor        EventColorUserRadix @default(value: violet)
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @default(now()) @updatedAt
+    // one user has many accounts
+    userId      String
+    user        User     @relation("UserToAccountMany", fields: [userId], references: [id], onDelete: Cascade)
+    // one user has one primaryAccount as the organiser of events; optional cause it's set with a custom events.linkAccount hook
+    userPrimary User?    @relation("UserToAccountPrimary")
 
     @@unique([provider, providerAccountId])
 }
 
-model AccountColor {
-    id        String @id @default(cuid())
-    color     String
-    darkColor String
-    order     Int
+// ============================================
+// The allowed colors for the account's event
+// as defined by radix-colors
+// ============================================
+enum EventColorUserRadix {
+    crimson
+    lime
+    yellow
+    sky
+    violet
 
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @default(now()) @updatedAt
-    accounts  Account[]
+    @@map("EventColorUserRadix")
+}
+
+enum EventColorDirectoryUserRadix {
+    orange
+    red
+    pink
+    tomato
+    brown
 }
 
 model Session {
@@ -67,22 +79,34 @@ model Session {
 }
 
 model User {
-    id               String          @id @default(cuid())
-    name             String?
-    email            String?         @unique
-    emailVerified    DateTime?
-    image            String?
-    accounts         Account[]
-    sessions         Session[]
-    payments         Invoice[]
-    preference       Preference?
-    membership       Membership      @default(FREE)
-    hasTrialed       Boolean         @default(false)
-    stripeCustomer   StripeCustomer? @relation(fields: [stripeCustomerId], references: [id])
-    stripeCustomerId String?
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
+    id                       String          @id @default(cuid())
+    name                     String?
+    email                    String?         @unique
+    emailVerified            DateTime?
+    image                    String?
+    sessions                 Session[]
+    preference               Preference?
+    // ================
+    // Stripe stuff
+    // ================
+    membership               Membership      @default(FREE)
+    paidUntil                Int? // in milliseconds
+    stripeCustomerId         String?
+    stripePlanId             String?
+    subscriptionCanceledDate Int?
+    payments                 Invoice[]
+    hasTrialed               Boolean         @default(false)
+    stripeCustomer           StripeCustomer? @relation(fields: [stripeCustomerId], references: [id])
+    // ================
+    // Stripe stuff
+    // ================
+    createdAt                DateTime        @default(now())
+    updatedAt                DateTime        @default(now()) @updatedAt
+    // one user has many accounts
+    accounts                 Account[]       @relation("UserToAccountMany")
+    // one user has one primaryAccount as the organiser of events; optional cause it's set with a custom events.linkAccount hook
+    accountPrimaryId         String?         @unique
+    accountPrimary           Account?        @relation("UserToAccountPrimary", fields: [accountPrimaryId], references: [id])
 }
 
 model VerificationToken {

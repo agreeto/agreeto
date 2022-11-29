@@ -53,7 +53,7 @@ type GetGoogleUserOptions = {
 
 type FormattedUser = Exclude<ReturnType<typeof formatUser>, null>;
 
-export const getGoogleUsers = async ({
+export const getGoogleWorkspaceUsers = async ({
   accessToken,
   refreshToken,
   search,
@@ -70,7 +70,6 @@ export const getGoogleUsers = async ({
     viewType: "domain_public",
     query: search,
   });
-
   const formatted = (response.data.users ?? [])
     .map((u) => formatUser(u))
     .filter((u): u is FormattedUser => !!u);
