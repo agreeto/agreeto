@@ -2,7 +2,6 @@
 module.exports = {
   // mode: "jit",
   darkMode: "class",
-  content: ["./**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
@@ -20,5 +19,6 @@ module.exports = {
     require("@tailwindcss/typography"),
     require("@tailwindcss/line-clamp"),
     require("tailwindcss-radix"),
+    require("windy-radix-palette"),
   ],
 };

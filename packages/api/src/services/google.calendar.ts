@@ -1,5 +1,6 @@
-import { type Event, EventResponseStatus, type Attendee } from "@agreeto/db";
+import { EventResponseStatus } from "@agreeto/db";
 import { type calendar_v3, google } from "googleapis";
+
 import { type ICreateEvent, type IGetEvents, type IUpdateEvent } from "./types";
 export class GoogleCalendarService {
   private accessToken: string;
@@ -32,8 +33,8 @@ export class GoogleCalendarService {
     description,
     attendees,
     extendedProperties,
-  }: calendar_v3.Schema$Event): Partial<Event & { attendees: Attendee[] }> {
-    const extractResponse = (status: string) => {
+  }: calendar_v3.Schema$Event) {
+    const extractResponse = (status: string | null | undefined) => {
       return status === "accepted"
         ? EventResponseStatus.ACCEPTED
         : status === "declined"
@@ -45,9 +46,11 @@ export class GoogleCalendarService {
 
     const isAgreeToEvent =
       extendedProperties?.private?.isAgreeToEvent === "true";
+    const agreeToId = extendedProperties?.private?.agreeToId;
 
     return {
-      //id: id as string,
+      // let agreeToId take precedence over the provider's id if it exists
+      id: agreeToId ?? (id as string),
       providerEventId: id as string,
       title: summary || "-",
       description: description || "",
@@ -59,12 +62,12 @@ export class GoogleCalendarService {
         : attendees.map((a) => ({
             id: a.id as string,
             color: null,
-            eventId: id!,
-            email: a.email!,
+            eventId: agreeToId ?? (id as string),
+            email: a.email as string,
             name: a.displayName || "",
             surname: "",
             provider: "google",
-            responseStatus: extractResponse(a.responseStatus!),
+            responseStatus: extractResponse(a.responseStatus),
           })),
     };
   }
@@ -80,10 +83,13 @@ export class GoogleCalendarService {
       orderBy: "startTime",
       maxResults: 100,
       singleEvents: true,
+      ...(startDate && {
+        timeMin: startDate.toISOString(),
+      }),
+      ...(endDate && {
+        timeMax: endDate.toISOString(),
+      }),
     };
-
-    if (startDate) params.timeMin = new Date(startDate).toISOString();
-    if (endDate) params.timeMax = new Date(endDate).toISOString();
 
     // Fetch events
     const response = await this.calendarClient.events.list(params);
@@ -95,6 +101,7 @@ export class GoogleCalendarService {
   }
 
   async createEvent({
+    agreeToId,
     title,
     startDate,
     endDate,
@@ -102,6 +109,8 @@ export class GoogleCalendarService {
   }: ICreateEvent) {
     // Generate the query params
     const params: calendar_v3.Params$Resource$Events$Insert = {
+      // Note: We don't send an id here because we want Google to generate one for us
+      // But we'll send the agreeToId as a private property so we can reuse it later
       calendarId: "primary",
       sendNotifications: true,
       sendUpdates: "all",
@@ -116,6 +125,7 @@ export class GoogleCalendarService {
         extendedProperties: {
           private: {
             isAgreeToEvent: "true",
+            agreeToId,
           },
         },
         attendees: attendeeEmails?.map((email) => ({ email })),

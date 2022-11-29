@@ -10,8 +10,7 @@
     "db-generate": "prisma generate",
     "db-push": "prisma db push",
     "db-migrate": "prisma migrate dev",
-    "db-down": "docker compose down",
-    "typecheck": "tsc --noEmit"
+    "db-down": "docker compose down"
   },
   "dependencies": {
     "@prisma/client": "^4.5.0",
@@ -21,7 +20,7 @@
   "devDependencies": {
     "@agreeto/tsconfig": "workspace:*",
     "@types/node": "^18.11.7",
-    "prisma": "^4.5.0",
+    "prisma": "^4.6.1",
     "typescript": "^4.8.4"
   }
 }

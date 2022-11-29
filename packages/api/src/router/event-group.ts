@@ -15,11 +15,7 @@ export const eventGroupRouter = router({
           deletedAt: null,
         },
         include: {
-          account: {
-            include: {
-              color: true,
-            },
-          },
+          account: true,
           events: {
             where: {
               deletedAt: null,
@@ -68,12 +64,12 @@ export const eventGroupRouter = router({
     .mutation(async ({ ctx, input }) => {
       const accounts = await ctx.prisma.account.findMany({
         where: { userId: ctx.user.id },
-        include: { color: true },
+        include: { userPrimary: true },
       });
       const accountEmails = accounts
         .map((a) => a.email)
         .filter((e): e is string => Boolean(e));
-      const primaryAccount = accounts.find((a) => a.isPrimary);
+      const primaryAccount = accounts.find((a) => !!a.userPrimary);
 
       if (!primaryAccount) {
         // Should not happen
@@ -140,6 +136,7 @@ export const eventGroupRouter = router({
           promises.push(
             service
               .createEvent({
+                agreeToId: ev.id,
                 title: ev.title,
                 attendeeEmails: [...attendeeEmails],
                 startDate: ev.startDate,

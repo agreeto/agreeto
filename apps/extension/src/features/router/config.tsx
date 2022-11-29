@@ -5,6 +5,7 @@ import {
   createRouteConfig,
 } from "@tanstack/react-router";
 
+import { Accounts } from "~pages/accounts";
 import { SettingsLayout } from "~pages/settings/layout";
 import { SignoutPage } from "~pages/settings/signout";
 import { Subscription } from "~pages/settings/subscription";
@@ -31,6 +32,10 @@ const routeConfig = createRouteConfig().createChildren((createRoute) => [
       component: SignoutPage,
     }),
   ]),
+  createRoute({
+    path: "accounts",
+    component: Accounts,
+  }),
 ]);
 
 export const router = createReactRouter({

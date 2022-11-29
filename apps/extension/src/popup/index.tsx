@@ -3,7 +3,6 @@ import "@fullcalendar/common/main.css";
 import "@fullcalendar/timegrid/main.css";
 import "../style.css";
 
-// import "@agreeto/ui/dist/styles.css";
 import { Spinner } from "@agreeto/ui";
 import { Outlet, RouterProvider } from "@tanstack/react-router";
 
@@ -33,7 +32,7 @@ const PopupContent: React.FC = () => {
       {/* maximum size of popup */}
       <div className="w-[800] h-[600]">
         {isAuthenticating ? (
-          <div className="h-full w-full grid place-content-center">
+          <div className="grid w-full h-full place-content-center">
             <div className="h-12">
               <Spinner />
             </div>
