@@ -64,7 +64,10 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     session({ session, user }) {
       if (session.user) {
+        /** @see next-auth.d.ts */
         session.user.id = user.id;
+        session.user.membership = user.membership;
+        session.user.hasTrialed = user.hasTrialed;
       }
       return session;
     },
@@ -106,6 +109,8 @@ export const authOptions: NextAuthOptions = {
               : undefined,
         },
       });
+
+      return;
     },
   },
 

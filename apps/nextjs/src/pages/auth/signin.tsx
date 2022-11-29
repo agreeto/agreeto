@@ -1,5 +1,4 @@
 import { signIn } from "next-auth/react";
-
 import { Button, GoogleLogo, MicrosoftLogo, Spinner } from "@agreeto/ui";
 import { type GetServerSideProps, type NextPage } from "next";
 import { trpc } from "../../utils/trpc";
@@ -7,7 +6,7 @@ import { Membership } from "@agreeto/api/types";
 import { useRouter } from "next/router";
 import { FaStripe } from "react-icons/fa";
 import { Card } from "../../components/card";
-import React from "react";
+import { appRouter, createContext } from "@agreeto/api";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const searchParams = new URLSearchParams(ctx.req.url?.split("?")[1]);
@@ -20,13 +19,35 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     origin?.includes("live") ||
     origin?.includes("microsoft");
 
-  // Redirect to the callbackUrl if we're coming from an OAuth provider
+  // This means we have completed the sign in flow
   if (fromOAuth && callbackUrl) {
+    // @ts-expect-error - Not sure how to type this to accept GetServerSidePropsContext across packages - but they are compatible
+    const trpcCtx = await createContext(ctx);
+    const caller = appRouter.createCaller(trpcCtx);
+
+    // Check if user signed in for the first time,
+    // if so, redirect to starting a trial
+    if (trpcCtx?.user?.membership === "FREE" && !trpcCtx?.user?.hasTrialed) {
+      const { checkoutUrl } = await caller.stripe.checkout.create({
+        plan: "PRO",
+        period: "monthly",
+      });
+      return { redirect: { destination: checkoutUrl, permanent: false } };
+    }
+
+    // Else, redirect to the callbackUrl
     return { redirect: { destination: callbackUrl, permanent: false } };
   }
+
+  // Here we are coming straight from the app, and should
+  // continue the sign in flow
   return { props: {} };
 };
 
+/**
+ * This protects the page if the user manually inputs the URL
+ * in the browser, even though they're on the FREE plan.
+ */
 const UpgradeContent = () => {
   const router = useRouter();
   const { mutate: upgrade } = trpc.stripe.checkout.create.useMutation({
