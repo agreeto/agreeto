@@ -2,7 +2,10 @@ import * as Tooltip from "@radix-ui/react-tooltip";
 import type { ReactNode, FC } from "react";
 import { Button } from "./button";
 
-export const PaywallTooltip: FC<{ children: ReactNode }> = ({ children }) => {
+export const PaywallTooltip: FC<{
+  onUpgradeClick: () => void;
+  children: ReactNode;
+}> = ({ onUpgradeClick, children }) => {
   return (
     <Tooltip.Provider>
       <Tooltip.Root>
@@ -23,8 +26,7 @@ export const PaywallTooltip: FC<{ children: ReactNode }> = ({ children }) => {
                 <Button
                   className="py-1"
                   variant="outline"
-                  // TODO: wait for pull#12 to be merged
-                  // onClick={() => onPageChange?.("settings")}
+                  onClick={() => onUpgradeClick()}
                 >
                   Upgrade
                 </Button>

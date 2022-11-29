@@ -1,8 +1,9 @@
 import { Membership } from "@agreeto/api/types";
-import { Button, PaywallTooltip } from "@agreeto/ui";
+import { Button } from "@agreeto/ui";
 
 import AccountCard from "~features/accounts/account-card";
 import { signIn } from "~features/auth/sign-in";
+import { PaywallTooltip } from "~features/paywall";
 import { trpcApi } from "~features/trpc/api/hooks";
 
 /**

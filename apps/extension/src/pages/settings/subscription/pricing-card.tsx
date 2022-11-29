@@ -45,9 +45,9 @@ export const PricingCard = ({ plan, period }: PricingCardProps) => {
       </p>
 
       {/* Price */}
-      <div className="flex gap-1 items-center">
+      <div className="flex gap-1 items-end">
         <b className="font-bold text-3xl">${price}</b>
-        <p className="text-xs text-gray-400 break-words w-min">per {period}</p>
+        <p className="text-xs text-gray-400 break-words w-min">{period}</p>
       </div>
 
       {/* Button */}
