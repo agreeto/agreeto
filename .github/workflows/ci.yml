@@ -62,6 +62,8 @@ jobs:
 
       - name: Build, lint and type-check
         run: pnpm turbo build lint typecheck
+        env:
+          NEXTAUTH_SECRET: supersecret
 
       # TODO: Maybe add manypkg later
       # - name: Check workspaces
