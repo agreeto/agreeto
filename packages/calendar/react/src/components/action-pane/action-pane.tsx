@@ -12,7 +12,7 @@ import { Spinner } from "@agreeto/ui";
 import { trpc } from "../../utils/trpc";
 import { useEventStore } from "../../utils/store";
 import clsx from "clsx";
-import { SharedRoutes } from "../../calendar";
+import { type SharedRoutes } from "../../calendar";
 
 const actionTypes = {
   "Copy and Close":

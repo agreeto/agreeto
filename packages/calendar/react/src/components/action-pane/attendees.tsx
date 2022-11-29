@@ -17,7 +17,7 @@ import { toast } from "react-toastify";
 import { useEventStore } from "../../utils/store";
 import { BiTrash } from "react-icons/bi";
 import { themeColors, unknownColorName } from "../../utils/colors";
-import { SharedRoutes } from "../../calendar";
+import { type SharedRoutes } from "../../calendar";
 
 const SelectedAttendeeCard: React.FC<{
   color:
