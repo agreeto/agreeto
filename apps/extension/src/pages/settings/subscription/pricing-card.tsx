@@ -36,7 +36,7 @@ export const PricingCard = ({ plan, period }: PricingCardProps) => {
 
       {/* Title */}
       <h3 className="text-xl font-semibold capitalize">
-        {`${plan.toLocaleLowerCase} Plan`}
+        {`${plan.toLocaleLowerCase()} Plan`}
       </h3>
 
       {/* Description */}
