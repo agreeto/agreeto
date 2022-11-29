@@ -11,7 +11,7 @@ export const Subscription = () => {
 
   return (
     <div className="p-4 w-full max-w-md mx-auto">
-      {subscription ? (
+      {subscription && subscription.membership !== "TRIAL" ? (
         <SubscriptionCard subscription={subscription} />
       ) : (
         <Tabs.Root defaultValue="monthly" className="space-y-2">
