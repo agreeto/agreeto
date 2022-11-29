@@ -61,9 +61,8 @@ jobs:
         run: pnpm db-generate
 
       - name: Build, lint and type-check
+        run: cp .env.example .env
         run: pnpm turbo build lint typecheck
-        env:
-          NEXTAUTH_SECRET: supersecret
 
       # TODO: Maybe add manypkg later
       # - name: Check workspaces
