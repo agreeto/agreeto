@@ -13,7 +13,9 @@ import { Subscription } from "~pages/settings/subscription";
 const routeConfig = createRouteConfig().createChildren((createRoute) => [
   createRoute({
     path: "calendar",
-    component: Calendar,
+    component: () => (
+      <Calendar onPageChange={(to) => router.navigate({ to })} />
+    ),
   }),
   createRoute({
     path: "settings",

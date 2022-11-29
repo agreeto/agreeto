@@ -12,6 +12,7 @@ import { Spinner } from "@agreeto/ui";
 import { trpc } from "../../utils/trpc";
 import { useEventStore } from "../../utils/store";
 import clsx from "clsx";
+import { SharedRoutes } from "../../calendar";
 
 const actionTypes = {
   "Copy and Close":
@@ -23,7 +24,7 @@ export type ActionType = keyof typeof actionTypes;
 
 type Props = {
   onClose?: () => void;
-  onPageChange?: (page: string) => void;
+  onPageChange?: (page: SharedRoutes) => void;
   onPrimaryActionClick?: (type: ActionType) => void;
 };
 

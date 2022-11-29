@@ -17,6 +17,7 @@ import { toast } from "react-toastify";
 import { useEventStore } from "../../utils/store";
 import { BiTrash } from "react-icons/bi";
 import { themeColors, unknownColorName } from "../../utils/colors";
+import { SharedRoutes } from "../../calendar";
 
 const SelectedAttendeeCard: React.FC<{
   color:
@@ -127,7 +128,7 @@ const AttendeeOptionCard: React.FC<{
 export const Attendees: React.FC<{
   eventGroup?: RouterOutputs["eventGroup"]["byId"];
 
-  onPageChange?: (page: string) => void;
+  onPageChange?: (page: SharedRoutes) => void;
 }> = ({ eventGroup, onPageChange }) => {
   const [showProTooltip, setShowProTooltip] = useState(false);
   const [isAttendeePopupOpen, setIsAttendeePopupOpen] = useState(false);
@@ -256,7 +257,7 @@ export const Attendees: React.FC<{
                 </div>
                 <div
                   className="mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border border-primary text-primary"
-                  onClick={() => onPageChange?.("settings")}
+                  onClick={() => onPageChange?.("/settings/subscription")}
                 >
                   Upgrade
                 </div>
