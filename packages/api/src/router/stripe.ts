@@ -185,6 +185,7 @@ export const stripeRouter = router({
         z.object({
           plan: z.enum([Membership.PRO, Membership.PREMIUM]),
           period: z.enum(["monthly", "annually"]),
+          success_url: z.string().optional(),
         }),
       )
       .mutation(async ({ ctx, input }) => {
@@ -218,7 +219,8 @@ export const stripeRouter = router({
             },
           ],
 
-          success_url: `${process.env.NEXTAUTH_URL}/payment/success`,
+          success_url:
+            input.success_url ?? `${process.env.NEXTAUTH_URL}/payment/success`,
           cancel_url: `${process.env.NEXTAUTH_URL}/payment/cancel`,
           subscription_data: {
             trial_period_days: !user.hasTrialed ? 7 : undefined,

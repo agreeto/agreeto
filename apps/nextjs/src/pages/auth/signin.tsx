@@ -17,7 +17,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const fromOAuth =
     origin?.includes("google") ||
     origin?.includes("live") ||
-    origin?.includes("microsoft");
+    origin?.includes("microsoft") ||
+    origin?.includes("stripe");
 
   // This means we have completed the sign in flow
   if (fromOAuth && callbackUrl) {
@@ -31,6 +32,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       const { checkoutUrl } = await caller.stripe.checkout.create({
         plan: "PRO",
         period: "monthly",
+        // come back here after checkout is complete to finish the sign in flow
+        success_url: `https://${ctx.req.headers.host}/${ctx.req.url}`,
       });
       return { redirect: { destination: checkoutUrl, permanent: false } };
     }
