@@ -85,7 +85,7 @@ export const userRouter = router({
       status: subscription.status,
       current_period_end: subscription.current_period_end,
       membership,
-      period,
+      period: period as "monthly" | "annually", // FIXME: Why is `as` needed
     };
   }),
 
