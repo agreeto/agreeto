@@ -2,6 +2,7 @@ import _React from "react";
 
 export * from "./button";
 export * from "./logo";
+export * as GmailCompose from "./gmail";
 export * from "./modal";
 export * from "./spinner";
 export * from "./paywall-tooltip";
