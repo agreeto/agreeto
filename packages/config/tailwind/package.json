@@ -12,10 +12,13 @@
     }
   },
   "devDependencies": {
+    "@radix-ui/colors": "^0.1.8",
     "@tailwindcss/forms": "^0.5.3",
     "@tailwindcss/line-clamp": "^0.4.2",
     "@tailwindcss/typography": "^0.5.7",
-    "postcss": "^8.4.14",
-    "tailwindcss": "^3.1.8"
+    "tailwindcss": "^3.1.8",
+    "tailwindcss-radix": "^2.6.1",
+    "windy-radix-palette": "^0.3.0",
+    "postcss": "^8.4.14"
   }
 }

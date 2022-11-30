@@ -8,8 +8,8 @@
     "sourceMap": true,
     "resolveJsonModule": true,
     "noEmit": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noImplicitReturns": true
   },
   "exclude": ["node_modules"]

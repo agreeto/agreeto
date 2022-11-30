@@ -1,6 +1,6 @@
 // import calendarCssText from "data-text:~/../../packages/calendar/dist/assets/index.css";
 // import cssText from "data-text:~/contents/all-pages-content-styles.css";
-import { Outlet } from "@tanstack/react-location";
+import { Outlet } from "@tanstack/react-router";
 import type { PlasmoContentScript } from "plasmo";
 import React from "react";
 

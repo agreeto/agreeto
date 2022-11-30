@@ -18,15 +18,16 @@
       "outputs": [".next/**", ".expo/**", ".plasmo/**", "build/**", "dist/**"]
     },
     "lint": {
-      "outputs": [],
-      "cache": false
+      "outputs": []
     },
     "typecheck": {
+      "dependsOn": ["^db-generate", "^build"],
       "outputs": [],
       "cache": false
     }
   },
   "globalEnv": [
+    "CI",
     "NODE_ENV",
     "NEXT_PUBLIC_PORT",
     "VERCEL",
@@ -49,6 +50,6 @@
     "STRIPE_PK",
     "STRIPE_WEBHOOK_SECRET",
     "STRIPE_MONTHLY_PRICE_ID",
-    "STRIPE_YEARLY_PRICE_ID"
+    "STRIPE_ANNUALLY_PRICE_ID"
   ]
 }

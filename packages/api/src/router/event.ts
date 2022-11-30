@@ -2,8 +2,13 @@ import { router, privateProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { GoogleCalendarService } from "../services/google.calendar";
-import { EventResponseStatus, type Event } from "@agreeto/db";
-import { getCalendarService } from "../services/service-helpers";
+import type { Account } from "@agreeto/db";
+import { EventResponseStatus } from "@agreeto/db";
+import {
+  type DirectoryUserEventSchema,
+  getCalendarService,
+} from "../services/service-helpers";
+import { EventColorDirectoryUserRadix } from "@agreeto/db/client-types";
 
 export const eventRouter = router({
   // Get Accounts and AgreeTo Events
@@ -14,7 +19,6 @@ export const eventRouter = router({
       const [accounts, userEvents] = await Promise.all([
         ctx.prisma.account.findMany({
           where: { userId: ctx.user.id },
-          include: { color: true },
         }),
         ctx.prisma.event.findMany({
           where: {
@@ -28,11 +32,7 @@ export const eventRouter = router({
             },
           },
           include: {
-            account: {
-              include: {
-                color: true,
-              },
-            },
+            account: true,
             attendees: true,
           },
         }),
@@ -46,7 +46,6 @@ export const eventRouter = router({
           return events.map((e) => ({
             ...e,
             account,
-            color: account.color.color,
           }));
         }),
       );
@@ -84,7 +83,6 @@ export const eventRouter = router({
         attendees: z.array(
           z.object({
             id: z.string(),
-            color: z.string(),
             name: z.string(),
             surname: z.string(),
             email: z.string(),
@@ -209,9 +207,9 @@ export const eventRouter = router({
         const updatePromise = (async () => {
           const accounts = await ctx.prisma.account.findMany({
             where: { userId: ctx.user.id },
-            include: { color: true },
+            include: { userPrimary: true },
           });
-          const primaryAccount = accounts.find((a) => a.isPrimary);
+          const primaryAccount = accounts.find((a) => !!a.userPrimary);
           if (!primaryAccount) {
             throw new TRPCError({
               code: "BAD_REQUEST",
@@ -251,12 +249,11 @@ export const eventRouter = router({
         users: z
           .object({
             id: z.string(),
-            color: z.string(),
+            color: z.nativeEnum(EventColorDirectoryUserRadix),
             name: z.string(),
             surname: z.string(),
             email: z.string(),
             provider: z.string(),
-            // events: z.array(EventValidator.partial()).optional(),
           })
           .array(),
       }),
@@ -264,54 +261,63 @@ export const eventRouter = router({
     .query(async ({ ctx, input }) => {
       const accounts = await ctx.prisma.account.findMany({
         where: { userId: ctx.user.id },
-        include: { color: true },
       });
-      const googleAccounts = accounts.filter(
-        (account) => account.provider === "google",
-      );
 
       const result = [...input.users].map((u) => ({
         ...u,
-        events: [] as Partial<Event>[],
+        events: [] as z.infer<typeof DirectoryUserEventSchema>[],
       }));
       const promises: Promise<void>[] = [];
 
-      input.users
-        .filter((user) => user.provider === "google")
-        .forEach((user) => {
-          googleAccounts.forEach((account) => {
-            const google = new GoogleCalendarService(
-              account.access_token,
-              account.refresh_token,
-            );
+      input.users.forEach((user) => {
+        // Only work on Google accounts
+        if (user.provider !== "google") return;
 
-            promises.push(
-              google
-                .getEvents({
-                  startDate: input.startDate,
-                  endDate: input.endDate,
-                  email: user.email,
-                })
-                .then(({ events }) => {
-                  const foundUser = result.find((r) => r.id === user.id);
+        accounts.forEach((account) => {
+          // Only work on Google accounts
+          if (account.provider !== "google") return;
 
-                  if (foundUser) {
-                    foundUser.events = events.map((e) => ({
-                      ...e,
-                      color: user.color,
-                      account,
-                    }));
-                    // FIXME: Assign random?
-                    foundUser.color = "#0165FF";
-                  }
-                })
-                .catch((e) => console.error("Could not fetch user events", e)),
-            );
-          });
+          const google = new GoogleCalendarService(
+            account.access_token,
+            account.refresh_token,
+          );
+
+          // TODO: Add domain check
+
+          promises.push(
+            google
+              .getEvents({
+                startDate: input.startDate,
+                endDate: input.endDate,
+                email: user.email,
+              })
+              .then(({ events }) => {
+                const foundUser = result.find((r) => r.id === user.id);
+
+                if (foundUser) {
+                  foundUser.events = events.map((e) => ({
+                    ...e,
+                    color: user.color,
+                  }));
+                }
+              })
+              .catch((e) => console.error("Could not fetch user events", e)),
+          );
         });
+      });
 
       await Promise.all(promises);
 
       return result;
     }),
 });
+
+/**
+ * Checks if the two emails are on the same domain
+ * note (richard): didn't feel like implementing something via the browser's email validation regex, may need to revisit this for more robustness (subdomains etc)
+ * @link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#basic_validation
+ **/
+const _isDomainEqual = (
+  email1: NonNullable<Account["email"]>,
+  email2: NonNullable<Account["email"]>,
+) => email1.split("@")[1] === email2.split("@")[1];

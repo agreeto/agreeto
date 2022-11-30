@@ -3,10 +3,5 @@
   "compilerOptions": {
     "target": "es2017"
   },
-  "include": [
-    "node_modules/@agreeto/auth/next-auth.d.ts",
-    "src",
-    "index.ts",
-    "transformer.ts"
-  ]
+  "include": ["../auth/next-auth.d.ts", "src", "index.ts", "transformer.ts"]
 }

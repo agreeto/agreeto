@@ -1,5 +1,4 @@
 import "@agreeto/tailwind-config";
-import "@agreeto/ui/dist/styles.css";
 import "react-toastify/dist/ReactToastify.css";
 import { add, endOfWeek, startOfWeek } from "date-fns";
 import ActionPane from "./components/action-pane";
@@ -15,11 +14,14 @@ import { type PLATFORM } from "@agreeto/calendar-core";
 import { trpc } from "./utils/trpc";
 import { useCalendarStore, useEventStore, useTZStore } from "./utils/store";
 
+/** A bunch of routes that all apps must implement in order for the routes to be somewhat typesafe */
+export type SharedRoutes = "/settings/subscription";
+
 type Props = {
   onClose?: () => void;
   renderKey?: number;
   platform?: PLATFORM;
-  onPageChange?: (page: string) => void;
+  onPageChange: (page: SharedRoutes) => void;
   onPrimaryActionClick?: (type: ActionType) => void;
 };
 

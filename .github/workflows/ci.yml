@@ -1,0 +1,80 @@
+# see https://github.com/t3-oss/create-t3-turbo/blob/main/.github/workflows/ci.yml
+
+name: CI
+
+on:
+  pull_request:
+    branches: ["*"]
+  push:
+    branches: ["main"]
+
+# You can leverage Vercel Remote Caching with Turbo to speed up your builds
+# @link https://turborepo.org/docs/core-concepts/remote-caching#remote-caching-on-vercel-builds
+# env:
+#   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+#   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    env:
+      NEXT_PUBLIC_EXTENSION_ID: nonce
+      NEXT_PUBLIC_OUTLOOK_ADDIN_URL: https://localhost:8082
+      NEXT_PUBLIC_PORT: 3000
+
+      NEXTAUTH_URL: https://localhost:3000
+      NEXTAUTH_SECRET: supersecret
+      GOOGLE_ID: supersecret
+      GOOGLE_SECRET: supersecret
+      AZURE_AD_CLIENT_ID: supersecret
+      AZURE_AD_CLIENT_SECRET: supersecret
+
+      STRIPE_PK: public
+      STRIPE_SK: secret
+      STRIPE_WEBHOOK_SECRET: nonce
+      STRIPE_MONTHLY_PRICE_ID: nonce
+      STRIPE_ANNUALLY_PRICE_ID: nonce
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.2.4
+
+      - name: Setup Node 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install deps (with cache)
+        run: pnpm install
+
+      - name: Check formatting
+        run: pnpm format:check
+
+      # This shouldn't be necessary, it should happen automatically
+      # since it's part of the pipeline and the `typecheck` depends on it
+      - name: Generate prisma
+        run: pnpm db-generate
+
+      - name: Build, lint and typecheck
+        run: pnpm turbo build lint typecheck
+
+      # TODO: Maybe add manypkg later
+      # - name: Check workspaces
+      #   run: pnpm manypkg check

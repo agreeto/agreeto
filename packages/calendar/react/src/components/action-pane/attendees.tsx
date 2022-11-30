@@ -5,6 +5,10 @@ import { BiSearch } from "react-icons/bi";
 import { Float } from "@headlessui-float/react";
 import { trpc } from "../../utils/trpc";
 import { type RouterOutputs } from "@agreeto/api";
+import type {
+  EventColorUserRadix,
+  EventColorDirectoryUserRadix,
+} from "@agreeto/api/types";
 import { EventResponseStatus, Membership } from "@agreeto/api/types";
 import clsx from "clsx";
 import { DebouncedInput } from "./debounced-input";
@@ -12,9 +16,14 @@ import { z } from "zod";
 import { toast } from "react-toastify";
 import { useEventStore } from "../../utils/store";
 import { BiTrash } from "react-icons/bi";
+import { themeColors, unknownColorName } from "../../utils/colors";
+import { type SharedRoutes } from "../../calendar";
 
 const SelectedAttendeeCard: React.FC<{
-  color: string;
+  color:
+    | EventColorUserRadix
+    | EventColorDirectoryUserRadix
+    | typeof unknownColorName;
   email: string;
   deleteAttendee: () => void;
   hideDeleteButton: boolean;
@@ -25,8 +34,10 @@ const SelectedAttendeeCard: React.FC<{
         {/* Color and email */}
         <div className="flex items-center space-x-2">
           <div
-            className="h-3 w-3 rounded-full"
-            style={{ backgroundColor: color }}
+            className={"h-3 w-3 rounded-full"}
+            style={{
+              backgroundColor: themeColors[color][7],
+            }}
           />
           <div className="text-xs">{email}</div>
         </div>
@@ -70,7 +81,10 @@ const AddUnknownAttendee: React.FC<{ text: string; clearText: () => void }> = ({
           name: text,
           surname: "",
           email: text,
-          color: "#C4C4C4",
+          // Escape hatch to not have to modify types just to get typescript
+          // to accept our unknown color. We don't want the unknown color to be
+          // selectable on the backend, thus we don't add it to the enum.
+          color: unknownColorName as "red",
           provider: "google",
           responseStatus: EventResponseStatus.NEEDS_ACTION,
         });
@@ -114,7 +128,7 @@ const AttendeeOptionCard: React.FC<{
 export const Attendees: React.FC<{
   eventGroup?: RouterOutputs["eventGroup"]["byId"];
 
-  onPageChange?: (page: string) => void;
+  onPageChange?: (page: SharedRoutes) => void;
 }> = ({ eventGroup, onPageChange }) => {
   const [showProTooltip, setShowProTooltip] = useState(false);
   const [isAttendeePopupOpen, setIsAttendeePopupOpen] = useState(false);
@@ -131,7 +145,7 @@ export const Attendees: React.FC<{
   // Fetch directory users from providers
   const { data: directoryUsers, isFetching: isLoadingUsers } =
     trpc.user.getFriends.useQuery(
-      { search: attendeeText, occupiedColors: attendees.map((u) => u.color) },
+      { search: attendeeText, occupiedColors: attendees.map((a) => a.color) },
       {
         keepPreviousData: true,
         staleTime: 60 * 1000,
@@ -147,13 +161,13 @@ export const Attendees: React.FC<{
           {!eventGroup?.isSelectionDone ? "Add attendees" : "Attendees"}
         </span>
       </div>
-
       <div className="max-h-36 space-y-1 overflow-auto py-1">
         {/* Selected attendees */}
         {attendees.map((attendee) => (
           <SelectedAttendeeCard
             {...{
               key: attendee.id,
+              // REVIW (richard): What do we need this color for when adding attendees?
               color: attendee.color,
               email: attendee.email,
               hideDeleteButton: !!eventGroup?.isSelectionDone,
@@ -163,11 +177,11 @@ export const Attendees: React.FC<{
         ))}
 
         {/* Unknown attendees */}
-        {unknownAttendees.map(({ email, color }) => (
+        {unknownAttendees.map(({ email }) => (
           <SelectedAttendeeCard
             {...{
               key: email,
-              color,
+              color: unknownColorName,
               email,
               hideDeleteButton: false,
               deleteAttendee: () => removeUnknownAttendee(email),
@@ -243,7 +257,7 @@ export const Attendees: React.FC<{
                 </div>
                 <div
                   className="mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border border-primary text-primary"
-                  onClick={() => onPageChange?.("settings")}
+                  onClick={() => onPageChange?.("/settings/subscription")}
                 >
                   Upgrade
                 </div>

@@ -11,7 +11,7 @@ if (!root) throw new Error("Root element not found");
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
     <TRPCProvider>
-      <Calendar />
+      <Calendar onPageChange={(to) => (window.location.href = to)} />
     </TRPCProvider>
   </React.StrictMode>,
 );

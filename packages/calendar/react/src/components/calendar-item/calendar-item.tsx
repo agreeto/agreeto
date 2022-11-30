@@ -30,13 +30,18 @@ import TimeZoneSelect from "./time-zone-select";
 
 import { trpc } from "../../utils/trpc";
 import { useCalendarStore, useEventStore, useTZStore } from "../../utils/store";
+import { themeColors } from "../../utils/colors";
+import clsx from "clsx";
+import { type SharedRoutes } from "../../calendar";
 
 type Props = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onRefSettled: (ref: any) => void;
-  onPageChange?: (page: string) => void;
+  onPageChange?: (page: SharedRoutes) => void;
 };
 
 const CalendarItem: FC<Props> = ({ onRefSettled, onPageChange }) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const ref = useRef<any>(null);
   const enableMock = false;
 
@@ -80,7 +85,7 @@ const CalendarItem: FC<Props> = ({ onRefSettled, onPageChange }) => {
 
   useEffect(() => {
     if (ref) onRefSettled(ref);
-  }, [ref]);
+  }, [ref, onRefSettled]);
 
   const extractEventHours = (event: EventApi) => {
     if (event.start && event.end) {
@@ -104,9 +109,10 @@ const CalendarItem: FC<Props> = ({ onRefSettled, onPageChange }) => {
       <div>
         <div className="font-normal text-gray-600">{day}</div>
         <div
-          className={`my-1 flex h-10 w-10 items-center justify-center rounded-full text-xl font-semibold ${
-            isToday ? "bg-primary text-white" : "text-gray-600"
-          }`}
+          className={clsx(
+            "my-1 flex h-10 w-10 items-center justify-center rounded-full text-xl font-semibold",
+            isToday ? "bg-primary text-white" : "text-gray-600",
+          )}
         >
           {date.getDate()}
         </div>
@@ -125,11 +131,14 @@ const CalendarItem: FC<Props> = ({ onRefSettled, onPageChange }) => {
 
     return (
       <div
-        className={`h-full overflow-hidden ${
-          extendedProps?.isDeclined ? "line-through" : ""
-        } ${shrinkFont ? "" : "p-1"} ${diff <= 15 ? "flex space-x-1" : ""}`}
+        className={clsx(
+          "h-full overflow-hidden",
+          extendedProps?.isDeclined && "line-through",
+          !shrinkFont && "p-1",
+          diff <= 15 && "flex space-x-1",
+        )}
         style={{
-          color: event.textColor,
+          // color: event.textColor,
           lineHeight: shrinkFont ? 1 : undefined,
         }}
         title={`${event.title} 
@@ -137,7 +146,9 @@ const CalendarItem: FC<Props> = ({ onRefSettled, onPageChange }) => {
 ${extractEventHours(event)}`} // This is not a lint error. The space is left here on purpose for line breaks in the title
       >
         {/* Title */}
-        <div className={`${shrinkFont ? "text-2xs" : "text-xs"} font-semibold`}>
+        <div
+          className={clsx("font-semibold", shrinkFont ? "text-2xs" : "text-xs")}
+        >
           {event.title}
         </div>
         {/* Event hours */}
@@ -145,13 +156,12 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
         {/* Cancel button */}
         {extendedProps?.new && (
           <div
-            className={
-              "absolute flex h-4 w-4 cursor-pointer items-center justify-center rounded-full bg-primary text-white"
-            }
-            style={{
-              top: extendedProps?.new ? "-10px" : "-8px",
-              right: extendedProps?.new ? "-8px" : "-6px",
-            }}
+            className={clsx(
+              "absolute flex h-4 w-4 cursor-pointer items-center justify-center rounded-full bg-primary text-white",
+              extendedProps?.new
+                ? "top-[-10px] right-[-8px]"
+                : "top-[-8px] right-[-6px]",
+            )}
             onClick={() => {
               deleteSlot(event.toJSON());
             }}
@@ -166,11 +176,12 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
   const renderSlotLabels = ({ time }: SlotLabelContentArg) => {
     return (
       <div
-        className={`text-ceter flex text-xs text-gray-300 ${
+        className={clsx(
+          "text-ceter flex text-xs text-gray-300",
           timeZones.length === 1
             ? "w-14 justify-center"
-            : "w-24 justify-between pr-2"
-        }`}
+            : "w-24 justify-between pr-2",
+        )}
         style={{
           lineHeight: "12px", // This is for slot height. Update this and fc-timegrid-slot in calendar-item.scss to chage the height
         }}
@@ -218,23 +229,40 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
     events.forEach((event) => {
       const { id, title, startDate, endDate, account, attendees } = event;
 
-      const backgroundColor = account?.color.color;
-      const textColor = account?.color.darkColor;
+      const eventColor = themeColors[account?.eventColor];
 
-      const isDeclined = attendees?.some(
-        (a) =>
+      const isDeclined = attendees?.some((a) => {
+        return (
           a.email === currentUser?.email &&
-          a.responseStatus === EventResponseStatus.DECLINED,
+          a.responseStatus === EventResponseStatus.DECLINED
+        );
+      });
+
+      // NEEDS_ACTION style
+      const attendeeMe = attendees?.find(
+        (attendee) => attendee.email === account.email,
       );
+
+      const backgroundColor =
+        attendeeMe?.responseStatus !== EventResponseStatus.ACCEPTED
+          ? eventColor[3]
+          : eventColor[7];
+
+      const borderColor =
+        attendeeMe?.responseStatus !== EventResponseStatus.ACCEPTED
+          ? eventColor[7]
+          : eventColor[1];
+
+      const textColor = eventColor[11];
 
       newEvents.push({
         id,
         title: title,
         start: startDate,
         end: endDate,
-        backgroundColor: isDeclined ? "white" : backgroundColor,
-        textColor: textColor,
-        borderColor: isDeclined ? textColor : "transparent",
+        backgroundColor,
+        textColor,
+        borderColor,
         extendedProps: {
           isDeclined,
           event,
@@ -246,14 +274,13 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
     // Add events of directory users
     directoryUsersWithEvents?.forEach(({ events: directoryEvents, color }) => {
       directoryEvents?.forEach((event) => {
-        const { id, title, startDate, endDate } = event;
+        const { title, startDate, endDate } = event;
 
         newEvents.push({
-          id,
-          title: title,
+          title,
           start: startDate,
           end: endDate,
-          backgroundColor: color,
+          backgroundColor: themeColors[color][7],
           textColor: "white",
           borderColor: "transparent",
           extendedProps: {
@@ -262,7 +289,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
         });
       });
     });
-
+    
     return [...newEvents, ...selectedSlots];
   };
 
@@ -313,8 +340,8 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
           scrollTime="08:00:00"
           nowIndicator
           timeZone={primaryTimeZone}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           eventOrder={(e1: any, e2: any) => {
-            // TODO: Why doesn't FullCalendar's type match here?
             if (e1?.extendedProps?.new) {
               return 1;
             }
@@ -352,12 +379,10 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
 
       {/* Timezone title */}
       <div
-        className="absolute top-7 flex justify-around"
-        style={{
-          width: timeZones.length === 1 ? "64px" : "120px",
-          left: timeZones.length === 1 ? "-14px" : "-8px",
-          paddingRight: timeZones.length === 1 ? "0" : "8px",
-        }}
+        className={clsx(
+          "absolute top-7 flex justify-around",
+          timeZones.length === 1 ? "-left-4 w-16" : "-left-2 w-32 pr-2",
+        )}
       >
         {/* Plus icon */}
         {timeZones.length === 1 && (

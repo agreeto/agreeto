@@ -4,12 +4,11 @@ import {
   type NextPage,
 } from "next";
 import { getToken } from "next-auth/jwt";
-import Image from "next/image.js";
-import agreetoLogo from "../../assets/icon512.png";
 import { Spinner } from "@agreeto/ui";
 
 import { useEffect, useState } from "react";
 import { env as clientEnv } from "../../env/client.mjs";
+import { Card } from "../../components/card";
 
 const Extension: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
@@ -28,7 +27,7 @@ const Extension: NextPage<
 
     chrome.runtime.sendMessage(
       clientEnv.NEXT_PUBLIC_EXTENSION_ID,
-      { accessToken },
+      { action: "signin", accessToken },
       (res) => {
         setIsLoadingExtension(false);
         if (res.success) {
@@ -44,50 +43,43 @@ const Extension: NextPage<
   }, [accessToken]);
 
   return (
-    <div className="h-screen pt-16 text-center text-xl font-semibold">
-      <div className="my-16 flex items-center justify-center">
-        <div className="relative h-20 w-20">
-          <Image
-            src={agreetoLogo}
-            alt="AgreeTo"
-            layout="fill"
-            placeholder="blur"
-          />
-        </div>
-        <h1 className="ml-2 text-4xl font-semibold text-primary">AgreeTo</h1>
-      </div>
-      {isLoadingExtension ? (
-        // We're still loading the response from the extension
-        <div className="flex flex-col items-center justify-center gap-2">
-          <div className="h-12">
-            <Spinner />
+    <div className="flex h-screen items-center justify-center">
+      <Card disclaimer="This page will close automatically">
+        {isLoadingExtension ? (
+          // We're still loading the response from the extension
+          <div>
+            <div className="h-12">
+              <Spinner />
+            </div>
+            <span className="text-gray-600">Verifying...</span>
           </div>
-          <span className="text-gray-600">Verifying...</span>
-        </div>
-      ) : isSuccess ? (
-        // The extension responded with success
-        <div>
-          <p className="text-2xl text-green-600">
-            You are successfully logged in!
-          </p>
-          <p className="text-lg text-gray-600">
-            You can open your extension now.
-          </p>
-        </div>
-      ) : isError ? (
-        // The extension responded with an error
-        <div>
-          <p className="text-2xl text-red-600">Something went wrong!</p>
-          <p className="text-lg text-gray-600">Please try again.</p>
-        </div>
-      ) : (
-        // User came here without an accessToken
-        <div>
-          <p className="text-2xl text-gray-600">
-            Seems like you reached this page by mistake.
-          </p>
-        </div>
-      )}
+        ) : isSuccess ? (
+          // The extension responded with success
+          <div>
+            <p className="text-xl font-semibold text-green-600">
+              You are successfully logged in!
+            </p>
+            <p className="text-lg text-gray-600">
+              You can open your extension now.
+            </p>
+          </div>
+        ) : isError ? (
+          // The extension responded with an error
+          <div>
+            <p className="text-xl font-semibold text-red-600">
+              Something went wrong!
+            </p>
+            <p className="text-lg text-gray-600">Please try again.</p>
+          </div>
+        ) : (
+          // User came here without an accessToken
+          <div>
+            <p className="text-2xl text-gray-600">
+              Seems like you reached this page by mistake.
+            </p>
+          </div>
+        )}
+      </Card>
     </div>
   );
 };

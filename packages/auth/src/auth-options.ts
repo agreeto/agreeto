@@ -4,7 +4,6 @@ import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import AzureAdProvider from "next-auth/providers/azure-ad";
 import { azureScopes, googleScopes } from "./scopes";
-import { type AdapterAccount } from "next-auth/adapters";
 
 /**
  * The process.env is loaded from the Next.js application
@@ -17,68 +16,17 @@ if (
   !process.env.GOOGLE_ID ||
   !process.env.GOOGLE_SECRET ||
   !process.env.AZURE_AD_CLIENT_ID ||
-  !process.env.AZURE_AD_CLIENT_SECRET ||
-  !process.env.AZURE_AD_TENANT_ID
+  !process.env.AZURE_AD_CLIENT_SECRET
 ) {
-  throw new Error("NEXTAUTH_SECRET is not set");
+  throw new Error(
+    "[@agreeto/auth: auth-options.ts]: NEXTAUTH_SECRET, or another related secret is not set",
+  );
 }
 
 export const authOptions: NextAuthOptions = {
   /** Use Prisma adapter to persist user information */
   /** @see https://next-auth.js.org/adapters/prisma */
-  adapter: {
-    ...PrismaAdapter(prisma),
-    // Override the adapter to add `color` field
-    async linkAccount(account) {
-      const user = await prisma.user.findUnique({
-        where: { id: account.userId },
-        include: { accounts: { include: { color: true } } },
-      });
-      const currentAccounts = user?.accounts;
-
-      if (user?.membership === Membership.FREE && currentAccounts?.length) {
-        throw new Error("Only paid users can add more than one account");
-      }
-
-      const colors = await prisma.accountColor.findMany({
-        orderBy: { order: "asc" },
-      });
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      let colorId = colors[0]!.id;
-
-      if (currentAccounts && currentAccounts.length > 0) {
-        let assignedANewColor = false;
-        colors.forEach((color) => {
-          if (assignedANewColor) return;
-          const foundColor = currentAccounts.find(
-            (a) => a.colorId === color.id,
-          );
-          if (!foundColor) {
-            colorId = color.id;
-            assignedANewColor = true;
-          }
-        });
-      }
-
-      const newAccount = await prisma.account.create({
-        data: {
-          ...account,
-          userId: undefined,
-          user: {
-            connect: {
-              id: account.userId,
-            },
-          },
-          color: {
-            connect: {
-              id: colorId,
-            },
-          },
-        },
-      });
-      return newAccount as unknown as AdapterAccount;
-    },
-  },
+  adapter: PrismaAdapter(prisma),
 
   /** Built in providers, adjusted to our needs */
   /** @see https://next-auth.js.org/providers */
@@ -97,7 +45,6 @@ export const authOptions: NextAuthOptions = {
     AzureAdProvider({
       clientId: process.env.AZURE_AD_CLIENT_ID,
       clientSecret: process.env.AZURE_AD_CLIENT_SECRET,
-      // tenantId: process.env.AZURE_AD_TENANT_ID,
       authorization: {
         params: {
           access_type: "offline",
@@ -108,16 +55,15 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
-  /** Secret used to encrypt and hash tokens */
-  /** @see https://next-auth.js.org/configuration/options#secret */
-  secret: process.env.NEXTAUTH_SECRET,
-
   /** Callbacks used to control actions */
   /** @see https://next-auth.js.org/configuration/callbacks */
   callbacks: {
     session({ session, user }) {
       if (session.user) {
+        /** @see next-auth.d.ts */
         session.user.id = user.id;
+        session.user.membership = user.membership;
+        session.user.hasTrialed = user.hasTrialed;
       }
       return session;
     },
@@ -135,13 +81,11 @@ export const authOptions: NextAuthOptions = {
         return;
       }
 
+      // Grab user from DB, we need to read the accounts length to
+      // determine if this is the first account -> assign primary
       const dbUser = await prisma.user.findUnique({
-        where: {
-          id: user.id,
-        },
-        include: {
-          accounts: true,
-        },
+        where: { id: user.id },
+        include: { accounts: true },
       });
 
       await prisma.account.update({
@@ -154,10 +98,15 @@ export const authOptions: NextAuthOptions = {
         data: {
           // Set email to the one from the oauth provider's profile
           email: profile.email,
-          // Set account to primary if it's the first one
-          isPrimary: !!(dbUser && dbUser.accounts.length <= 1),
+          // Set primary if this is the first account
+          userPrimary:
+            dbUser && dbUser.accounts.length <= 1
+              ? { connect: { id: dbUser.id } }
+              : undefined,
         },
       });
+
+      return;
     },
   },
 
