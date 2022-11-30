@@ -1,8 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-
-/* eslint-disable react-hooks/exhaustive-deps */
-
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { DateFormat, IntroSentenceType } from "@agreeto/api/types";
 import {
   DEFAULT_LANGUAGE_FORMAT,
@@ -13,17 +8,13 @@ import { extractTextFromSlots } from "@agreeto/calendar-core/index";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { addHours, format, startOfDay } from "date-fns";
 import { useEffect, useRef, useState } from "react";
+import { HiCheckCircle } from "react-icons/hi";
+import { TiArrowSortedDown } from "react-icons/ti";
 
 import { trpcApi } from "~features/trpc/api/hooks";
 
-// @ts-ignore
-import arrowDownIcon from "./../../assets/arrow-down.svg";
-// @ts-ignore
-import checkMarkBlueIcon from "./../../assets/check-mark-blue.svg";
-// @ts-ignore
+// @ts-expect-error - svg's are not typed
 import previewImage from "./../../assets/gmail-preview.svg";
-
-// import { client } from "~features/trpc/chrome/client";
 
 export const Formatting = () => {
   const utils = trpcApi.useContext();
@@ -61,6 +52,7 @@ export const Formatting = () => {
     if (formatting) {
       setSelectedDateFormat(formatting.dateFormat);
       setSelectedLanguage(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         LANGUAGE_FORMATS.find((i) => i.key === formatting.language)!,
       );
       setIntroSentenceType(formatting.introSentenceType);
@@ -71,6 +63,7 @@ export const Formatting = () => {
       setIntroSentenceType(IntroSentenceType.DEFAULT);
       resetIntroSentence(IntroSentenceType.DEFAULT);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLanguage, formattings]);
 
   const resetIntroSentence = (type: IntroSentenceType) => {
@@ -101,9 +94,8 @@ export const Formatting = () => {
             </div>
             <div>{selectedLanguage.title}</div>
           </div>
-          <div className="flex items-center">
-            <img src={arrowDownIcon} alt="arrow" width={12} height={7} />
-          </div>
+
+          <TiArrowSortedDown className="h-6 w-6" />
         </div>
       </DropdownMenu.Trigger>
 
@@ -129,9 +121,7 @@ export const Formatting = () => {
                 <div>{item.title}</div>
               </div>
               {item.key === selectedLanguage.key && (
-                <div className="flex items-center">
-                  <img src={checkMarkBlueIcon} alt="" width={12} height={7} />
-                </div>
+                <HiCheckCircle className="h-6 w-6 text-primary" />
               )}
             </div>
           </DropdownMenu.Item>
@@ -202,9 +192,7 @@ export const Formatting = () => {
       <DropdownMenu.Trigger>
         <div className="h-10 bg-white color-gray-700 rounded border border-gray-200 w-64 flex py-1 px-3 justify-between space-x-3 items-center text-sm">
           <div>{format(new Date(), selectedDateFormat)}</div>
-          <div className="flex items-center">
-            <img src={arrowDownIcon} alt="arrow" width={12} height={7} />
-          </div>
+          <TiArrowSortedDown className="h-6 w-6" />
         </div>
       </DropdownMenu.Trigger>
 
@@ -234,9 +222,7 @@ export const Formatting = () => {
             <div className="h-10 bg-white color-gray-700 w-64 flex py-1 px-3 justify-between space-x-3 cursor-pointer items-center text-sm">
               <div>{format(new Date(), item)}</div>
               {item === selectedDateFormat && (
-                <div className="flex items-center">
-                  <img src={checkMarkBlueIcon} alt="" width={12} height={7} />
-                </div>
+                <HiCheckCircle className="h-6 w-6 text-primary" />
               )}
             </div>
           </DropdownMenu.Item>
