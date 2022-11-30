@@ -1,4 +1,5 @@
 import "@agreeto/tailwind-config";
+
 import "react-toastify/dist/ReactToastify.css";
 import { add, endOfWeek, startOfWeek } from "date-fns";
 import ActionPane from "./components/action-pane";

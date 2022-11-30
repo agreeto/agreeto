@@ -6,8 +6,7 @@ import { convertToDate } from "./date";
 import { getCopyTitle, getDateLocale, getHourText } from "./locale";
 import { getTimeZoneAbv } from "./timezone";
 import { type RouterOutputs } from "@agreeto/api";
-import { DateFormat } from "@agreeto/api/types";
-import { Language } from "@prisma/client";
+import { DateFormat, Language } from "@agreeto/api/types";
 
 type Event = RouterOutputs["event"]["all"][number];
 

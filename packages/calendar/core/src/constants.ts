@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { Language } from "@prisma/client";
+import { Language } from "@agreeto/api/types";
 // @ts-ignore
 import flagDeIcon from "@agreeto/ui/src/assets/flag-de.svg";
 // @ts-ignore
