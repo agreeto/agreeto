@@ -15,7 +15,7 @@ export const serverSchema = z.lazy(() =>
     GOOGLE_SECRET: z.string(),
     AZURE_AD_CLIENT_ID: z.string(),
     AZURE_AD_CLIENT_SECRET: z.string(),
-    // AZURE_AD_TENANT_ID: z.string(),
+
     NEXTAUTH_SECRET: z.string(),
     NEXTAUTH_URL: z.preprocess(
       // Let VERCEL_URL take precedence if it's set
@@ -43,7 +43,6 @@ export const serverSchema = z.lazy(() =>
 export const clientSchema = z.object({
   NEXT_PUBLIC_EXTENSION_ID: z.string(),
   NEXT_PUBLIC_OUTLOOK_ADDIN_URL: z.string(),
-  NEXT_PUBLIC_PORT: z.string(),
 });
 
 /**
