@@ -1,16 +1,5 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Language } from "@agreeto/api/types";
-// @ts-ignore
-import flagDeIcon from "@agreeto/ui/src/assets/flag-de.svg";
-// @ts-ignore
-import flagEsIcon from "@agreeto/ui/src/assets/flag-es.svg";
-// @ts-ignore
-import flagFrIcon from "@agreeto/ui/src/assets/flag-fr.svg";
-// @ts-ignore
-import flagItIcon from "@agreeto/ui/src/assets/flag-it.svg";
-// @ts-ignore
-import flagUSIcon from "@agreeto/ui/src/assets/flag-us.svg";
-import { type LanguageFormatItem } from "./interfaces";
+import { DeFlag, EsFlag, FrFlag, ItFlag, UsFlag } from "@agreeto/ui";
 
 // FIXME:
 export const API_URL = "https://localhost:3000";
@@ -25,34 +14,41 @@ export const LOCAL_STORAGE_KEYS = {
 
 export type PLATFORM = "ext" | "web" | "addin";
 
+export type LanguageFormatItem = {
+  key: Language;
+  icon: typeof UsFlag;
+  title: string;
+  defaultIntroSentence: string;
+};
+
 export const LANGUAGE_FORMATS: LanguageFormatItem[] = [
   {
     key: Language.EN,
-    icon: flagUSIcon,
+    icon: UsFlag,
     title: "English (US)",
     defaultIntroSentence: "Would any of the following times work for you?",
   },
   {
     key: Language.ES,
-    icon: flagEsIcon,
+    icon: EsFlag,
     title: "Spanish (ES)",
     defaultIntroSentence: "Estaré disponible en los siguientes horarios:",
   },
   {
     key: Language.DE,
-    icon: flagDeIcon,
+    icon: DeFlag,
     title: "German (DE)",
     defaultIntroSentence: "Ich bin zu folgenden Zeiten verfügbar:",
   },
   {
     key: Language.FR,
-    icon: flagFrIcon,
+    icon: FrFlag,
     title: "French (FR)",
     defaultIntroSentence: "Je serai disponible aux horaires suivants :",
   },
   {
     key: Language.IT,
-    icon: flagItIcon,
+    icon: ItFlag,
     title: "Italian (IT)",
     defaultIntroSentence: "Sarò disponibile nei seguenti orari:",
   },

@@ -2,9 +2,11 @@ import { DateFormat, IntroSentenceType } from "@agreeto/api/types";
 import {
   DEFAULT_LANGUAGE_FORMAT,
   LANGUAGE_FORMATS,
-  type LanguageFormatItem,
 } from "@agreeto/calendar-core";
-import { extractTextFromSlots } from "@agreeto/calendar-core/index";
+import {
+  type LanguageFormatItem,
+  extractTextFromSlots,
+} from "@agreeto/calendar-core/index";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { addHours, format, startOfDay } from "date-fns";
 import { useEffect, useRef, useState } from "react";
@@ -23,7 +25,7 @@ export const Formatting = () => {
   const [dateFormatDropdownOpen, setDateFormatDropdownOpen] = useState(false);
   const [introSentenceFocused, setIntroSentenceFocused] = useState(false);
   const [canSave, setCanSave] = useState(false);
-  const [introSentence, setIntroSentence] = useState(
+  const [introSentence, setIntroSentence] = useState<string>(
     DEFAULT_LANGUAGE_FORMAT.defaultIntroSentence,
   );
   const [introSentenceType, setIntroSentenceType] = useState<IntroSentenceType>(
@@ -84,14 +86,7 @@ export const Formatting = () => {
       <DropdownMenu.Trigger>
         <div className="h-10 bg-white color-gray-700 rounded border border-gray-200 w-64 flex py-1 px-3 justify-between space-x-3 text-sm">
           <div className="flex space-x-3 items-center">
-            <div>
-              <img
-                src={selectedLanguage.icon}
-                alt="lng"
-                width={14}
-                height={14}
-              />
-            </div>
+            <selectedLanguage.icon className="h-6 w-6" />
             <div>{selectedLanguage.title}</div>
           </div>
 
@@ -115,9 +110,7 @@ export const Formatting = () => {
           >
             <div className="h-10 bg-white color-gray-700 w-64 flex py-1 px-3 justify-between space-x-3 cursor-pointer text-sm">
               <div className="flex space-x-3 items-center">
-                <div>
-                  <img src={item.icon} alt="lng" width={14} height={14} />
-                </div>
+                <item.icon className="h-6 w-6" />
                 <div>{item.title}</div>
               </div>
               {item.key === selectedLanguage.key && (
