@@ -2,11 +2,9 @@ import { DateFormat, IntroSentenceType } from "@agreeto/api/types";
 import {
   DEFAULT_LANGUAGE_FORMAT,
   LANGUAGE_FORMATS,
-} from "@agreeto/calendar-core";
-import {
   type LanguageFormatItem,
   extractTextFromSlots,
-} from "@agreeto/calendar-core/index";
+} from "@agreeto/calendar-core";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { addHours, format, startOfDay } from "date-fns";
 import { useEffect, useRef, useState } from "react";
