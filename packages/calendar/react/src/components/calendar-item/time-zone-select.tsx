@@ -4,10 +4,8 @@ import { BiPlus, BiSearch } from "react-icons/bi";
 import { HiCheckCircle } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
 import { Popover } from "@headlessui/react";
-import OutsideClickHandler from "react-outside-click-handler";
 import { getTimeZoneAbv } from "@agreeto/calendar-core";
 import { Membership } from "@agreeto/api/types";
-import { Float } from "@headlessui-float/react";
 import { trpc } from "../../utils/trpc";
 import { useTZStore } from "../../utils/store";
 import { type SharedRoutes } from "../../calendar";
@@ -26,19 +24,19 @@ const TimeZoneSelect: FC<Props> = ({
   index,
   type,
   referenceDate,
-  onPageChange,
+  // onPageChange,
 }) => {
   const { data: user } = trpc.user.me.useQuery();
   const isFree = user?.membership === Membership.FREE;
 
   const recentlyUsedTimeZones = useTZStore((s) => s.recentlyUsedTimeZones);
-  const timeZones = useTZStore((s) => s.timeZones);
-  const deleteTimeZone = useTZStore((s) => s.deleteTimeZone);
+  // const timeZones = useTZStore((s) => s.timeZones);
+  // const deleteTimeZone = useTZStore((s) => s.deleteTimeZone);
   const addTimeZone = useTZStore((s) => s.addTimeZone);
   const changeTimeZone = useTZStore((s) => s.changeTimeZone);
 
   const [isOpen, setIsOpen] = useState(false);
-  const [showProTooltip, setShowProTooltip] = useState(false);
+  // const [showProTooltip, setShowProTooltip] = useState(false);
   const [searchText, setSearchText] = useState("");
 
   const title =
@@ -67,83 +65,10 @@ const TimeZoneSelect: FC<Props> = ({
   return (
     <Popover
       className="relative leading-4"
-      onMouseLeave={() => setShowProTooltip(false)}
+      // onMouseLeave={() => setShowProTooltip(false)}
     >
       <Popover.Button>
-        <Float
-          show={isFree && type !== "primary" && showProTooltip}
-          arrow
-          flip
-          className="cursor-auto"
-        >
-          <div onMouseEnter={() => setShowProTooltip(true)}>
-            <div
-              className={`text-3xs-05 group flex items-center justify-center rounded border ${
-                type === "primary"
-                  ? "cursor-pointer text-primary"
-                  : !isFree
-                  ? "cursor-pointer border-[#F0F1F2] bg-[#F0F1F2] hover:border-gray-300"
-                  : "border-[#F0F1F2] bg-[#F0F1F2]"
-              } ${
-                type === "addIcon"
-                  ? "mr-2 w-6"
-                  : timeZones.length === 1
-                  ? "text-2xs w-12"
-                  : "text-3xs-05 w-10"
-              }`}
-              onClick={() => {
-                if (isFree && type !== "primary") return;
-                setIsOpen(true);
-              }}
-              style={{
-                height: "22px",
-              }}
-            >
-              {title}
-              {/* Remove button */}
-              {type === "secondary" && (
-                <div>
-                  <div
-                    className={
-                      "text-3xs-05 absolute flex h-4 w-0 cursor-pointer items-center justify-center rounded-full bg-gray-500 text-white hover:bg-gray-600 group-hover:w-4"
-                    }
-                    style={{
-                      top: "-8px",
-                      right: "-6px",
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteTimeZone(value);
-                    }}
-                  >
-                    X
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-          <div
-            className="mt-4 w-60 cursor-auto rounded border border-[#F9FAFA] bg-[#F9FAFA] p-4 text-left"
-            style={{ boxShadow: "2px 4px 12px 2px #dbd9d9" }}
-          >
-            <div className="text-sm font-semibold text-gray-900">
-              Unlock Multiple Time Zones
-            </div>
-            <div className="mt-2 text-xs text-gray-900">
-              This feature is part of the Pro Plan
-            </div>
-            <div
-              className="mt-8 flex h-8 w-full cursor-pointer items-center justify-center rounded border border-primary text-primary"
-              onClick={() => onPageChange?.("/settings/subscription")}
-            >
-              Upgrade
-            </div>
-            <Float.Arrow
-              className="absolute h-5 w-5 rotate-45 bg-[#F9FAFA]"
-              offset={-12}
-            />
-          </div>
-        </Float>
+        <div>Float replacement</div>
       </Popover.Button>
 
       {isOpen && (
@@ -277,5 +202,82 @@ const TimeZoneSelect: FC<Props> = ({
     </Popover>
   );
 };
+
+// const replaces = () => (
+//   <Float
+//     show={isFree && type !== "primary" && showProTooltip}
+//     arrow
+//     flip
+//     className="cursor-auto"
+//   >
+//     <div onMouseEnter={() => setShowProTooltip(true)}>
+//       <div
+//         className={`text-3xs-05 group flex items-center justify-center rounded border ${
+//           type === "primary"
+//             ? "cursor-pointer text-primary"
+//             : !isFree
+//             ? "cursor-pointer border-[#F0F1F2] bg-[#F0F1F2] hover:border-gray-300"
+//             : "border-[#F0F1F2] bg-[#F0F1F2]"
+//         } ${
+//           type === "addIcon"
+//             ? "mr-2 w-6"
+//             : timeZones.length === 1
+//             ? "text-2xs w-12"
+//             : "text-3xs-05 w-10"
+//         }`}
+//         onClick={() => {
+//           if (isFree && type !== "primary") return;
+//           setIsOpen(true);
+//         }}
+//         style={{
+//           height: "22px",
+//         }}
+//       >
+//         {title}
+//         {/* Remove button */}
+//         {type === "secondary" && (
+//           <div>
+//             <div
+//               className={
+//                 "text-3xs-05 absolute flex h-4 w-0 cursor-pointer items-center justify-center rounded-full bg-gray-500 text-white hover:bg-gray-600 group-hover:w-4"
+//               }
+//               style={{
+//                 top: "-8px",
+//                 right: "-6px",
+//               }}
+//               onClick={(e) => {
+//                 e.stopPropagation();
+//                 deleteTimeZone(value);
+//               }}
+//             >
+//               X
+//             </div>
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//     <div
+//       className="mt-4 w-60 cursor-auto rounded border border-[#F9FAFA] bg-[#F9FAFA] p-4 text-left"
+//       style={{ boxShadow: "2px 4px 12px 2px #dbd9d9" }}
+//     >
+//       <div className="text-sm font-semibold text-gray-900">
+//         Unlock Multiple Time Zones
+//       </div>
+//       <div className="mt-2 text-xs text-gray-900">
+//         This feature is part of the Pro Plan
+//       </div>
+//       <div
+//         className="flex items-center justify-center w-full h-8 mt-8 border rounded cursor-pointer border-primary text-primary"
+//         onClick={() => onPageChange?.("/settings/subscription")}
+//       >
+//         Upgrade
+//       </div>
+//       <Float.Arrow
+//         className="absolute h-5 w-5 rotate-45 bg-[#F9FAFA]"
+//         offset={-12}
+//       />
+//     </div>
+//   </Float>
+// );
 
 export default TimeZoneSelect;
