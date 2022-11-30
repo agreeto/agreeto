@@ -290,7 +290,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
         });
       });
     });
-    
+
     return [...newEvents, ...selectedSlots];
   };
 
