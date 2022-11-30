@@ -1,4 +1,5 @@
-import { type DefaultSession } from "next-auth";
+import { type Membership } from "@agreeto/db";
+import { type DefaultSession, type User as DefaultUser } from "next-auth";
 import { type AdapterAccount as $AdapterAccount } from "next-auth/adapters";
 
 /**
@@ -18,9 +19,7 @@ declare module "next-auth" {
       hasTrialed: boolean;
     } & DefaultSession["user"];
   }
-}
 
-declare module "next-auth/adapters" {
   interface User extends DefaultUser {
     id: string;
     membership: Membership;
