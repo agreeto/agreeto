@@ -82,13 +82,13 @@ export const Formatting = () => {
   const languageDropdown = (
     <DropdownMenu.Root onOpenChange={setLanguageDropdownOpen}>
       <DropdownMenu.Trigger>
-        <div className="h-10 bg-white color-gray-700 rounded border border-gray-200 w-64 flex py-1 px-3 justify-between space-x-3 text-sm">
+        <div className="h-10 bg-white color-gray-700 rounded border border-gray-200 w-64 flex py-1 px-3 justify-between items-center space-x-3 text-sm">
           <div className="flex space-x-3 items-center">
-            <selectedLanguage.icon className="h-6 w-6" />
+            <selectedLanguage.icon className="h-5 w-5" />
             <div>{selectedLanguage.title}</div>
           </div>
 
-          <TiArrowSortedDown className="h-6 w-6" />
+          <TiArrowSortedDown className="h-6 w-6 text-gray-600" />
         </div>
       </DropdownMenu.Trigger>
 
@@ -108,11 +108,11 @@ export const Formatting = () => {
           >
             <div className="h-10 bg-white color-gray-700 w-64 flex py-1 px-3 justify-between space-x-3 cursor-pointer text-sm">
               <div className="flex space-x-3 items-center">
-                <item.icon className="h-6 w-6" />
+                <item.icon className="h-5 w-5" />
                 <div>{item.title}</div>
               </div>
               {item.key === selectedLanguage.key && (
-                <HiCheckCircle className="h-6 w-6 text-primary" />
+                <HiCheckCircle className="h-4 w-4 text-primary" />
               )}
             </div>
           </DropdownMenu.Item>
@@ -183,7 +183,7 @@ export const Formatting = () => {
       <DropdownMenu.Trigger>
         <div className="h-10 bg-white color-gray-700 rounded border border-gray-200 w-64 flex py-1 px-3 justify-between space-x-3 items-center text-sm">
           <div>{format(new Date(), selectedDateFormat)}</div>
-          <TiArrowSortedDown className="h-6 w-6" />
+          <TiArrowSortedDown className="h-6 w-6 text-gray-600" />
         </div>
       </DropdownMenu.Trigger>
 
@@ -213,7 +213,7 @@ export const Formatting = () => {
             <div className="h-10 bg-white color-gray-700 w-64 flex py-1 px-3 justify-between space-x-3 cursor-pointer items-center text-sm">
               <div>{format(new Date(), item)}</div>
               {item === selectedDateFormat && (
-                <HiCheckCircle className="h-6 w-6 text-primary" />
+                <HiCheckCircle className="h-4 w-4 text-primary" />
               )}
             </div>
           </DropdownMenu.Item>
