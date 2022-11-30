@@ -17,9 +17,4 @@ const config = {
   typescript: { ignoreBuildErrors: !!process.env.CI },
 };
 
-export default withTM([
-  "@agreeto/api",
-  "@agreeto/auth",
-  "@agreeto/db",
-  "@agreeto/ui",
-])(config);
+export default withTM(["@agreeto/api", "@agreeto/auth", "@agreeto/db"])(config);

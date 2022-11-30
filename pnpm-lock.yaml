@@ -323,6 +323,7 @@ importers:
   packages/calendar/core:
     specifiers:
       '@agreeto/api': workspace:*
+      '@agreeto/ui': workspace:*
       '@fullcalendar/react': ^5.11.2
       '@types/chrome': ^0.0.197
       '@types/lodash': ^4.14.182
@@ -335,6 +336,7 @@ importers:
       zustand: ^4.1.4
     dependencies:
       '@agreeto/api': link:../../api
+      '@agreeto/ui': link:../../ui
       '@types/lodash': 4.14.189
       copy-to-clipboard: 3.3.3
       date-fns: 2.29.3
@@ -507,17 +509,6 @@ importers:
       '@agreeto/tsconfig': link:../config/tsconfig
       '@types/node': 18.11.9
       prisma: 4.6.1
-      typescript: 4.9.3
-
-  packages/shared:
-    specifiers:
-      '@types/node': ^18.11.7
-      tsx: ^3.12.1
-      typescript: ^4.8.4
-    dependencies:
-      tsx: 3.12.1
-    devDependencies:
-      '@types/node': 18.11.9
       typescript: 4.9.3
 
   packages/ui:

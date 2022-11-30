@@ -202,7 +202,6 @@ model Formatting {
     updatedAt DateTime @default(now()) @updatedAt
 
     @@unique([userId, language])
-    @@map("formattings")
 }
 
 model EventGroup {

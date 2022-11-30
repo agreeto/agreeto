@@ -2,6 +2,7 @@ import { Membership } from "@agreeto/api/types";
 import { Button } from "@agreeto/ui";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
+import React from "react";
 import { FaUser } from "react-icons/fa";
 import { HiCheckCircle } from "react-icons/hi";
 
@@ -14,7 +15,7 @@ export const Settings = () => {
   const { data: user } = trpcApi.user.me.useQuery();
   const { data: accounts } = trpcApi.account.me.useQuery();
   const { data: primaryAccount } = trpcApi.account.primary.useQuery();
-  const { mutate: changePrimary } = trpcApi.account.changePrimary.useMutation({
+  const { mutate: changePrimary } = trpcApi.user.changePrimary.useMutation({
     onSuccess() {
       utils.account.primary.invalidate();
     },
@@ -39,8 +40,8 @@ export const Settings = () => {
 
   return (
     <div className="w-full">
-      <div className="flex items-center gap-4 border-b border-gray-200 h-16 flex-1 py-4">
-        <h2 className="text-xl font-bold pl-2">Settings</h2>
+      <div className="flex items-center flex-1 h-16 gap-4 py-4 border-b border-gray-200">
+        <h2 className="pl-2 text-xl font-bold">Settings</h2>
         <Button
           onClick={() => {
             window.open(
@@ -72,14 +73,14 @@ export const Settings = () => {
         {/* Account Switch */}
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
-            <button className="bg-primary h-8 w-8 rounded flex items-center justify-center">
-              <FaUser className="text-white h-6 w-6" />
+            <button className="flex items-center justify-center w-8 h-8 rounded bg-primary">
+              <FaUser className="w-6 h-6 text-white" />
             </button>
           </DropdownMenu.Trigger>
 
           <DropdownMenu.Portal>
             <DropdownMenu.Content
-              className="rounded bg-white text-gray-900 border shadow-xl"
+              className="text-gray-900 bg-white border rounded shadow-xl"
               sideOffset={5}
             >
               {accounts?.map((a, idx) => (
@@ -95,7 +96,7 @@ export const Settings = () => {
                   >
                     <div className="text-sm">{a.email}</div>
                     {a.id === primaryAccount?.id && (
-                      <HiCheckCircle className="text-primary h-6" />
+                      <HiCheckCircle className="h-6 text-primary" />
                     )}
                   </div>
                 </DropdownMenu.Item>
@@ -104,23 +105,6 @@ export const Settings = () => {
           </DropdownMenu.Portal>
         </DropdownMenu.Root>
       </div>
-      {primaryAccount && (
-        <div className="p-2">
-          <h3 className="text-lg font-bold">Primary Account</h3>
-          <p>{primaryAccount.email}</p>
-          <p>{primaryAccount.provider}</p>
-          <p>You&apos;re currently on the {user?.membership} plan.</p>
-          {user ? (
-            user.subscriptionCanceledDate ? (
-              <p>Expires at {user.paidUntil?.toDateString()}</p>
-            ) : (
-              <p>Next payment {user.paidUntil?.toDateString()}</p>
-            )
-          ) : (
-            <p>No active subscription</p>
-          )}
-        </div>
-      )}
     </div>
   );
 };

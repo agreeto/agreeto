@@ -1,4 +1,4 @@
-import { Membership, prisma } from "@agreeto/db";
+import { prisma } from "@agreeto/db";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";

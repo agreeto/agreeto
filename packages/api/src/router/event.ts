@@ -39,6 +39,7 @@ export const eventRouter = router({
       ]);
 
       // Get calendar Events
+
       const calendarEvents = await Promise.all(
         accounts.map(async (account) => {
           const service = getCalendarService(account);
@@ -70,6 +71,7 @@ export const eventRouter = router({
         addedEvents.set(id, true);
         return true;
       });
+
       return newEvents;
     }),
 

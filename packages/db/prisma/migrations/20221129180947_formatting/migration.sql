@@ -5,7 +5,7 @@ CREATE TYPE "IntroSentenceType" AS ENUM ('DEFAULT', 'CUSTOM', 'NONE');
 CREATE TYPE "DateFormat" AS ENUM ('MMMM_d_EEEE', 'MM_dd_yyyy', 'yyyy_MM_dd', 'MMMM_dd_yyyy', 'EEEE_MM_dd_yyyy', 'MMM_dd_EEEE', 'EEEE_M_d', 'EEE_MM_dd');
 
 -- CreateTable
-CREATE TABLE "formattings" (
+CREATE TABLE "Formatting" (
     "id" TEXT NOT NULL,
     "language" "Language" NOT NULL,
     "dateFormat" "DateFormat" NOT NULL,
@@ -15,11 +15,11 @@ CREATE TABLE "formattings" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "formattings_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Formatting_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "formattings_userId_language_key" ON "formattings"("userId", "language");
+CREATE UNIQUE INDEX "Formatting_userId_language_key" ON "Formatting"("userId", "language");
 
 -- AddForeignKey
-ALTER TABLE "formattings" ADD CONSTRAINT "formattings_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Formatting" ADD CONSTRAINT "Formatting_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
