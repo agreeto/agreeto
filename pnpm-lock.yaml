@@ -23,6 +23,7 @@ importers:
   apps/extension:
     specifiers:
       '@agreeto/api': workspace:*
+      '@agreeto/calendar-core': workspace:*
       '@agreeto/calendar-react': workspace:*
       '@agreeto/tailwind-config': workspace:*
       '@agreeto/tsconfig': workspace:*
@@ -69,6 +70,7 @@ importers:
       zod: ^3.18.0
     dependencies:
       '@agreeto/api': link:../../packages/api
+      '@agreeto/calendar-core': link:../../packages/calendar/core
       '@agreeto/calendar-react': link:../../packages/calendar/react
       '@agreeto/ui': link:../../packages/ui
       '@fullcalendar/common': 5.11.3
