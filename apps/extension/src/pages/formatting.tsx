@@ -124,11 +124,8 @@ export const Formatting = () => {
   const introSentenceElem = (
     <div>
       <div className="flex border border-gray-100 rounded w-full h-9 overflow-hidden">
-        {[
-          IntroSentenceType.DEFAULT,
-          IntroSentenceType.CUSTOM,
-          IntroSentenceType.NONE,
-        ].map((type) => (
+        {Object.values(IntroSentenceType)
+          .map((type) => (
           <div
             key={type}
             className={`flex-1 cursor-pointer text-sm flex items-center justify-center ${
