@@ -14,11 +14,7 @@
       "cache": false
     },
     "build": {
-      "dependsOn": ["^build", "^db-generate"],
-      "outputs": [".next/**", ".expo/**", ".plasmo/**", "build/**", "dist/**"]
-    },
-    "vercel-build": {
-      "dependsOn": ["^build", "^db-push"],
+      "dependsOn": ["^db-generate"],
       "outputs": [".next/**", ".expo/**", ".plasmo/**", "build/**", "dist/**"]
     },
     "lint": {

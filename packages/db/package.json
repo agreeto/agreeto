@@ -8,7 +8,7 @@
     "dev": "prisma studio",
     "db-up": "docker compose up -d",
     "db-generate": "prisma generate",
-    "db-push": "prisma db push",
+    "db-push": "prisma db push --skip-generate",
     "db-down": "docker compose down",
     "db-reset": "prisma db push --force-reset"
   },
