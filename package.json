@@ -10,7 +10,7 @@
     "db-up": "pnpm -F db db-up",
     "db-push": "turbo db-push",
     "db-reset": "pnpm -F db db-reset",
-    "vercel-build": "pnpm db-push && --filter=nextjs...",
+    "vercel-build": "pnpm db-push && turbo run build --filter=nextjs...",
     "prisma": "pnpm --filter db exec prisma",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
