@@ -189,16 +189,8 @@ export const Formatting = () => {
         style={{ boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.10)" }}
         align="end"
       >
-        {[
-          DateFormat.MMMM_d_EEEE,
-          DateFormat.MM_dd_yyyy,
-          DateFormat.yyyy_MM_dd,
-          DateFormat.MMMM_dd_yyyy,
-          DateFormat.EEEE_MM_dd_yyyy,
-          DateFormat.MMM_dd_EEEE,
-          DateFormat.EEEE_M_d,
-          DateFormat.EEE_MM_dd,
-        ].map((item) => (
+        {Object.values(DateFormat)
+          .map((item) => (
           <DropdownMenu.Item
             key={item}
             onSelect={() => {
