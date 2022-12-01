@@ -34,6 +34,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       case "invoice.payment_succeeded":
         await caller.stripe.webhooks.invoice.paid({ event });
         break;
+      case "checkout.session.completed":
+        await caller.stripe.webhooks.checkoutSession.completed({ event });
+        break;
       case "customer.deleted":
         await caller.stripe.webhooks.customer.deleted({ event });
         break;

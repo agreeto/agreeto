@@ -204,10 +204,15 @@ export const stripeRouter = router({
           });
         }
 
+        const hasActiveTrial = user.membership === Membership.TRIAL;
+
         const session = await stripe.checkout.sessions.create({
           customer: customerId,
           client_reference_id: ctx.user.id,
           payment_method_types: ["card"],
+          success_url:
+            input.success_url ?? `${process.env.NEXTAUTH_URL}/payment/success`,
+          cancel_url: `${process.env.NEXTAUTH_URL}/payment/cancel`,
           mode: "subscription",
           line_items: [
             {
@@ -215,12 +220,13 @@ export const stripeRouter = router({
               quantity: 1,
             },
           ],
-
-          success_url:
-            input.success_url ?? `${process.env.NEXTAUTH_URL}/payment/success`,
-          cancel_url: `${process.env.NEXTAUTH_URL}/payment/cancel`,
           subscription_data: {
-            trial_period_days: !user.hasTrialed ? 7 : undefined,
+            // Start a trial if they haven't yet consumed their free trial
+            trial_period_days: hasActiveTrial
+              ? 1
+              : !user.hasTrialed
+              ? 7
+              : undefined,
             metadata: {
               userId: ctx.user.id,
             },
@@ -252,6 +258,61 @@ export const stripeRouter = router({
 
   // Webhooks for Stripe events, server-called by Next.js API endpoint
   webhooks: router({
+    checkoutSession: router({
+      completed: stripeWHProcedure.mutation(async ({ ctx, input }) => {
+        /**
+         * @note We are going quite far away from Stripe's mental model here,
+         * and there's no "native" way to get the subscription from here, so we
+         * fetch from our db.
+         * Due to this being a bit out there, excessive error handling is done.
+         */
+        const checkout = input.event.data.object as Stripe.Checkout.Session;
+        const upgradeTrial = checkout.metadata?.upgradeTrial === "true";
+
+        console.log({ event: input.event, checkout, upgradeTrial });
+
+        if (!upgradeTrial) {
+          console.log("Returning early, not an upgrade trial");
+          return;
+        }
+
+        const customer = await ctx.prisma.stripeCustomer.findUnique({
+          where: { id: checkout.customer as string },
+          include: {
+            subscriptions: {
+              where: { status: "trialing" },
+            },
+          },
+        });
+
+        if (!customer)
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to find the Stripe customer",
+          });
+
+        const subscriptions = customer.subscriptions;
+        if (subscriptions.length > 1)
+          // we messed up somewhere
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message:
+              "[FATAL]: Found more than one trial subscription for a customer",
+          });
+
+        if (!subscriptions[0])
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Customer does not have a trial subscription",
+          });
+
+        const subscription = subscriptions[0];
+        await stripe.subscriptions.update(subscription.id, {
+          trial_end: "now",
+          default_payment_method: "card",
+        });
+      }),
+    }),
     customer: router({
       deleted: stripeWHProcedure.mutation(async ({ ctx, input }) => {
         const { event } = input;
