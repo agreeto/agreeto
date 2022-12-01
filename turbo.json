@@ -17,6 +17,10 @@
       "dependsOn": ["^build", "^db-generate"],
       "outputs": [".next/**", ".expo/**", ".plasmo/**", "build/**", "dist/**"]
     },
+    "vercel-build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", ".expo/**", ".plasmo/**", "build/**", "dist/**"]
+    },
     "lint": {
       "outputs": []
     },
