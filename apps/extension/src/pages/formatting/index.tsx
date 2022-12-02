@@ -6,9 +6,11 @@ import {
   extractTextFromSlots,
 } from "@agreeto/calendar-core";
 import { Button } from "@agreeto/ui";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import * as Label from "@radix-ui/react-label";
 import * as Select from "@radix-ui/react-select";
+import clsx from "clsx";
 import { addHours, format, startOfDay } from "date-fns";
+import { useEffect } from "react";
 import { HiCheckCircle } from "react-icons/hi";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { useValue, useZorm } from "react-zorm";
@@ -24,6 +26,7 @@ export const Formatting = () => {
   const zo = useZorm("update-formatting", UpdateFormSchema, {
     onValidSubmit(e) {
       e.preventDefault();
+      console.log(e.data);
       updateFormatting(e.data);
     },
   });
@@ -37,17 +40,17 @@ export const Formatting = () => {
   const { data: formatting } = trpcApi.formatting.byLanguage.useQuery({
     language,
   });
-  const { mutate: updateFormatting, isLoading: isUpdating } =
-    trpcApi.formatting.update.useMutation({
-      onSuccess() {
-        utils.formatting.byCurrentUser.invalidate();
-      },
-    });
+  const { mutate: updateFormatting } = trpcApi.formatting.update.useMutation({
+    onSuccess() {
+      utils.formatting.byCurrentUser.invalidate();
+    },
+  });
 
   const dateFormat = useValue({
     zorm: zo,
     name: zo.fields.dateFormat(),
     initialValue: formatting?.dateFormat ?? DateFormat.MMMM_d_EEEE,
+    event: "change",
   });
   const introSentence = useValue({
     zorm: zo,
@@ -61,222 +64,154 @@ export const Formatting = () => {
     initialValue: formatting?.introSentenceType ?? IntroSentenceType.DEFAULT,
   });
 
-  //   const languageDropdown = (
-  //     <DropdownMenu.Root onOpenChange={setLanguageDropdownOpen}>
-  //       <DropdownMenu.Trigger>
-  //         <div className="h-10 bg-white color-gray-700 rounded border border-gray-200 w-64 flex py-1 px-3 justify-between items-center space-x-3 text-sm">
-  //           <div className="flex space-x-3 items-center">
-  //             <selectedLanguage.icon className="h-5 w-5" />
-  //             <div>{selectedLanguage.title}</div>
-  //           </div>
-
-  //           <TiArrowSortedDown className="h-6 w-6 text-gray-600" />
-  //         </div>
-  //       </DropdownMenu.Trigger>
-
-  //       <DropdownMenu.Content
-  //         className="z-10 bg-white color-gray-700 rounded mt-2"
-  //         style={{ boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.10)" }}
-  //         align="end"
-  //       >
-  //         {LANGUAGE_FORMATS.map((item) => (
-  //           <DropdownMenu.Item
-  //             key={item.key}
-  //             onSelect={() => {
-  //               if (item.key === selectedLanguage.key) return;
-  //               setSelectedLanguage(item);
-  //               setCanSave(false);
-  //             }}
-  //           >
-  //             <div className="h-10 bg-white color-gray-700 w-64 flex py-1 px-3 justify-between space-x-3 cursor-pointer text-sm">
-  //               <div className="flex space-x-3 items-center">
-  //                 <item.icon className="h-5 w-5" />
-  //                 <div>{item.title}</div>
-  //               </div>
-  //               {item.key === selectedLanguage.key && (
-  //                 <HiCheckCircle className="h-4 w-4 text-primary" />
-  //               )}
-  //             </div>
-  //           </DropdownMenu.Item>
-  //         ))}
-  //       </DropdownMenu.Content>
-  //     </DropdownMenu.Root>
-  //   );
-
-  const introSentenceElem = (
-    <div>
-      <div className="flex border border-gray-100 rounded w-full h-9 overflow-hidden">
-        {Object.values(IntroSentenceType).map((type) => (
-          //   <div
-          //     key={type}
-          //     className={`flex-1 cursor-pointer text-sm flex items-center justify-center ${
-          //       introSentenceType === type
-          //         ? "bg-primary text-white"
-          //         : "bg-white color-[#3A3F46] hover:bg-gray-100"
-          //     } ${
-          //       type !== IntroSentenceType.NONE ? "border-r border-gray-100" : ""
-          //     }`}
-          //     onClick={() => {
-          //       setIntroSentenceType(type);
-          //       resetIntroSentence(type);
-          //       setCanSave(true);
-          //       if (type === IntroSentenceType.CUSTOM) {
-          //         setTimeout(() => {
-          //           introSentenceRef?.current?.focus();
-          //         }, 10);
-          //       }
-          //     }}
-          //   >
-          //     {`${type.toUpperCase().substring(0, 1)}${type
-          //       .toLowerCase()
-          //       .slice(1)}`}
-          //   </div>
-          <label
-            className={`flex-1 cursor-pointer text-sm flex items-center justify-center ${
-              sentenceType === type
-                ? "bg-primary text-white"
-                : "bg-white color-[#3A3F46] hover:bg-gray-100"
-            } ${
-              type !== IntroSentenceType.NONE ? "border-r border-gray-100" : ""
-            }`}
-            htmlFor={type}
-          >
-            {type}
-            <input
-              type="radio"
-              className="hidden"
-              id={type}
-              name={zo.fields.introSentenceType()}
-              value={type}
-            />
-          </label>
-        ))}
-      </div>
-
-      <div className="mt-3">
-        <textarea
-          className="resize-none w-full rounded-lg px-4 py-3 text-sm border border-gray-200 disabled:cursor-not-allowed disabled:text-gray-300"
-          rows={4}
-          name={zo.fields.introSentence()}
-          defaultValue={introSentence}
-          //   value={introSentence}
-          //   onChange={(e) => {
-          //     setIntroSentence(e.target.value);
-          //     setCanSave(true);
-          //   }}
-          //   disabled={introSentenceType !== IntroSentenceType.CUSTOM}
-          //   ref={introSentenceRef}
-          //   onFocus={() => {
-          //     setIntroSentenceFocused(true);
-          //   }}
-          //   onBlur={() => {
-          //     setIntroSentenceFocused(false);
-          //   }}
-        />
-      </div>
-    </div>
-  );
-
-  //   const dateFormatDropdown = (
-  //     <DropdownMenu.Root onOpenChange={setDateFormatDropdownOpen}>
-  //       <DropdownMenu.Trigger>
-  //         <div className="h-10 bg-white color-gray-700 rounded border border-gray-200 w-64 flex py-1 px-3 justify-between space-x-3 items-center text-sm">
-  //           <div>{format(new Date(), selectedDateFormat)}</div>
-  //           <TiArrowSortedDown className="h-6 w-6 text-gray-600" />
-  //         </div>
-  //       </DropdownMenu.Trigger>
-
-  //       <DropdownMenu.Content
-  //         className="z-10 bg-white color-gray-700 rounded mt-2"
-  //         style={{ boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.10)" }}
-  //         align="end"
-  //       >
-  //         {Object.values(DateFormat).map((item) => (
-  //           <DropdownMenu.Item
-  //             key={item}
-  //             onSelect={() => {
-  //               if (item === selectedDateFormat) return;
-  //               setSelectedDateFormat(item);
-  //               setCanSave(true);
-  //             }}
-  //           >
-  //             <div className="h-10 bg-white color-gray-700 w-64 flex py-1 px-3 justify-between space-x-3 cursor-pointer items-center text-sm">
-  //               <div>{format(new Date(), item)}</div>
-  //               {item === selectedDateFormat && (
-  //                 <HiCheckCircle className="h-4 w-4 text-primary" />
-  //               )}
-  //             </div>
-  //           </DropdownMenu.Item>
-  //         ))}
-  //       </DropdownMenu.Content>
-  //     </DropdownMenu.Root>
-  //   );
-
-  //   const SelectLanguage = (
-  //     <Select.Root>
-  //       <Select.Trigger>
-  //         <Select.Value />
-  //         <Select.Icon />
-  //       </Select.Trigger>
-  //       <Select.Portal>
-  //         <Select.Content>
-  //             {LANGUAGE_FORMATS.map((item) => (
-  //                 <Select.Option
-  //                     key={item.key}
-  //                     value={item.key}
-  //                         >
-  //         </Select.Content>
-  //       </Select.Portal>
-  //     </Select.Root>
-  //   );
+  // Reset introSentence type when sentenceType changes
+  useEffect(() => {
+    console.log(zo.fields.introSentenceType("id"));
+  }, [sentenceType]);
+  // ^?
 
   return (
-    <div className="flex pl-3 space-x-6 justify-between">
+    <div className="flex pl-3 space-x-6 justify-between gap-3">
       {/* Form */}
       <div>
         <form ref={zo.ref}>
-          <div className="mt-3">
-            <label className="block text-sm font-medium text-gray-700">
+          {/* Language Selector */}
+          {/* TODO: Abstract out */}
+          <div>
+            <Label.Root
+              htmlFor={zo.fields.language("id")}
+              className="block text-sm font-medium text-gray-700"
+            >
               Language
-            </label>
-            <select name={zo.fields.language()}>
-              {LANGUAGE_FORMATS.map((item) => (
-                <option key={item.key} value={item.key}>
-                  {item.title}
-                </option>
-              ))}
-            </select>
+            </Label.Root>
+            <Select.Root
+              defaultValue={language}
+              name={zo.fields.language("name")}
+            >
+              <Select.Trigger className="h-10 bg-white text-gray-700 rounded border border-gray-200 w-64 flex justify-between items-center py-1 px-3 gap-3 cursor-pointer text-sm">
+                <Select.Value aria-label={language}>{language}</Select.Value>
+                <Select.Icon asChild>
+                  <TiArrowSortedDown className="w-4 text-gray-700" />
+                </Select.Icon>
+              </Select.Trigger>
+
+              <Select.Portal>
+                <Select.Content className="overflow-hidden bg-white rounded text-gray-700 mt-2">
+                  <Select.Viewport className="p-2">
+                    {LANGUAGE_FORMATS.map((item) => (
+                      <Select.Item
+                        key={item.key}
+                        value={item.key}
+                        className="flex"
+                      >
+                        <Select.ItemText className="inline-flex gap-2 h-10 w-64 py-1 px-3 justify-between space-x-3 cursor-pointer items-center text-sm">
+                          <item.icon className="h-5 w-5" />
+                          <p>{item.key}</p>
+                        </Select.ItemText>
+                        <Select.ItemIndicator className="SelectItemIndicator">
+                          <HiCheckCircle className="h-5 w-5 text-primary" />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                    ))}
+                  </Select.Viewport>
+                </Select.Content>
+              </Select.Portal>
+            </Select.Root>
           </div>
-          <div className="mt-3">
-            <label className="block text-sm font-medium text-gray-700">
+
+          {/* DateFormat Selector */}
+          <div>
+            <Label.Root className="block text-sm font-medium text-gray-700">
               Date Format
-            </label>
-            <select name={zo.fields.dateFormat()}>
-              {Object.values(DateFormat).map((item) => (
-                <option key={item} value={item}>
-                  {format(new Date(), item)}
-                </option>
-              ))}
-            </select>
+            </Label.Root>
+            <Select.Root
+              defaultValue={language}
+              name={zo.fields.language("name")}
+            >
+              <Select.Trigger
+                className={clsx(
+                  "h-10 bg-white text-gray-700 rounded border border-gray-200 w-64 flex justify-between items-center py-1 px-3 gap-3 cursor-pointer text-sm",
+                  zo.errors.dateFormat("errored"),
+                )}
+              >
+                <Select.Value aria-label={language}>{language}</Select.Value>
+                <Select.Icon asChild>
+                  <TiArrowSortedDown className="w-4 text-gray-700" />
+                </Select.Icon>
+              </Select.Trigger>
+
+              <Select.Portal>
+                <Select.Content className="overflow-hidden bg-white rounded text-gray-700 mt-2 border border-gray-100">
+                  <Select.Viewport className="p-2">
+                    {Object.values(DateFormat).map((item) => (
+                      <Select.Item key={item} value={item} className="flex">
+                        <Select.ItemText className="inline-flex gap-2 h-10 w-64 py-1 px-3 justify-between space-x-3 cursor-pointer items-center text-sm">
+                          {format(new Date(), item)}
+                        </Select.ItemText>
+                        <Select.ItemIndicator className="SelectItemIndicator">
+                          <HiCheckCircle className="h-5 w-5 text-primary" />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                    ))}
+                  </Select.Viewport>
+                </Select.Content>
+              </Select.Portal>
+            </Select.Root>
           </div>
-          <div className="mt-3">{introSentenceElem}</div>
+
+          {/* IntroSentenceType Radio Group + Textarea */}
+          <div className="mt-3">
+            <div className="flex border border-gray-100 rounded w-full h-9 overflow-hidden">
+              {Object.values(IntroSentenceType).map((type, i) => (
+                <label
+                  className={clsx(
+                    "flex-1 cursor-pointer text-sm flex items-center justify-center",
+                    sentenceType === type
+                      ? "bg-primary text-white"
+                      : "bg-white text-gray-900",
+                    i !== Object.values(IntroSentenceType).length - 1 &&
+                      "border-r border-gray-100",
+                  )}
+                  htmlFor={type}
+                >
+                  {type.substring(0, 1).toUpperCase() +
+                    type.substring(1).toLowerCase()}
+                  <input
+                    type="radio"
+                    className="hidden"
+                    id={type}
+                    name={zo.fields.introSentenceType()}
+                    value={type}
+                  />
+                </label>
+              ))}
+            </div>
+
+            <div className="mt-3">
+              <textarea
+                className="resize-none w-full rounded-lg px-4 py-3 text-sm border border-gray-200 disabled:cursor-not-allowed disabled:text-gray-300"
+                rows={4}
+                name={zo.fields.introSentence()}
+                defaultValue={
+                  sentenceType === IntroSentenceType.DEFAULT
+                    ? LANGUAGE_FORMATS.find((item) => item.key === language)
+                        ?.defaultIntroSentence
+                    : sentenceType === IntroSentenceType.CUSTOM
+                    ? introSentence
+                    : ""
+                }
+                disabled={sentenceType !== IntroSentenceType.CUSTOM}
+              />
+            </div>
+          </div>
+
+          {/* Submit Button */}
           <div className="mt-3">
             <Button type="submit" className="w-full">
-              Save
+              <span>Save</span>
             </Button>
           </div>
-          <pre>
-            {JSON.stringify(
-              {
-                language,
-                dateFormat,
-                introSentence,
-                sentenceType,
-              },
-              null,
-              2,
-            )}
-          </pre>
+
           <pre>Validation status: {JSON.stringify(zo.validation, null, 2)}</pre>
         </form>
       </div>
