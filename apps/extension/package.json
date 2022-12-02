@@ -1,7 +1,7 @@
 {
   "name": "@agreeto/extension",
-  "displayName": "Migrated",
-  "version": "0.0.0",
+  "displayName": "PREVIEW",
+  "version": "0.4.0",
   "description": "AgreeTo Chrome Extension.",
   "author": "richardpoelderl",
   "scripts": {
