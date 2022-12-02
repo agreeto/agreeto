@@ -3,14 +3,12 @@ import { DateFormat, IntroSentenceType } from "@agreeto/api/client";
 import {
   DEFAULT_LANGUAGE_FORMAT,
   LANGUAGE_FORMATS,
-  type LanguageFormatItem,
   extractTextFromSlots,
 } from "@agreeto/calendar-core";
 import { Button } from "@agreeto/ui";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Select from "@radix-ui/react-select";
 import { addHours, format, startOfDay } from "date-fns";
-import { useEffect, useRef, useState } from "react";
 import { HiCheckCircle } from "react-icons/hi";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { useValue, useZorm } from "react-zorm";
@@ -22,9 +20,6 @@ import previewImage from "../../../assets/gmail-preview.svg";
 
 export const Formatting = () => {
   const utils = trpcApi.useContext();
-  const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
-  const [dateFormatDropdownOpen, setDateFormatDropdownOpen] = useState(false);
-  const [introSentenceFocused, setIntroSentenceFocused] = useState(false);
 
   const zo = useZorm("update-formatting", UpdateFormSchema, {
     onValidSubmit(e) {
@@ -305,13 +300,14 @@ export const Formatting = () => {
                 },
               ],
               {
-                formatLanguage: language as Language,
-                dateFormat: dateFormat as DateFormat,
+                formatLanguage: language,
+                dateFormat: dateFormat,
                 copyTitle: introSentence,
                 highlight: {
-                  date: languageDropdownOpen || dateFormatDropdownOpen,
-                  introSentence: languageDropdownOpen || introSentenceFocused,
-                  time: languageDropdownOpen,
+                  // TODO: Can we use the ref or smth?
+                  //   date: languageDropdownOpen || dateFormatDropdownOpen,
+                  //   introSentence: languageDropdownOpen || introSentenceFocused,
+                  //   time: languageDropdownOpen,
                 },
               },
             ),
