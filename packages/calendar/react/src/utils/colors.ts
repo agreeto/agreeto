@@ -1,7 +1,7 @@
 import type {
   EventColorDirectoryUserRadix,
   EventColorUserRadix,
-} from "@agreeto/api/types";
+} from "@agreeto/api/client";
 
 import * as tailwindConfig from "../../tailwind.config.cjs";
 import resolveConfig from "tailwindcss/resolveConfig";

@@ -19,7 +19,7 @@ import "./calendar-item.scss";
 import type { FC } from "react";
 import { useEffect, useRef } from "react";
 
-import { EventResponseStatus, Membership } from "@agreeto/api/types";
+import { EventResponseStatus, Membership } from "@agreeto/api/client";
 import { eventMocks } from "./mock";
 import { ulid } from "ulid";
 import {

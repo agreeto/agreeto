@@ -2,7 +2,7 @@ import { signIn } from "next-auth/react";
 import { Button, GoogleLogo, MicrosoftLogo, Spinner } from "@agreeto/ui";
 import { type GetServerSideProps, type NextPage } from "next";
 import { trpc } from "../../utils/trpc";
-import { Membership } from "@agreeto/api/types";
+import { Membership } from "@agreeto/api/client";
 import { useRouter } from "next/router";
 import { FaStripe } from "react-icons/fa";
 import { Card } from "../../components/card";

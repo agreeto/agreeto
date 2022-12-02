@@ -8,8 +8,8 @@ import { type RouterOutputs } from "@agreeto/api";
 import type {
   EventColorUserRadix,
   EventColorDirectoryUserRadix,
-} from "@agreeto/api/types";
-import { EventResponseStatus, Membership } from "@agreeto/api/types";
+} from "@agreeto/api/client";
+import { EventResponseStatus, Membership } from "@agreeto/api/client";
 import clsx from "clsx";
 import { DebouncedInput } from "./debounced-input";
 import { z } from "zod";

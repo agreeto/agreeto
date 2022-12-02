@@ -6,7 +6,7 @@ import { convertToDate } from "./date";
 import { getCopyTitle, getDateLocale, getHourText } from "./locale";
 import { getTimeZoneAbv } from "./timezone";
 import { type RouterOutputs } from "@agreeto/api";
-import { DateFormat, Language } from "@agreeto/api/types";
+import { DateFormat, Language } from "@agreeto/api/client";
 
 type Event = RouterOutputs["event"]["all"][number];
 

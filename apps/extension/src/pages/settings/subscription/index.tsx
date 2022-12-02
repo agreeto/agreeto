@@ -1,4 +1,4 @@
-import { Membership } from "@agreeto/api/types";
+import { Membership } from "@agreeto/api/client";
 import * as Tabs from "@radix-ui/react-tabs";
 
 import { trpcApi } from "~features/trpc/api/hooks";

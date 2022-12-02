@@ -1,4 +1,4 @@
-import type { Membership } from "@agreeto/api/types";
+import type { Membership } from "@agreeto/api/client";
 import { AgreeToLogo, Button } from "@agreeto/ui";
 import { HiCheckCircle } from "react-icons/hi";
 

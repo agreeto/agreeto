@@ -1,7 +1,6 @@
 import { privateProcedure, router } from "../trpc";
-import { z } from "zod";
 
-import { DateFormat, IntroSentenceType, Language } from "@agreeto/db";
+import { UpdateFormSchema } from "../../client";
 
 export const formattingRouter = router({
   // Get all formatting options for the current user
@@ -15,14 +14,7 @@ export const formattingRouter = router({
 
   // Update formatting for the current user
   update: privateProcedure
-    .input(
-      z.object({
-        language: z.nativeEnum(Language),
-        dateFormat: z.nativeEnum(DateFormat),
-        introSentenceType: z.nativeEnum(IntroSentenceType),
-        introSentence: z.string(),
-      }),
-    )
+    .input(UpdateFormSchema)
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.user.id;
 
