@@ -213,26 +213,32 @@ export const stripeRouter = router({
           success_url:
             input.success_url ?? `${process.env.NEXTAUTH_URL}/payment/success`,
           cancel_url: `${process.env.NEXTAUTH_URL}/payment/cancel`,
-          mode: "subscription",
-          line_items: [
-            {
-              price: getStripePriceId(input.plan, input.period),
-              quantity: 1,
-            },
-          ],
-          subscription_data: {
-            // Start a trial if they haven't yet consumed their free trial
-            trial_period_days: hasActiveTrial
-              ? 1
-              : !user.hasTrialed
-              ? 7
-              : undefined,
-            metadata: {
-              userId: ctx.user.id,
-            },
-          },
-          // allow starting trials without payment
-          payment_method_collection: "if_required",
+          ...(hasActiveTrial
+            ? {
+                mode: "setup",
+                metadata: {
+                  upgradeTrial: "true",
+                  userId: ctx.user.id,
+                },
+              }
+            : {
+                mode: "subscription",
+                line_items: [
+                  {
+                    price: getStripePriceId(input.plan, input.period),
+                    quantity: 1,
+                  },
+                ],
+                subscription_data: {
+                  // Start a trial if they haven't yet consumed their free trial
+                  trial_period_days: !user.hasTrialed ? 7 : undefined,
+                  metadata: {
+                    userId: ctx.user.id,
+                  },
+                },
+                // allow starting trials without payment
+                payment_method_collection: "if_required",
+              }),
         });
 
         if (!session || !session.url)
@@ -306,10 +312,14 @@ export const stripeRouter = router({
             message: "Customer does not have a trial subscription",
           });
 
+        await stripe.customers.update(customer.id, {
+          source: "tok_visa",
+        });
+
         const subscription = subscriptions[0];
         await stripe.subscriptions.update(subscription.id, {
           trial_end: "now",
-          default_payment_method: "card",
+          // default_payment_method: "card",
         });
       }),
     }),
@@ -344,43 +354,47 @@ export const stripeRouter = router({
           ? Membership.TRIAL
           : getMembershipFromPriceId(priceId);
 
+        const subData = {
+          cancel_at_period_end: subscription.cancel_at_period_end,
+          collection_method: subscription.collection_method,
+          livemode: subscription.livemode,
+          metadata: subscription.metadata,
+          start_date: new Date(subscription.start_date * 1000),
+          status: subscription.status,
+          stripeCustomer: {
+            connect: { id: subscription.customer as string },
+          },
+          priceId: getPriceIdFromSubscription(subscription.items),
+          current_period_start: new Date(
+            subscription.current_period_start * 1000,
+          ),
+          current_period_end: new Date(subscription.current_period_end * 1000),
+          created: new Date(subscription.created * 1000), // convert to milliseconds
+          canceled_at: subscription.canceled_at
+            ? new Date(subscription.canceled_at * 1000)
+            : null,
+          ended_at: subscription.ended_at
+            ? new Date(subscription.ended_at * 1000)
+            : null,
+          trial_start: subscription.trial_start
+            ? new Date(subscription.trial_start * 1000)
+            : null,
+          trial_end: subscription.trial_end
+            ? new Date(subscription.trial_end * 1000)
+            : null,
+        };
+
         // These queries are executed in order
         await ctx.prisma.$transaction([
           // First create the subscription in the db
 
-          ctx.prisma.stripeSubscription.create({
-            data: {
+          ctx.prisma.stripeSubscription.upsert({
+            where: { id: subscription.id },
+            create: {
               id: subscription.id,
-              cancel_at_period_end: subscription.cancel_at_period_end,
-              collection_method: subscription.collection_method,
-              livemode: subscription.livemode,
-              metadata: subscription.metadata,
-              start_date: new Date(subscription.start_date * 1000),
-              status: subscription.status,
-              stripeCustomer: {
-                connect: { id: subscription.customer as string },
-              },
-              priceId: getPriceIdFromSubscription(subscription.items),
-              current_period_start: new Date(
-                subscription.current_period_start * 1000,
-              ),
-              current_period_end: new Date(
-                subscription.current_period_end * 1000,
-              ),
-              created: new Date(subscription.created * 1000), // convert to milliseconds
-              canceled_at: subscription.canceled_at
-                ? new Date(subscription.canceled_at * 1000)
-                : null,
-              ended_at: subscription.ended_at
-                ? new Date(subscription.ended_at * 1000)
-                : null,
-              trial_start: subscription.trial_start
-                ? new Date(subscription.trial_start * 1000)
-                : null,
-              trial_end: subscription.trial_end
-                ? new Date(subscription.trial_end * 1000)
-                : null,
+              ...subData,
             },
+            update: subData,
           }),
           ctx.prisma.user.update({
             where: { id: userId },
