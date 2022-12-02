@@ -1,6 +1,8 @@
 import { privateProcedure, router } from "../trpc";
 
 import { UpdateFormSchema } from "../../client";
+import { z } from "zod";
+import { Language } from "@agreeto/db";
 
 export const formattingRouter = router({
   // Get all formatting options for the current user
@@ -11,6 +13,19 @@ export const formattingRouter = router({
       where: { userId },
     });
   }),
+
+  byLanguage: privateProcedure
+    .input(z.object({ language: z.nativeEnum(Language) }))
+    .query(async ({ ctx, input }) => {
+      const userId = ctx.user.id;
+
+      return ctx.prisma.formatting.findFirst({
+        where: {
+          userId,
+          language: input.language,
+        },
+      });
+    }),
 
   // Update formatting for the current user
   update: privateProcedure

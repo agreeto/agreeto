@@ -20,70 +20,11 @@ import { trpcApi } from "~features/trpc/api/hooks";
 // @ts-expect-error - svg's are not typed
 import previewImage from "../../../assets/gmail-preview.svg";
 
-const getDateFormatByString = (format: string): DateFormat => {
-  console.log("inc", format);
-  switch (format) {
-    case "EEEE_MM_dd_yyyy":
-      return DateFormat.EEEE_MM_dd_yyyy;
-    case "MM/DD/YY":
-      return DateFormat.EEEE_M_d;
-    case "YYYY/MM/DD":
-      return DateFormat.EEE_MM_dd;
-    case "MMMM_d_EEEE":
-      return DateFormat.MMMM_d_EEEE;
-    default:
-      return DateFormat.EEEE_MM_dd_yyyy;
-  }
-};
-
 export const Formatting = () => {
   const utils = trpcApi.useContext();
   const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
   const [dateFormatDropdownOpen, setDateFormatDropdownOpen] = useState(false);
   const [introSentenceFocused, setIntroSentenceFocused] = useState(false);
-
-  const { data: formattings } = trpcApi.formatting.byCurrentUser.useQuery();
-  const { mutate: updateFormatting, isLoading: isUpdating } =
-    trpcApi.formatting.update.useMutation({
-      onSuccess() {
-        utils.formatting.byCurrentUser.invalidate();
-      },
-    });
-
-  //   useEffect(() => {
-  //     const formatting = formattings?.find(
-  //       (f) => f.language === selectedLanguage.key,
-  //     );
-
-  //     if (formatting) {
-  //       setSelectedDateFormat(formatting.dateFormat);
-  //       setSelectedLanguage(
-  //         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  //         LANGUAGE_FORMATS.find((i) => i.key === formatting.language)!,
-  //       );
-  //       setIntroSentenceType(formatting.introSentenceType);
-  //     //   setIntroSentence(formatting.introSentence);
-  //     } else {
-  //       // Reset fields
-  //       setSelectedDateFormat(DateFormat.MMMM_d_EEEE);
-  //       setIntroSentenceType(IntroSentenceType.DEFAULT);
-  //       resetIntroSentence(IntroSentenceType.DEFAULT);
-  //     }
-  //     // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   }, [selectedLanguage, formattings]);
-
-  //   const resetIntroSentence = (type: IntroSentenceType) => {
-  //     const lang = LANGUAGE_FORMATS.find(
-  //       ({ key }) => key === selectedLanguage.key,
-  //     );
-  //     if (type === IntroSentenceType.NONE) {
-  //       setIntroSentence("");
-  //     } else {
-  //       if (lang) {
-  //         setIntroSentence(lang.defaultIntroSentence);
-  //       }
-  //     }
-  //   };
 
   const zo = useZorm("update-formatting", UpdateFormSchema, {
     onValidSubmit(e) {
@@ -92,25 +33,37 @@ export const Formatting = () => {
     },
   });
 
-  const dateFormat = useValue({
-    zorm: zo,
-    name: zo.fields.dateFormat(),
-    initialValue: DateFormat.MMMM_d_EEEE,
-  });
-  const introSentence = useValue({
-    zorm: zo,
-    name: zo.fields.introSentence(),
-    initialValue: DEFAULT_LANGUAGE_FORMAT.defaultIntroSentence,
-  });
-  const sentenceType = useValue({
-    zorm: zo,
-    name: zo.fields.introSentenceType(),
-    initialValue: IntroSentenceType.DEFAULT,
-  });
   const language = useValue({
     zorm: zo,
     name: zo.fields.language(),
     initialValue: Language.EN,
+  });
+
+  const { data: formatting } = trpcApi.formatting.byLanguage.useQuery({
+    language,
+  });
+  const { mutate: updateFormatting, isLoading: isUpdating } =
+    trpcApi.formatting.update.useMutation({
+      onSuccess() {
+        utils.formatting.byCurrentUser.invalidate();
+      },
+    });
+
+  const dateFormat = useValue({
+    zorm: zo,
+    name: zo.fields.dateFormat(),
+    initialValue: formatting?.dateFormat ?? DateFormat.MMMM_d_EEEE,
+  });
+  const introSentence = useValue({
+    zorm: zo,
+    name: zo.fields.introSentence(),
+    initialValue:
+      formatting?.introSentence ?? DEFAULT_LANGUAGE_FORMAT.defaultIntroSentence,
+  });
+  const sentenceType = useValue({
+    zorm: zo,
+    name: zo.fields.introSentenceType(),
+    initialValue: formatting?.introSentenceType ?? IntroSentenceType.DEFAULT,
   });
 
   //   const languageDropdown = (
@@ -183,16 +136,25 @@ export const Formatting = () => {
           //       .toLowerCase()
           //       .slice(1)}`}
           //   </div>
-          <>
-            <label className="block text-sm font-medium text-gray-700">
-              {type}
-            </label>
+          <label
+            className={`flex-1 cursor-pointer text-sm flex items-center justify-center ${
+              sentenceType === type
+                ? "bg-primary text-white"
+                : "bg-white color-[#3A3F46] hover:bg-gray-100"
+            } ${
+              type !== IntroSentenceType.NONE ? "border-r border-gray-100" : ""
+            }`}
+            htmlFor={type}
+          >
+            {type}
             <input
               type="radio"
+              className="hidden"
+              id={type}
               name={zo.fields.introSentenceType()}
               value={type}
             />
-          </>
+          </label>
         ))}
       </div>
 
@@ -201,6 +163,7 @@ export const Formatting = () => {
           className="resize-none w-full rounded-lg px-4 py-3 text-sm border border-gray-200 disabled:cursor-not-allowed disabled:text-gray-300"
           rows={4}
           name={zo.fields.introSentence()}
+          defaultValue={introSentence}
           //   value={introSentence}
           //   onChange={(e) => {
           //     setIntroSentence(e.target.value);
@@ -275,45 +238,53 @@ export const Formatting = () => {
   return (
     <div className="flex pl-3 space-x-6 justify-between">
       {/* Form */}
-      <form ref={zo.ref}>
-        <div className="mt-3">
-          <label className="block text-sm font-medium text-gray-700">
-            Language
-          </label>
-          <select name={zo.fields.language()}>
-            {LANGUAGE_FORMATS.map((item) => (
-              <option key={item.key} value={item.key}>
-                {item.title}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="mt-3">
-          <label className="block text-sm font-medium text-gray-700">
-            Date Format
-          </label>
-          <select name={zo.fields.dateFormat()}>
-            {Object.values(DateFormat).map((item) => (
-              <option key={item} value={item}>
-                {format(new Date(), item)}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="mt-3">{introSentenceElem}</div>
-        <pre>
-          {JSON.stringify(
-            {
-              language,
-              dateFormat,
-              introSentence,
-              sentenceType,
-            },
-            null,
-            2,
-          )}
-        </pre>
-      </form>
+      <div>
+        <form ref={zo.ref}>
+          <div className="mt-3">
+            <label className="block text-sm font-medium text-gray-700">
+              Language
+            </label>
+            <select name={zo.fields.language()}>
+              {LANGUAGE_FORMATS.map((item) => (
+                <option key={item.key} value={item.key}>
+                  {item.title}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="mt-3">
+            <label className="block text-sm font-medium text-gray-700">
+              Date Format
+            </label>
+            <select name={zo.fields.dateFormat()}>
+              {Object.values(DateFormat).map((item) => (
+                <option key={item} value={item}>
+                  {format(new Date(), item)}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="mt-3">{introSentenceElem}</div>
+          <div className="mt-3">
+            <Button type="submit" className="w-full">
+              Save
+            </Button>
+          </div>
+          <pre>
+            {JSON.stringify(
+              {
+                language,
+                dateFormat,
+                introSentence,
+                sentenceType,
+              },
+              null,
+              2,
+            )}
+          </pre>
+          <pre>Validation status: {JSON.stringify(zo.validation, null, 2)}</pre>
+        </form>
+      </div>
 
       {/* Preview */}
       <div className="relative flex">
