@@ -43,7 +43,6 @@ export const getServerSession = async (
           name: true,
           image: true,
           membership: true,
-          hasTrialed: true,
         },
       },
     },
