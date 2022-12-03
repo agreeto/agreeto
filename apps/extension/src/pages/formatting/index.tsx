@@ -6,7 +6,6 @@ import {
   extractTextFromSlots,
 } from "@agreeto/calendar-core";
 import { Button } from "@agreeto/ui";
-import * as Label from "@radix-ui/react-label";
 import * as Select from "@radix-ui/react-select";
 import clsx from "clsx";
 import { addHours, format, startOfDay } from "date-fns";
@@ -26,8 +25,8 @@ export const Formatting = () => {
   const zo = useZorm("update-formatting", UpdateFormSchema, {
     onValidSubmit(e) {
       e.preventDefault();
-      console.log(e.data);
-      updateFormatting(e.data);
+      console.log("FormData:", e.data);
+      //   updateFormatting(e.data);
     },
   });
 
@@ -50,7 +49,6 @@ export const Formatting = () => {
     zorm: zo,
     name: zo.fields.dateFormat(),
     initialValue: formatting?.dateFormat ?? DateFormat.MMMM_d_EEEE,
-    event: "change",
   });
   const introSentence = useValue({
     zorm: zo,
@@ -68,7 +66,6 @@ export const Formatting = () => {
   useEffect(() => {
     console.log(zo.fields.introSentenceType("id"));
   }, [sentenceType]);
-  // ^?
 
   return (
     <div className="flex pl-3 space-x-6 justify-between gap-3">
@@ -78,15 +75,18 @@ export const Formatting = () => {
           {/* Language Selector */}
           {/* TODO: Abstract out */}
           <div>
-            <Label.Root
+            <label
               htmlFor={zo.fields.language("id")}
               className="block text-sm font-medium text-gray-700"
             >
               Language
-            </Label.Root>
+            </label>
             <Select.Root
               defaultValue={language}
               name={zo.fields.language("name")}
+              onValueChange={(value) => {
+                console.log("Lang onChange", value);
+              }}
             >
               <Select.Trigger className="h-10 bg-white text-gray-700 rounded border border-gray-200 w-64 flex justify-between items-center py-1 px-3 gap-3 cursor-pointer text-sm">
                 <Select.Value aria-label={language}>{language}</Select.Value>
@@ -120,18 +120,20 @@ export const Formatting = () => {
           </div>
 
           {/* DateFormat Selector */}
-          <div>
-            <Label.Root className="block text-sm font-medium text-gray-700">
+          {/* <div>
+            <label className="block text-sm font-medium text-gray-700">
               Date Format
-            </Label.Root>
+            </label>
             <Select.Root
               defaultValue={language}
-              name={zo.fields.language("name")}
+              //   name={zo.fields.language("name")}
+              onValueChange={(value) => {
+                console.log(value);
+              }}
             >
               <Select.Trigger
                 className={clsx(
                   "h-10 bg-white text-gray-700 rounded border border-gray-200 w-64 flex justify-between items-center py-1 px-3 gap-3 cursor-pointer text-sm",
-                  zo.errors.dateFormat("errored"),
                 )}
               >
                 <Select.Value aria-label={language}>{language}</Select.Value>
@@ -157,10 +159,10 @@ export const Formatting = () => {
                 </Select.Content>
               </Select.Portal>
             </Select.Root>
-          </div>
+          </div> */}
 
           {/* IntroSentenceType Radio Group + Textarea */}
-          <div className="mt-3">
+          {/* <div className="mt-3">
             <div className="flex border border-gray-100 rounded w-full h-9 overflow-hidden">
               {Object.values(IntroSentenceType).map((type, i) => (
                 <label
@@ -203,7 +205,7 @@ export const Formatting = () => {
                 disabled={sentenceType !== IntroSentenceType.CUSTOM}
               />
             </div>
-          </div>
+          </div> */}
 
           {/* Submit Button */}
           <div className="mt-3">
