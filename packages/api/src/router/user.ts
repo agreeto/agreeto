@@ -120,6 +120,29 @@ export const userRouter = router({
     });
   }),
 
+  endSubscription: privateProcedure.mutation(async ({ ctx }) => {
+    const user = await ctx.prisma.user.findUnique({
+      where: { id: ctx.user.id },
+    });
+
+    if (!user) throw new TRPCError({ code: "NOT_FOUND" });
+    if (
+      user.membership !== Membership.PRO &&
+      user.membership !== Membership.PREMIUM
+    )
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "User does not have an active subscription",
+      });
+
+    return await ctx.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        membership: Membership.FREE,
+      },
+    });
+  }),
+
   subscription: privateProcedure.query(async ({ ctx }) => {
     const subscription = await ctx.prisma.stripeSubscription.findFirst({
       where: {

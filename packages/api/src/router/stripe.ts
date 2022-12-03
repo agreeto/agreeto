@@ -1,4 +1,4 @@
-import { Language, Membership, type Prisma } from "@agreeto/db";
+import { Membership, type Prisma } from "@agreeto/db";
 import { TRPCError } from "@trpc/server";
 import { Stripe } from "stripe";
 import { z } from "zod";
@@ -380,38 +380,21 @@ export const stripeRouter = router({
         ]);
       }),
 
-      // Occurs whenever a customer's subscription ends
-      // We use this to update the user's membership and reset their premium features
-      // NOTE: There is also a client-side check to this which lets the user select which
-      // account they would like to keep and which to remove
       deleted: stripeWHProcedure.mutation(async ({ ctx, input }) => {
         const subscription = input.event.data.object as Stripe.Subscription;
-        const { userId } = subscription.metadata;
 
-        await Promise.all([
-          ctx.prisma.user.update({
-            where: { id: userId },
-            data: {
-              membership: Membership.FREE,
-              preference: {
-                update: {
-                  formatLanguage: Language.EN,
-                },
-              },
-            },
-          }),
-          ctx.prisma.stripeSubscription.update({
-            where: { id: subscription.id },
-            data: {
-              canceled_at: subscription.canceled_at
-                ? new Date(subscription.canceled_at * 1000)
-                : undefined,
-              ended_at: subscription.ended_at
-                ? new Date(subscription.ended_at * 1000)
-                : undefined,
-            },
-          }),
-        ]);
+        await ctx.prisma.stripeSubscription.update({
+          where: { id: subscription.id },
+          data: {
+            status: subscription.status,
+            canceled_at: subscription.canceled_at
+              ? new Date(subscription.canceled_at * 1000)
+              : undefined,
+            ended_at: subscription.ended_at
+              ? new Date(subscription.ended_at * 1000)
+              : undefined,
+          },
+        });
       }),
     }),
   }),

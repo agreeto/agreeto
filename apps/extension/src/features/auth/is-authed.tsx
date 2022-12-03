@@ -44,7 +44,7 @@ export const useValidateTrialOrSub = () => {
     "children" | "startTrial" | "endTrial" | "endSubscription"
   >("children");
 
-  trpcApi.user.validateTrialOrSub.useQuery(undefined, {
+  const { isLoading } = trpcApi.user.validateTrialOrSub.useQuery(undefined, {
     onSuccess(data) {
       setComponent(
         data.showStartTrial
@@ -58,6 +58,7 @@ export const useValidateTrialOrSub = () => {
     },
     // Don't spam the server so we set a longer staleTime
     staleTime: 1000 * 60 * 60 * 30, // 30 minutes
+    retry: false,
   });
-  return component;
+  return { component, isValidating: isLoading };
 };
