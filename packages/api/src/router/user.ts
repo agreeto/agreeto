@@ -1,10 +1,6 @@
 import { router, publicProcedure, privateProcedure } from "../trpc";
 import { getMembershipFromPriceId } from "./stripe";
-import {
-  EventResponseStatus,
-  Membership,
-  StripeSubscriptionStatus,
-} from "@agreeto/db";
+import { EventResponseStatus, Membership } from "@agreeto/db";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { getGoogleWorkspaceUsers } from "../external/google";
@@ -125,32 +121,20 @@ export const userRouter = router({
   }),
 
   subscription: privateProcedure.query(async ({ ctx }) => {
-    const stripeCustomer = await ctx.prisma.user
-      .findUnique({
-        where: { id: ctx.user.id },
-      })
-      .stripeCustomer();
-
     const subscription = await ctx.prisma.stripeSubscription.findFirst({
       where: {
-        stripeCustomerId: stripeCustomer?.id,
+        stripeCustomer: {
+          user: { every: { id: ctx.user.id } },
+        },
+        status: "active",
       },
-      orderBy: {
-        current_period_end: "desc",
-      },
+      orderBy: { current_period_end: "desc" },
     });
 
     if (!subscription) {
       throw new TRPCError({
         code: "NOT_FOUND",
-        message: "No subscription found",
-      });
-    }
-
-    if (StripeSubscriptionStatus.active !== subscription.status) {
-      throw new TRPCError({
-        code: "NOT_FOUND",
-        message: "No active subscription found",
+        message: `No subscription found for user ${ctx.user.id}`,
       });
     }
 
