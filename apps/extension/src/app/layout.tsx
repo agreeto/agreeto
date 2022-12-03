@@ -6,8 +6,6 @@ import { trpcApi } from "~features/trpc/api/hooks";
 export const Layout: React.FC<{
   children?: React.ReactNode;
 }> = ({ children }) => {
-  // Check that trial/subscription are valid
-
   const utils = trpcApi.useContext();
   useEffect(() => {
     // prefetch subscription
