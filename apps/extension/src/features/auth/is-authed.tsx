@@ -41,8 +41,8 @@ export const useIsAuthed = () => {
 export const useValidateTrialOrSub = () => {
   // Assume all good
   const [component, setComponent] = React.useState<
-    "children" | "startTrial" | "endTrial" | "endSubscription"
-  >("children");
+    "outlet" | "startTrial" | "endTrial" | "endSubscription"
+  >("outlet");
 
   const { isLoading } = trpcApi.user.validateTrialOrSub.useQuery(undefined, {
     onSuccess(data) {
@@ -53,7 +53,7 @@ export const useValidateTrialOrSub = () => {
           ? "endTrial"
           : data.showEndSubscription
           ? "endSubscription"
-          : "children",
+          : "outlet",
       );
     },
     // Don't spam the server so we set a longer staleTime

@@ -42,7 +42,7 @@ const PopupContent: React.FC = () => {
         ) : isAuthed ? (
           /** THE ACTUAL APP */
           <Layout>
-            {component === "children" ? (
+            {component === "outlet" ? (
               <Outlet />
             ) : component === "startTrial" ? (
               <StartTrialScreen />
