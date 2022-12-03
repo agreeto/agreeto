@@ -189,11 +189,16 @@ importers:
   apps/outlook:
     specifiers:
       '@agreeto/api': workspace:*
+      '@agreeto/calendar-react': workspace:*
       '@agreeto/tailwind-config': workspace:*
       '@agreeto/tsconfig': workspace:*
+      '@agreeto/ui': workspace:*
       '@microsoft/office-js': ^1.1.78
-      '@tanstack/react-location': ^3.7.4
+      '@radix-ui/react-radio-group': ^1.1.0
+      '@radix-ui/react-tabs': ^1.0.1
+      '@radix-ui/react-tooltip': ^1.0.2
       '@tanstack/react-query': ^4.13.0
+      '@tanstack/react-router': ^0.0.1-beta.25
       '@trpc/client': ^10.0.0
       '@trpc/react-query': ^10.0.0
       '@trpc/server': ^10.0.0
@@ -206,21 +211,30 @@ importers:
       live-server: ^1.2.2
       office-addin-debugging: ^4.4.0
       office-addin-manifest: ^1.9.0
+      postcss: ^8.4.14
       react: 18.2.0
       react-dom: 18.2.0
+      react-icons: ^4.6.0
+      tailwindcss: ^3.1.8
       typescript: ^4.8.4
       vite: ^3.2.3
       vite-plugin-mkcert: ^1.10.0
     dependencies:
       '@agreeto/api': link:../../packages/api
+      '@agreeto/calendar-react': link:../../packages/calendar/react
+      '@agreeto/ui': link:../../packages/ui
       '@microsoft/office-js': 1.1.82
-      '@tanstack/react-location': 3.7.4_biqbaboplfbrettd7655fr4n2y
+      '@radix-ui/react-radio-group': 1.1.0_biqbaboplfbrettd7655fr4n2y
+      '@radix-ui/react-tabs': 1.0.1_biqbaboplfbrettd7655fr4n2y
+      '@radix-ui/react-tooltip': 1.0.2_2zx2umvpluuhvlq44va5bta2da
       '@tanstack/react-query': 4.16.1_biqbaboplfbrettd7655fr4n2y
+      '@tanstack/react-router': 0.0.1-beta.25_biqbaboplfbrettd7655fr4n2y
       '@trpc/client': 10.4.1_@trpc+server@10.4.1
       '@trpc/react-query': 10.4.1_ptpgoviylwbqyngs2ahluodk3i
       '@trpc/server': 10.4.1
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
+      react-icons: 4.6.0_react@18.2.0
     devDependencies:
       '@agreeto/tailwind-config': link:../../packages/config/tailwind
       '@agreeto/tsconfig': link:../../packages/config/tsconfig
@@ -233,6 +247,8 @@ importers:
       live-server: 1.2.2
       office-addin-debugging: 4.6.4
       office-addin-manifest: 1.10.4
+      postcss: 8.4.19
+      tailwindcss: 3.2.4_postcss@8.4.19
       typescript: 4.9.3
       vite: 3.2.4
       vite-plugin-mkcert: 1.10.1_vite@3.2.4
@@ -4544,19 +4560,6 @@ packages:
 
   /@tanstack/query-core/4.15.1:
     resolution: {integrity: sha512-+UfqJsNbPIVo0a9ANW0ZxtjiMfGLaaoIaL9vZeVycvmBuWywJGtSi7fgPVMCPdZQFOzMsaXaOsDtSKQD5xLRVQ==}
-    dev: false
-
-  /@tanstack/react-location/3.7.4_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-6rH2vNHGr0uyeUz5ZHvWMYjeYKGgIKFzvs5749QtnS9f+FU7t7fQE0hKZAzltBZk82LT7iYbcHBRyUg2lW13VA==}
-    engines: {node: '>=12'}
-    peerDependencies:
-      react: '>=16'
-      react-dom: '>=16'
-    dependencies:
-      '@babel/runtime': 7.20.1
-      history: 5.3.0
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /@tanstack/react-query/4.16.1_biqbaboplfbrettd7655fr4n2y:
