@@ -36,6 +36,67 @@ export const userRouter = router({
     return user;
   }),
 
+  validateTrial: privateProcedure.mutation(async ({ ctx }) => {
+    const user = await ctx.prisma.user.findUnique({
+      where: { id: ctx.user.id },
+    });
+
+    // Nothing to do if they're not on a trial
+    if (user?.membership !== Membership.TRIAL) return;
+
+    if (user?.trialEnds && user?.trialEnds < new Date())
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Trial has ended",
+      });
+  }),
+
+  startTrial: privateProcedure.mutation(async ({ ctx }) => {
+    const user = await ctx.prisma.user.findUnique({
+      where: { id: ctx.user.id },
+    });
+    if (!user) throw new TRPCError({ code: "NOT_FOUND" });
+    if (user.membership !== Membership.FREE)
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Can't start trial on an active subscriber",
+      });
+    if (user.trialEnds !== null)
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "User has already trialed",
+      });
+
+    return await ctx.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        membership: Membership.TRIAL,
+        trialEnds: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7), // 7 days from now
+      },
+    });
+  }),
+
+  endTrial: privateProcedure.mutation(async ({ ctx }) => {
+    const user = await ctx.prisma.user.findUnique({
+      where: { id: ctx.user.id },
+    });
+
+    if (!user) throw new TRPCError({ code: "NOT_FOUND" });
+    if (user.membership !== Membership.TRIAL)
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "Can't end trial on a non-trial user",
+      });
+
+    return await ctx.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        membership: Membership.FREE,
+        trialEnds: new Date(),
+      },
+    });
+  }),
+
   subscription: privateProcedure.query(async ({ ctx }) => {
     const stripeCustomer = await ctx.prisma.user
       .findUnique({
@@ -59,21 +120,14 @@ export const userRouter = router({
       });
     }
 
-    if (
-      StripeSubscriptionStatus.active !== subscription.status &&
-      StripeSubscriptionStatus.trialing !== subscription.status
-    ) {
+    if (StripeSubscriptionStatus.active !== subscription.status) {
       throw new TRPCError({
         code: "NOT_FOUND",
         message: "No active subscription found",
       });
     }
 
-    // TODO: Parse differently when other plans are added
-    const membership =
-      subscription.status === StripeSubscriptionStatus.trialing
-        ? Membership.TRIAL
-        : getMembershipFromPriceId(subscription.priceId);
+    const membership = getMembershipFromPriceId(subscription.priceId);
 
     const period =
       subscription.priceId === process.env.STRIPE_MONTHLY_PRICE_ID
@@ -85,7 +139,7 @@ export const userRouter = router({
       status: subscription.status,
       current_period_end: subscription.current_period_end,
       membership,
-      period: period as "monthly" | "annually", // FIXME: Why is `as` needed
+      period: period as "monthly" | "annually", // FIXME: Why is `as` needed (typed as string on client if not used)
     };
   }),
 

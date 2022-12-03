@@ -79,34 +79,33 @@ model Session {
 }
 
 model User {
-    id                       String          @id @default(cuid())
-    name                     String?
-    email                    String?         @unique
-    emailVerified            DateTime?
-    image                    String?
-    sessions                 Session[]
-    preference               Preference?
+    id            String      @id @default(cuid())
+    name          String?
+    email         String?     @unique
+    emailVerified DateTime?
+    image         String?
+    sessions      Session[]
+    preference    Preference?
+    membership    Membership  @default(FREE)
+    trialEnds     DateTime?
+
+    // one user has many accounts
+    accounts         Account[] @relation("UserToAccountMany")
+    // one user has one primaryAccount as the organiser of events; optional cause it's set with a custom events.linkAccount hook
+    accountPrimaryId String?   @unique
+    accountPrimary   Account?  @relation("UserToAccountPrimary", fields: [accountPrimaryId], references: [id])
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
     // ================
     // Stripe stuff
     // ================
-    membership               Membership      @default(FREE)
-    paidUntil                Int? // in milliseconds
     stripeCustomerId         String?
     stripePlanId             String?
     subscriptionCanceledDate Int?
     payments                 Invoice[]
-    hasTrialed               Boolean         @default(false)
     stripeCustomer           StripeCustomer? @relation(fields: [stripeCustomerId], references: [id])
-    // ================
-    // Stripe stuff
-    // ================
-    createdAt                DateTime        @default(now())
-    updatedAt                DateTime        @default(now()) @updatedAt
-    // one user has many accounts
-    accounts                 Account[]       @relation("UserToAccountMany")
-    // one user has one primaryAccount as the organiser of events; optional cause it's set with a custom events.linkAccount hook
-    accountPrimaryId         String?         @unique
-    accountPrimary           Account?        @relation("UserToAccountPrimary", fields: [accountPrimaryId], references: [id])
 }
 
 model VerificationToken {
@@ -295,8 +294,6 @@ model StripeSubscription {
     created              DateTime
     canceled_at          DateTime?
     ended_at             DateTime?
-    trial_end            DateTime?
-    trial_start          DateTime?
 }
 
 model Invoice {

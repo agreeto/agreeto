@@ -185,7 +185,6 @@ export const stripeRouter = router({
         z.object({
           plan: z.enum([Membership.PRO, Membership.PREMIUM]),
           period: z.enum(["monthly", "annually"]),
-          success_url: z.string().optional(),
         }),
       )
       .mutation(async ({ ctx, input }) => {
@@ -194,51 +193,31 @@ export const stripeRouter = router({
           ctx.prisma,
         );
 
-        if (
-          user.membership !== Membership.FREE &&
-          user.membership !== Membership.TRIAL
-        ) {
+        if (user.membership === input.plan) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "User already has a paid membership",
+            message: `Can't upgrade to the ${input.plan} plan since you're already on it. Use 'Manage subscription' instead.`,
           });
         }
-
-        const hasActiveTrial = user.membership === Membership.TRIAL;
 
         const session = await stripe.checkout.sessions.create({
           customer: customerId,
           client_reference_id: ctx.user.id,
           payment_method_types: ["card"],
-          success_url:
-            input.success_url ?? `${process.env.NEXTAUTH_URL}/payment/success`,
+          success_url: `${process.env.NEXTAUTH_URL}/payment/success`,
           cancel_url: `${process.env.NEXTAUTH_URL}/payment/cancel`,
-          ...(hasActiveTrial
-            ? {
-                mode: "setup",
-                metadata: {
-                  upgradeTrial: "true",
-                  userId: ctx.user.id,
-                },
-              }
-            : {
-                mode: "subscription",
-                line_items: [
-                  {
-                    price: getStripePriceId(input.plan, input.period),
-                    quantity: 1,
-                  },
-                ],
-                subscription_data: {
-                  // Start a trial if they haven't yet consumed their free trial
-                  trial_period_days: !user.hasTrialed ? 7 : undefined,
-                  metadata: {
-                    userId: ctx.user.id,
-                  },
-                },
-                // allow starting trials without payment
-                payment_method_collection: "if_required",
-              }),
+          mode: "subscription",
+          line_items: [
+            {
+              price: getStripePriceId(input.plan, input.period),
+              quantity: 1,
+            },
+          ],
+          subscription_data: {
+            metadata: {
+              userId: ctx.user.id,
+            },
+          },
         });
 
         if (!session || !session.url)
@@ -264,70 +243,10 @@ export const stripeRouter = router({
 
   // Webhooks for Stripe events, server-called by Next.js API endpoint
   webhooks: router({
-    checkoutSession: router({
-      completed: stripeWHProcedure.mutation(async ({ ctx, input }) => {
-        /**
-         * @note We are going quite far away from Stripe's mental model here,
-         * and there's no "native" way to get the subscription from here, so we
-         * fetch from our db.
-         * Due to this being a bit out there, excessive error handling is done.
-         */
-        const checkout = input.event.data.object as Stripe.Checkout.Session;
-        const upgradeTrial = checkout.metadata?.upgradeTrial === "true";
-
-        console.log({ event: input.event, checkout, upgradeTrial });
-
-        if (!upgradeTrial) {
-          console.log("Returning early, not an upgrade trial");
-          return;
-        }
-
-        const customer = await ctx.prisma.stripeCustomer.findUnique({
-          where: { id: checkout.customer as string },
-          include: {
-            subscriptions: {
-              where: { status: "trialing" },
-            },
-          },
-        });
-
-        if (!customer)
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Failed to find the Stripe customer",
-          });
-
-        const subscriptions = customer.subscriptions;
-        if (subscriptions.length > 1)
-          // we messed up somewhere
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message:
-              "[FATAL]: Found more than one trial subscription for a customer",
-          });
-
-        if (!subscriptions[0])
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Customer does not have a trial subscription",
-          });
-
-        await stripe.customers.update(customer.id, {
-          source: "tok_visa",
-        });
-
-        const subscription = subscriptions[0];
-        await stripe.subscriptions.update(subscription.id, {
-          trial_end: "now",
-          // default_payment_method: "card",
-        });
-      }),
-    }),
     customer: router({
       deleted: stripeWHProcedure.mutation(async ({ ctx, input }) => {
-        const { event } = input;
-        const { object } = event.data;
-        const { id } = object as Stripe.Customer;
+        const customer = input.event.data.object as Stripe.Customer;
+        const id = customer.id;
 
         // TODO: Prob make stripeCustomerId unique
         await ctx.prisma.user.updateMany({
@@ -349,17 +268,14 @@ export const stripeRouter = router({
         const priceId = lineItem?.plan?.id;
         if (!priceId) throw new TRPCError({ code: "BAD_REQUEST" });
 
-        const isTrial = subscription.status === "trialing";
-        const membership = isTrial
-          ? Membership.TRIAL
-          : getMembershipFromPriceId(priceId);
+        const membership = getMembershipFromPriceId(priceId);
 
         const subData = {
           cancel_at_period_end: subscription.cancel_at_period_end,
           collection_method: subscription.collection_method,
           livemode: subscription.livemode,
           metadata: subscription.metadata,
-          start_date: new Date(subscription.start_date * 1000),
+          start_date: new Date(subscription.start_date * 1000), // convert to milliseconds
           status: subscription.status,
           stripeCustomer: {
             connect: { id: subscription.customer as string },
@@ -369,25 +285,18 @@ export const stripeRouter = router({
             subscription.current_period_start * 1000,
           ),
           current_period_end: new Date(subscription.current_period_end * 1000),
-          created: new Date(subscription.created * 1000), // convert to milliseconds
+          created: new Date(subscription.created * 1000),
           canceled_at: subscription.canceled_at
             ? new Date(subscription.canceled_at * 1000)
             : null,
           ended_at: subscription.ended_at
             ? new Date(subscription.ended_at * 1000)
             : null,
-          trial_start: subscription.trial_start
-            ? new Date(subscription.trial_start * 1000)
-            : null,
-          trial_end: subscription.trial_end
-            ? new Date(subscription.trial_end * 1000)
-            : null,
         };
 
         // These queries are executed in order
         await ctx.prisma.$transaction([
           // First create the subscription in the db
-
           ctx.prisma.stripeSubscription.upsert({
             where: { id: subscription.id },
             create: {
@@ -399,8 +308,6 @@ export const stripeRouter = router({
           ctx.prisma.user.update({
             where: { id: userId },
             data: {
-              // consume trial
-              hasTrialed: isTrial || undefined,
               membership,
             },
           }),
@@ -431,25 +338,18 @@ export const stripeRouter = router({
       updated: stripeWHProcedure.mutation(async ({ ctx, input }) => {
         const subscription = input.event.data.object as Stripe.Subscription;
         const { userId } = subscription.metadata;
-        const isTrial = subscription.status === "trialing";
 
         // NOTE: Just cause we get cancelled doesn't mean we should end the
         // membership, as the subscription is still active until the end of the
         // billing period. We get a separete `delete` event for that ⬇️⬇️⬇️
 
-        const canceledAt = subscription.canceled_at
-          ? new Date(subscription.canceled_at * 1000)
-          : null;
-
         await Promise.all([
           ctx.prisma.user.update({
             where: { id: userId },
             data: {
-              membership: isTrial
-                ? Membership.TRIAL
-                : getMembershipFromPriceId(
-                    subscription.items.data[0]?.price.id,
-                  ),
+              membership: getMembershipFromPriceId(
+                subscription.items.data[0]?.price.id,
+              ),
             },
           }),
           ctx.prisma.stripeSubscription.update({
@@ -469,31 +369,21 @@ export const stripeRouter = router({
               current_period_end: new Date(
                 subscription.current_period_end * 1000,
               ),
-              canceled_at: canceledAt,
+              canceled_at: subscription.canceled_at
+                ? new Date(subscription.canceled_at * 1000)
+                : undefined,
               ended_at: subscription.ended_at
                 ? new Date(subscription.ended_at * 1000)
-                : undefined,
-              trial_start: subscription.trial_start
-                ? new Date(subscription.trial_start * 1000)
-                : undefined,
-              trial_end: subscription.trial_end
-                ? new Date(subscription.trial_end * 1000)
                 : undefined,
             },
           }),
         ]);
       }),
 
-      trialWillEnd: stripeWHProcedure.mutation(async ({ input }) => {
-        const subscription = input.event.data.object as Stripe.Subscription;
-        const { userId } = subscription.metadata;
-        console.log("Trial ending for user", userId);
-
-        // Send email using Nodemailer?
-      }),
-
       // Occurs whenever a customer's subscription ends
       // We use this to update the user's membership and reset their premium features
+      // NOTE: There is also a client-side check to this which lets the user select which
+      // account they would like to keep and which to remove
       deleted: stripeWHProcedure.mutation(async ({ ctx, input }) => {
         const subscription = input.event.data.object as Stripe.Subscription;
         const { userId } = subscription.metadata;
