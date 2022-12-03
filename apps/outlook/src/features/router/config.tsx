@@ -5,40 +5,40 @@ import {
   createRouteConfig,
 } from "@tanstack/react-router";
 
-// import { Accounts } from "../../pages/accounts";
-// import { SettingsLayout } from "../../pages/settings/layout";
-// import { SignoutPage } from "../../pages/settings/signout";
-// import { Subscription } from "../../pages/settings/subscription";
+import { Accounts } from "../../pages/accounts";
+import { SettingsLayout } from "../../pages/settings/layout";
+import { SignoutPage } from "../../pages/settings/signout";
+import { Subscription } from "../../pages/settings/subscription";
 
 const routeConfig = createRouteConfig().createChildren((createRoute) => [
   createRoute({
     path: "calendar",
     component: () => (
-      <div>Hii</div>
+      <div className="text-red-500">Hii</div>
       // <Calendar onPageChange={(to) => router.navigate({ to: "/" })} />
     ),
   }),
-  // createRoute({
-  //   path: "settings",
-  //   component: SettingsLayout,
-  // }).createChildren((createRoute) => [
-  //   createRoute({
-  //     path: "/",
-  //     component: () => <>Select action pane</>,
-  //   }),
-  //   createRoute({
-  //     path: "subscription",
-  //     component: Subscription,
-  //   }),
-  //   createRoute({
-  //     path: "signout",
-  //     component: SignoutPage,
-  //   }),
-  // ]),
-  // createRoute({
-  //   path: "accounts",
-  //   component: Accounts,
-  // }),
+  createRoute({
+    path: "settings",
+    component: SettingsLayout,
+  }).createChildren((createRoute) => [
+    createRoute({
+      path: "/",
+      component: () => <>Select action pane</>,
+    }),
+    createRoute({
+      path: "subscription",
+      component: Subscription,
+    }),
+    createRoute({
+      path: "signout",
+      component: SignoutPage,
+    }),
+  ]),
+  createRoute({
+    path: "accounts",
+    component: Accounts,
+  }),
   createRoute({
     path: "format",
     component: () => <>Add Format Here</>,
