@@ -1,4 +1,3 @@
-import { type Membership } from "@agreeto/db";
 import { type DefaultSession, type User as DefaultUser } from "next-auth";
 import { type AdapterAccount as $AdapterAccount } from "next-auth/adapters";
 
@@ -15,15 +14,11 @@ declare module "next-auth" {
       // We can add any field from our user here thats a primitive,
       // nested relational objects are not returned by the provider by default
       id: string;
-      membership: Membership;
-      hasTrialed: boolean;
     } & DefaultSession["user"];
   }
 
   interface User extends DefaultUser {
     id: string;
-    membership: Membership;
-    hasTrialed: boolean;
   }
 }
 

@@ -42,7 +42,6 @@ export const getServerSession = async (
           email: true,
           name: true,
           image: true,
-          membership: true,
         },
       },
     },
