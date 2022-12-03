@@ -34,3 +34,30 @@ export const useIsAuthed = () => {
 
   return { isAuthed, isAuthenticating };
 };
+
+/**
+ * Background job to validate if a trial is valid
+ */
+export const useValidateTrialOrSub = () => {
+  // Assume all good
+  const [component, setComponent] = React.useState<
+    "children" | "startTrial" | "endTrial" | "endSubscription"
+  >("children");
+
+  trpcApi.user.validateTrialOrSub.useQuery(undefined, {
+    onSuccess(data) {
+      setComponent(
+        data.showStartTrial
+          ? "startTrial"
+          : data.showEndTrial
+          ? "endTrial"
+          : data.showEndSubscription
+          ? "endSubscription"
+          : "children",
+      );
+    },
+    // Don't spam the server so we set a longer staleTime
+    staleTime: 1000 * 60 * 60 * 30, // 30 minutes
+  });
+  return component;
+};

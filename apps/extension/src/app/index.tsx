@@ -9,7 +9,6 @@ import { Layout } from "./layout";
 
 const AppContent: React.FC = () => {
   const isAuthed = useIsAuthed();
-  // const utils = trpcApi.useContext()
 
   return (
     <RouterProvider router={router}>

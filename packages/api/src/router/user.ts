@@ -36,19 +36,46 @@ export const userRouter = router({
     return user;
   }),
 
-  validateTrial: privateProcedure.mutation(async ({ ctx }) => {
+  validateTrialOrSub: privateProcedure.query(async ({ ctx }) => {
     const user = await ctx.prisma.user.findUnique({
       where: { id: ctx.user.id },
+      include: {
+        stripeCustomer: {
+          include: {
+            subscriptions: true,
+          },
+        },
+      },
     });
 
-    // Nothing to do if they're not on a trial
-    if (user?.membership !== Membership.TRIAL) return;
+    const retVal = {
+      showStartTrial: false,
+      showEndTrial: false,
+      showEndSubscription: false,
+    };
 
-    if (user?.trialEnds && user?.trialEnds < new Date())
-      throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "Trial has ended",
-      });
+    if (user?.membership === Membership.FREE && user?.trialEnds === null) {
+      // Tell client to show startTrial modal
+      retVal.showStartTrial = true;
+    }
+
+    if (user?.membership === Membership.TRIAL) {
+      if (user?.trialEnds && user?.trialEnds < new Date())
+        retVal.showEndTrial = true;
+    }
+
+    if (
+      user?.membership === Membership.PRO ||
+      user?.membership === Membership.PREMIUM
+    ) {
+      if (
+        user?.stripeCustomer?.subscriptions?.length &&
+        !user?.stripeCustomer?.subscriptions.some((s) => s.status === "active")
+      )
+        retVal.showEndSubscription = true;
+    }
+
+    return retVal;
   }),
 
   startTrial: privateProcedure.mutation(async ({ ctx }) => {
