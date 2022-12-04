@@ -26,7 +26,7 @@ export const Formatting = () => {
     onValidSubmit(e) {
       e.preventDefault();
       console.log("FormData:", e.data);
-      //   updateFormatting(e.data);
+      updateFormatting(e.data);
     },
   });
 
@@ -37,35 +37,30 @@ export const Formatting = () => {
   });
 
   const { data: formatting } = trpcApi.formatting.byLanguage.useQuery({
-    language,
+    language: language || Language.EN,
   });
   const { mutate: updateFormatting } = trpcApi.formatting.update.useMutation({
     onSuccess() {
-      utils.formatting.byCurrentUser.invalidate();
+      utils.formatting.byLanguage.invalidate();
     },
   });
 
   const dateFormat = useValue({
     zorm: zo,
     name: zo.fields.dateFormat(),
-    initialValue: formatting?.dateFormat ?? DateFormat.MMMM_d_EEEE,
+    initialValue: formatting?.dateFormat || DateFormat.MMMM_d_EEEE,
   });
   const introSentence = useValue({
     zorm: zo,
     name: zo.fields.introSentence(),
     initialValue:
-      formatting?.introSentence ?? DEFAULT_LANGUAGE_FORMAT.defaultIntroSentence,
+      formatting?.introSentence || DEFAULT_LANGUAGE_FORMAT.defaultIntroSentence,
   });
   const sentenceType = useValue({
     zorm: zo,
     name: zo.fields.introSentenceType(),
-    initialValue: formatting?.introSentenceType ?? IntroSentenceType.DEFAULT,
+    initialValue: formatting?.introSentenceType || IntroSentenceType.DEFAULT,
   });
-
-  // Reset introSentence type when sentenceType changes
-  useEffect(() => {
-    console.log(zo.fields.introSentenceType("id"));
-  }, [sentenceType]);
 
   return (
     <div className="flex pl-3 space-x-6 justify-between gap-3">
@@ -81,15 +76,9 @@ export const Formatting = () => {
             >
               Language
             </label>
-            <Select.Root
-              defaultValue={language}
-              name={zo.fields.language("name")}
-              onValueChange={(value) => {
-                console.log("Lang onChange", value);
-              }}
-            >
+            <Select.Root defaultValue={language} name={zo.fields.language()}>
               <Select.Trigger className="h-10 bg-white text-gray-700 rounded border border-gray-200 w-64 flex justify-between items-center py-1 px-3 gap-3 cursor-pointer text-sm">
-                <Select.Value aria-label={language}>{language}</Select.Value>
+                <Select.Value />
                 <Select.Icon asChild>
                   <TiArrowSortedDown className="w-4 text-gray-700" />
                 </Select.Icon>
@@ -99,19 +88,26 @@ export const Formatting = () => {
                 <Select.Content className="overflow-hidden bg-white rounded text-gray-700 mt-2">
                   <Select.Viewport className="p-2">
                     {LANGUAGE_FORMATS.map((item) => (
-                      <Select.Item
-                        key={item.key}
-                        value={item.key}
-                        className="flex"
-                      >
-                        <Select.ItemText className="inline-flex gap-2 h-10 w-64 py-1 px-3 justify-between space-x-3 cursor-pointer items-center text-sm">
-                          <item.icon className="h-5 w-5" />
-                          <p>{item.key}</p>
-                        </Select.ItemText>
-                        <Select.ItemIndicator className="SelectItemIndicator">
-                          <HiCheckCircle className="h-5 w-5 text-primary" />
-                        </Select.ItemIndicator>
-                      </Select.Item>
+                      <>
+                        <Select.Item
+                          key={item.key}
+                          value={item.key}
+                          className="flex items-center justify-between"
+                        >
+                          <Select.ItemText>
+                            <div className="flex gap-2 items-center">
+                              <item.icon className="h-5 w-5" />
+                              <p className="h-10 flex cursor-pointer items-center text-sm">
+                                {item.key}
+                              </p>
+                            </div>
+                          </Select.ItemText>
+                          <Select.ItemIndicator>
+                            <HiCheckCircle className="h-5 w-5 text-primary" />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                        <Select.Separator className="h-px bg-gray-200 mx-4" />
+                      </>
                     ))}
                   </Select.Viewport>
                 </Select.Content>
@@ -120,23 +116,20 @@ export const Formatting = () => {
           </div>
 
           {/* DateFormat Selector */}
-          {/* <div>
+          <div>
             <label className="block text-sm font-medium text-gray-700">
               Date Format
             </label>
             <Select.Root
-              defaultValue={language}
-              //   name={zo.fields.language("name")}
-              onValueChange={(value) => {
-                console.log(value);
-              }}
+              defaultValue={dateFormat}
+              name={zo.fields.dateFormat()}
             >
               <Select.Trigger
                 className={clsx(
                   "h-10 bg-white text-gray-700 rounded border border-gray-200 w-64 flex justify-between items-center py-1 px-3 gap-3 cursor-pointer text-sm",
                 )}
               >
-                <Select.Value aria-label={language}>{language}</Select.Value>
+                <Select.Value />
                 <Select.Icon asChild>
                   <TiArrowSortedDown className="w-4 text-gray-700" />
                 </Select.Icon>
@@ -146,23 +139,32 @@ export const Formatting = () => {
                 <Select.Content className="overflow-hidden bg-white rounded text-gray-700 mt-2 border border-gray-100">
                   <Select.Viewport className="p-2">
                     {Object.values(DateFormat).map((item) => (
-                      <Select.Item key={item} value={item} className="flex">
-                        <Select.ItemText className="inline-flex gap-2 h-10 w-64 py-1 px-3 justify-between space-x-3 cursor-pointer items-center text-sm">
-                          {format(new Date(), item)}
-                        </Select.ItemText>
-                        <Select.ItemIndicator className="SelectItemIndicator">
-                          <HiCheckCircle className="h-5 w-5 text-primary" />
-                        </Select.ItemIndicator>
-                      </Select.Item>
+                      <>
+                        <Select.Item
+                          key={item}
+                          value={item}
+                          className="flex items-center justify-between"
+                        >
+                          <Select.ItemText>
+                            <p className="h-10 flex cursor-pointer items-center text-sm">
+                              {format(new Date(), item)}
+                            </p>
+                          </Select.ItemText>
+                          <Select.ItemIndicator>
+                            <HiCheckCircle className="h-5 w-5 text-primary" />
+                          </Select.ItemIndicator>
+                        </Select.Item>
+                        <Select.Separator className="h-px bg-gray-200 mx-4" />
+                      </>
                     ))}
                   </Select.Viewport>
                 </Select.Content>
               </Select.Portal>
             </Select.Root>
-          </div> */}
+          </div>
 
           {/* IntroSentenceType Radio Group + Textarea */}
-          {/* <div className="mt-3">
+          <div className="mt-3">
             <div className="flex border border-gray-100 rounded w-full h-9 overflow-hidden">
               {Object.values(IntroSentenceType).map((type, i) => (
                 <label
@@ -194,18 +196,11 @@ export const Formatting = () => {
                 className="resize-none w-full rounded-lg px-4 py-3 text-sm border border-gray-200 disabled:cursor-not-allowed disabled:text-gray-300"
                 rows={4}
                 name={zo.fields.introSentence()}
-                defaultValue={
-                  sentenceType === IntroSentenceType.DEFAULT
-                    ? LANGUAGE_FORMATS.find((item) => item.key === language)
-                        ?.defaultIntroSentence
-                    : sentenceType === IntroSentenceType.CUSTOM
-                    ? introSentence
-                    : ""
-                }
                 disabled={sentenceType !== IntroSentenceType.CUSTOM}
+                defaultValue={introSentence}
               />
             </div>
-          </div> */}
+          </div>
 
           {/* Submit Button */}
           <div className="mt-3">
@@ -213,13 +208,25 @@ export const Formatting = () => {
               <span>Save</span>
             </Button>
           </div>
-
-          <pre>Validation status: {JSON.stringify(zo.validation, null, 2)}</pre>
         </form>
       </div>
-
+      <div>
+        <pre className="w-full overflow-scroll">
+          {JSON.stringify(
+            {
+              language,
+              dateFormat,
+              sentenceType,
+              introSentence,
+            },
+            null,
+            2,
+          )}
+        </pre>
+        <pre className="w-full">{JSON.stringify(zo.validation, null, 2)}</pre>
+      </div>
       {/* Preview */}
-      <div className="relative flex">
+      {/* <div className="relative flex">
         <img src={previewImage} alt="preview" />
         <div
           className="absolute whitespace-pre"
@@ -250,7 +257,7 @@ export const Formatting = () => {
             ),
           }}
         />
-      </div>
+      </div> */}
     </div>
   );
 };
