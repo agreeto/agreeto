@@ -217,8 +217,13 @@ export const stripeRouter = router({
           ],
 
           success_url:
-            input.success_url ?? `${process.env.NEXTAUTH_URL}/payment/success`,
-          cancel_url: `${process.env.NEXTAUTH_URL}/payment/cancel`,
+            input.success_url ??
+            `${
+              process.env.NEXTAUTH_URL ?? process.env.VERCEL_URL
+            }/payment/success`,
+          cancel_url: `${
+            process.env.NEXTAUTH_URL ?? process.env.VERCEL_URL
+          }/payment/cancel`,
           subscription_data: {
             trial_period_days: !user.hasTrialed ? 7 : undefined,
             metadata: {
@@ -244,7 +249,7 @@ export const stripeRouter = router({
       const { customerId } = await getCustomerId(ctx.user.id, ctx.prisma);
       const session = await stripe.billingPortal.sessions.create({
         customer: customerId,
-        return_url: process.env.NEXTAUTH_URL,
+        return_url: process.env.NEXTAUTH_URL ?? process.env.VERCEL_URL,
       });
       return session;
     }),

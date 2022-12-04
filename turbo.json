@@ -14,7 +14,7 @@
       "cache": false
     },
     "build": {
-      "dependsOn": ["^build", "^db-generate"],
+      "dependsOn": ["^db-generate"],
       "outputs": [".next/**", ".expo/**", ".plasmo/**", "build/**", "dist/**"]
     },
     "lint": {
