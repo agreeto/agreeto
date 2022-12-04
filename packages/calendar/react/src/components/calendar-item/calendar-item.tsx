@@ -67,7 +67,7 @@ const CalendarItem: FC<Props> = ({ onRefSettled, onPageChange }) => {
   const { data: currentUser } = trpc.user.me.useQuery();
   const isFree = currentUser?.membership === Membership.FREE;
   const { data: preference } = trpc.preference.byCurrentUser.useQuery();
-  const locale = getDateLocale(preference);
+  const locale = getDateLocale(preference?.formatLanguage);
 
   const { data: events, isFetching: isFetchingEvents } =
     trpc.event.all.useQuery(period, { staleTime: 30 * 1000 });
@@ -290,9 +290,7 @@ ${extractEventHours(event)}`} // This is not a lint error. The space is left her
         });
       });
     });
-
-    console.log([...newEvents, ...selectedSlots]);
-
+    
     return [...newEvents, ...selectedSlots];
   };
 

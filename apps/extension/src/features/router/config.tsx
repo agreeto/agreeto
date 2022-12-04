@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-router";
 
 import { Accounts } from "~pages/accounts";
+import { Formatting } from "~pages/formatting";
 import { SettingsLayout } from "~pages/settings/layout";
 import { SignoutPage } from "~pages/settings/signout";
 import { Subscription } from "~pages/settings/subscription";
@@ -40,7 +41,7 @@ const routeConfig = createRouteConfig().createChildren((createRoute) => [
   }),
   createRoute({
     path: "format",
-    component: () => <>Add Format Here</>,
+    component: Formatting,
   }),
 ]);
 

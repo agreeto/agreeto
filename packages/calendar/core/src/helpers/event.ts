@@ -6,6 +6,7 @@ import { convertToDate } from "./date";
 import { getCopyTitle, getDateLocale, getHourText } from "./locale";
 import { getTimeZoneAbv } from "./timezone";
 import { type RouterOutputs } from "@agreeto/api";
+import { DateFormat, Language } from "@agreeto/api/types";
 
 type Event = RouterOutputs["event"]["all"][number];
 
@@ -42,36 +43,75 @@ export const getGroupedSlots = (selectedSlots: EventInput[]) => {
   return slots;
 };
 
-export const copyToClipboard = (
+interface ExtractTextOptions {
+  formatLanguage?: Language | undefined;
+  copyTitle?: string;
+  dateFormat?: DateFormat;
+  highlight?: {
+    introSentence?: boolean;
+    date?: boolean;
+    time?: boolean;
+  };
+}
+
+export const extractTextFromSlots = (
   selectedSlots: EventInput[],
-  preference?: RouterOutputs["preference"]["byCurrentUser"],
+  {
+    formatLanguage = Language.EN,
+    dateFormat = DateFormat.MMMM_d_EEEE,
+    copyTitle,
+    highlight,
+  }: ExtractTextOptions = {},
 ) => {
-  let text = getCopyTitle(preference);
-  const locale = getDateLocale(preference);
+  const copyTitleText = copyTitle ?? getCopyTitle(formatLanguage);
+  let text = `<div class="${
+    highlight?.introSentence ? "color-primary" : ""
+  }">${copyTitleText}</div>`;
+  const locale = getDateLocale(formatLanguage);
   const timeZone = tzStore.getState().selectedTimeZone;
 
   // Group slots based on days
   const groupedSlots = getGroupedSlots(selectedSlots);
-  Object.keys(groupedSlots).forEach((key) => {
+  Object.keys(groupedSlots).forEach((key, idx) => {
     const events: EventInput[] = groupedSlots[key];
     const firstEvent = events[0];
     if (!firstEvent) return;
 
+    if (idx !== 0 || copyTitleText) {
+      text += '<div style="padding-top: 12px;" />';
+    }
+
     // Add day
-    text += `\n\n${format(convertToDate(firstEvent.start), "MMMM d (EEEE)", {
-      locale,
-    })}`;
+    text += `<div class="${
+      highlight?.date ? "color-primary" : ""
+    }" style="font-weight: 600;">${format(
+      convertToDate(firstEvent.start),
+      dateFormat,
+      {
+        locale,
+      },
+    )}</div>`;
 
     events.map(({ start, end }) => {
-      text += `\n• ${getHourText(convertToDate(start), {
+      text += `<div class="${
+        highlight?.time ? "color-primary" : ""
+      }" style="padding-top: 2px;">• ${getHourText(convertToDate(start), {
         locale,
         timeZone,
       })} - ${getHourText(convertToDate(end), {
         locale,
         timeZone,
-      })} ${getTimeZoneAbv(timeZone, convertToDate(start))}`;
+      })} ${getTimeZoneAbv(timeZone, convertToDate(start))}</div>`;
     });
   });
 
-  copy(text, { format: "text/plain" });
+  return text;
+};
+
+export const copyToClipboard = (
+  selectedSlots: EventInput[],
+  options: ExtractTextOptions = {},
+) => {
+  const text = extractTextFromSlots(selectedSlots, options);
+  copy(text, { format: "text/html" });
 };
