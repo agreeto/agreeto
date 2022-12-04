@@ -54,5 +54,4 @@ export const clientSchema = z.object({
 export const clientEnv = {
   NEXT_PUBLIC_EXTENSION_ID: process.env.NEXT_PUBLIC_EXTENSION_ID,
   NEXT_PUBLIC_OUTLOOK_ADDIN_URL: process.env.NEXT_PUBLIC_OUTLOOK_ADDIN_URL,
-  NEXT_PUBLIC_PORT: process.env.NEXT_PUBLIC_PORT,
 };

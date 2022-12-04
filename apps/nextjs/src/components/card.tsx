@@ -8,10 +8,10 @@ export const Card: React.FC<{
   disclaimer?: React.ReactNode;
 }> = ({ children, title = "Welcome to AgreeTo", disclaimer }) => {
   return (
-    <div className="max-w-md px-16 py-12 space-y-4 text-center text-gray-600 shadow-2xl rounded-xl">
+    <div className="max-w-md space-y-4 rounded-xl px-16 py-12 text-center text-gray-600 shadow-2xl">
       <h1 className="text-3xl font-semibold">{title}</h1>
-      <div className="relative w-24 h-24 mx-auto">
-        <AgreeToLogo className="w-full h-full" />
+      <div className="relative mx-auto h-24 w-24">
+        <AgreeToLogo className="h-full w-full" />
       </div>
 
       {/* Content. */}
