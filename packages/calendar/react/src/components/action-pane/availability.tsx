@@ -43,7 +43,11 @@ const Availability: React.FC<{
 
   const { data: preference, isLoading: isLoadingPreference } =
     trpc.preference.byCurrentUser.useQuery();
-  const locale = getDateLocale(preference);
+  const locale = getDateLocale(preference?.formatLanguage);
+  const { data: formattings } = trpc.formatting.byCurrentUser.useQuery();
+  const formatting = formattings?.find(
+    (f) => f.language === preference?.formatLanguage,
+  );
 
   const { mutate: updatePreference, isLoading: isUpdatingPreference } =
     trpc.preference.update.useMutation({
@@ -159,6 +163,35 @@ const Availability: React.FC<{
     </DropdownMenu.Root>
   );
 
+  const copyButton = (
+    <button
+      className="h-7 w-7 pl-1"
+      title="copy"
+      disabled={selectedSlots.length === 0}
+      onClick={() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+        copyToClipboard(selectedSlots, {
+          formatLanguage: preference?.formatLanguage,
+          copyTitle: formatting?.introSentence,
+          dateFormat: formatting?.dateFormat,
+        });
+        toast("Saved to clipboard!", {
+          position: "bottom-center",
+          hideProgressBar: true,
+          autoClose: 1000,
+          type: "info",
+        });
+      }}
+    >
+      {copied ? (
+        <BiCheckCircle className="h-5 w-5 text-green-500" />
+      ) : (
+        <BiCopy className="h-5 w-5" />
+      )}
+    </button>
+  );
+
   return (
     <>
       <div className="w-100 flex items-center justify-between">
@@ -173,78 +206,90 @@ const Availability: React.FC<{
 
       <div className="pt-2">
         <div className="h-48 overflow-auto rounded border border-gray-50 bg-white py-1 pl-3 pr-1">
-          <div className="flex p-1 text-gray-700">
-            <span className="flex-1">
-              {selectedSlots.length
-                ? getCopyTitle(preference)
-                : "Selected slots will appear here"}
-            </span>
-            <button
-              className="h-7 w-7 pl-1"
-              title="copy"
-              disabled={selectedSlots.length === 0}
-              onClick={() => {
-                setCopied(true);
-                setTimeout(() => setCopied(false), 2000);
-                copyToClipboard(selectedSlots, preference);
-                toast("Saved to clipboard!", {
-                  position: "bottom-center",
-                  hideProgressBar: true,
-                  autoClose: 1000,
-                  type: "info",
-                });
-              }}
-            >
-              {copied ? (
-                <BiCheckCircle className="h-5 w-5 text-green-500" />
-              ) : (
-                <BiCopy className="h-5 w-5" />
-              )}
-            </button>
-          </div>
-          {Object.keys(getGroupedSlots(selectedSlots)).map((key, idx) => {
-            const events: EventInput[] = getGroupedSlots(selectedSlots)[key];
-            const firstEvent = events[0];
-            if (!firstEvent) return null;
+          {!selectedSlots.length ? (
+            <div className="flex justify-between">
+              <div
+                className="color-gray-200 text-sm"
+                style={{ paddingTop: "2px" }}
+              >
+                Selected slots will appear here
+              </div>
+              {copyButton}
+            </div>
+          ) : (
+            <div>
+              <div className="flex justify-between pb-3">
+                {formatting?.introSentence ??
+                getCopyTitle(preference?.formatLanguage) ? (
+                  <div className="text-sm" style={{ paddingTop: "2px" }}>
+                    <span className="color-gray-700">
+                      {formatting?.introSentence ??
+                        getCopyTitle(preference?.formatLanguage)}
+                    </span>
+                  </div>
+                ) : (
+                  <div />
+                )}
+                {copyButton}
+              </div>
 
-            return (
-              <div className="text-xs-05 pb-1 text-gray-700" key={idx}>
-                {/* Day */}
-                <div className="font-bold">
-                  {format(convertToDate(firstEvent.start), "MMMM d (EEEE)", {
-                    locale,
-                    timeZone: selectedTimeZone,
-                  })}
-                </div>
-                {/* Hours */}
-                {events.map((event) => {
-                  const { start, end, id } = event;
+              <div
+                style={{
+                  marginTop:
+                    formatting?.introSentence ??
+                    getCopyTitle(preference?.formatLanguage) !== undefined
+                      ? 0
+                      : "-36px",
+                }}
+              >
+                {Object.keys(getGroupedSlots(selectedSlots)).map((key, idx) => {
+                  const events: EventInput[] =
+                    getGroupedSlots(selectedSlots)[key];
+                  const firstEvent = events[0];
+                  if (!firstEvent) return null;
+
                   return (
-                    // todo: update to a proper id
-                    <div className="flex items-center" key={id ?? ulid()}>
-                      <span>•</span>
-                      <span className="pl-1">
-                        {`${getHourText(convertToDate(start), {
-                          locale,
-                          timeZone: selectedTimeZone,
-                        })} - ${getHourText(convertToDate(end), {
-                          locale,
-                          timeZone: selectedTimeZone,
-                        })} ${getTimeZoneAbv(
-                          selectedTimeZone,
-                          convertToDate(start),
-                        )}`}
-                      </span>
-                      <BiTrash
-                        className="ml-3 h-4 w-4 cursor-pointer"
-                        onClick={() => deleteSlot(event)}
-                      />
+                    <div className="text-xs-05 color-gray-700 pb-1" key={idx}>
+                      {/* Day */}
+                      <div className="font-bold">
+                        {format(
+                          convertToDate(firstEvent.start),
+                          formatting?.dateFormat ?? "MMMM d (EEEE)",
+                          { locale, timeZone: selectedTimeZone },
+                        )}
+                      </div>
+                      {/* Hours */}
+                      {events.map((event) => {
+                        const { start, end, id } = event;
+                        return (
+                          // todo: update to a proper id
+                          <div className="flex items-center" key={id ?? ulid()}>
+                            <span>•</span>
+                            <span className="pl-1">
+                              {`${getHourText(convertToDate(start), {
+                                locale,
+                                timeZone: selectedTimeZone,
+                              })} - ${getHourText(convertToDate(end), {
+                                locale,
+                                timeZone: selectedTimeZone,
+                              })} ${getTimeZoneAbv(
+                                selectedTimeZone,
+                                convertToDate(start),
+                              )}`}
+                            </span>
+                            <BiTrash
+                              className="ml-3 h-4 w-4 cursor-pointer"
+                              onClick={() => deleteSlot(event)}
+                            />
+                          </div>
+                        );
+                      })}
                     </div>
                   );
                 })}
               </div>
-            );
-          })}
+            </div>
+          )}
         </div>
       </div>
     </>

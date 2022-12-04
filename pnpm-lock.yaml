@@ -23,6 +23,7 @@ importers:
   apps/extension:
     specifiers:
       '@agreeto/api': workspace:*
+      '@agreeto/calendar-core': workspace:*
       '@agreeto/calendar-react': workspace:*
       '@agreeto/tailwind-config': workspace:*
       '@agreeto/tsconfig': workspace:*
@@ -54,6 +55,7 @@ importers:
       autoprefixer: ^10.4.7
       clsx: ^1.2.1
       date-fns: ^2.29.3
+      date-fns-tz: ^1.3.7
       plasmo: 0.55.0
       postcss: ^8.4.14
       prettier: 2.7.1
@@ -68,6 +70,7 @@ importers:
       zod: ^3.18.0
     dependencies:
       '@agreeto/api': link:../../packages/api
+      '@agreeto/calendar-core': link:../../packages/calendar/core
       '@agreeto/calendar-react': link:../../packages/calendar/react
       '@agreeto/ui': link:../../packages/ui
       '@fullcalendar/common': 5.11.3
@@ -91,6 +94,7 @@ importers:
       '@trpc/server': 10.4.1
       clsx: 1.2.1
       date-fns: 2.29.3
+      date-fns-tz: 1.3.7_date-fns@2.29.3
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-icons: 4.6.0_react@18.2.0
@@ -321,6 +325,7 @@ importers:
   packages/calendar/core:
     specifiers:
       '@agreeto/api': workspace:*
+      '@agreeto/ui': workspace:*
       '@fullcalendar/react': ^5.11.2
       '@types/chrome': ^0.0.197
       '@types/lodash': ^4.14.182
@@ -333,6 +338,7 @@ importers:
       zustand: ^4.1.4
     dependencies:
       '@agreeto/api': link:../../api
+      '@agreeto/ui': link:../../ui
       '@types/lodash': 4.14.189
       copy-to-clipboard: 3.3.3
       date-fns: 2.29.3

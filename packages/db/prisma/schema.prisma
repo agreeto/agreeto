@@ -79,13 +79,15 @@ model Session {
 }
 
 model User {
-    id                       String          @id @default(cuid())
-    name                     String?
-    email                    String?         @unique
-    emailVerified            DateTime?
-    image                    String?
-    sessions                 Session[]
-    preference               Preference?
+    id            String       @id @default(cuid())
+    name          String?
+    email         String?      @unique
+    emailVerified DateTime?
+    image         String?
+    sessions      Session[]
+    preference    Preference?
+    formattings   Formatting[]
+
     // ================
     // Stripe stuff
     // ================
@@ -151,6 +153,23 @@ enum Membership {
     PREMIUM
 }
 
+enum IntroSentenceType {
+    DEFAULT
+    CUSTOM
+    NONE
+}
+
+enum DateFormat {
+    MMMM_d_EEEE
+    MM_dd_yyyy
+    yyyy_MM_dd
+    MMMM_dd_yyyy
+    EEEE_MM_dd_yyyy
+    MMM_dd_EEEE
+    EEEE_M_d
+    EEE_MM_dd
+}
+
 // ======================================
 // End Enums
 // ======================================
@@ -168,6 +187,21 @@ model Preference {
     updatedAt DateTime @default(now()) @updatedAt
 
     user User @relation(fields: [userId], references: [id])
+}
+
+model Formatting {
+    id                String            @id @default(cuid())
+    language          Language
+    dateFormat        DateFormat
+    introSentenceType IntroSentenceType
+    introSentence     String            @default("")
+    userId            String
+
+    user      User     @relation(fields: [userId], references: [id])
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    @@unique([userId, language])
 }
 
 model EventGroup {
