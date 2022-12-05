@@ -9,7 +9,6 @@ import { Button } from "@agreeto/ui";
 import * as Select from "@radix-ui/react-select";
 import clsx from "clsx";
 import { addHours, format, startOfDay } from "date-fns";
-import { useEffect } from "react";
 import { HiCheckCircle } from "react-icons/hi";
 import { TiArrowSortedDown } from "react-icons/ti";
 import { useValue, useZorm } from "react-zorm";
@@ -34,6 +33,7 @@ export const Formatting = () => {
     zorm: zo,
     name: zo.fields.language(),
     initialValue: Language.EN,
+    event: "change",
   });
 
   const { data: formatting } = trpcApi.formatting.byLanguage.useQuery({
@@ -49,6 +49,7 @@ export const Formatting = () => {
     zorm: zo,
     name: zo.fields.dateFormat(),
     initialValue: formatting?.dateFormat || DateFormat.MMMM_d_EEEE,
+    event: "change",
   });
   const introSentence = useValue({
     zorm: zo,
@@ -68,7 +69,6 @@ export const Formatting = () => {
       <div>
         <form ref={zo.ref}>
           {/* Language Selector */}
-          {/* TODO: Abstract out */}
           <div>
             <label
               htmlFor={zo.fields.language("id")}
@@ -210,23 +210,9 @@ export const Formatting = () => {
           </div>
         </form>
       </div>
-      <div>
-        <pre className="w-full overflow-scroll">
-          {JSON.stringify(
-            {
-              language,
-              dateFormat,
-              sentenceType,
-              introSentence,
-            },
-            null,
-            2,
-          )}
-        </pre>
-        <pre className="w-full">{JSON.stringify(zo.validation, null, 2)}</pre>
-      </div>
+
       {/* Preview */}
-      {/* <div className="relative flex">
+      <div className="relative flex">
         <img src={previewImage} alt="preview" />
         <div
           className="absolute whitespace-pre"
@@ -245,7 +231,7 @@ export const Formatting = () => {
               ],
               {
                 formatLanguage: language,
-                dateFormat: dateFormat,
+                dateFormat: dateFormat || DateFormat.MMMM_d_EEEE,
                 copyTitle: introSentence,
                 highlight: {
                   // TODO: Can we use the ref or smth?
@@ -257,7 +243,7 @@ export const Formatting = () => {
             ),
           }}
         />
-      </div> */}
+      </div>
     </div>
   );
 };
