@@ -6,7 +6,7 @@ import { IoClose } from "react-icons/io5";
 import { Popover } from "@headlessui/react";
 import OutsideClickHandler from "react-outside-click-handler";
 import { getTimeZoneAbv } from "@agreeto/calendar-core";
-import { Membership } from "@agreeto/api/types";
+import { Membership } from "@agreeto/api/client";
 import { Float } from "@headlessui-float/react";
 import { trpc } from "../../utils/trpc";
 import { useTZStore } from "../../utils/store";

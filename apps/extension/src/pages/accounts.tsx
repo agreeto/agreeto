@@ -1,4 +1,4 @@
-import { Membership } from "@agreeto/api/types";
+import { Membership } from "@agreeto/api/client";
 import { Button } from "@agreeto/ui";
 
 import AccountCard from "~features/accounts/account-card";

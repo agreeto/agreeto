@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
 import { Attendees } from "./../action-pane/attendees";
-import { EventResponseStatus } from "@agreeto/api/types";
+import { EventResponseStatus } from "@agreeto/api/client";
 import { Button, Modal } from "@agreeto/ui";
 
 import { trpc } from "../../utils/trpc";

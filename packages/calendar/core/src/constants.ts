@@ -1,4 +1,4 @@
-import { Language } from "@agreeto/api/types";
+import { Language } from "@agreeto/api/client";
 import { DeFlag, EsFlag, FrFlag, ItFlag, UsFlag } from "@agreeto/ui";
 
 // FIXME:

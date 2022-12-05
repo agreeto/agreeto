@@ -1,5 +1,5 @@
 import type { RouterOutputs } from "@agreeto/api";
-import { EventColorUserRadix } from "@agreeto/api/types";
+import { EventColorUserRadix } from "@agreeto/api/client";
 import {
   Button,
   Dialog,

@@ -6,7 +6,7 @@ import { convertToDate } from "./date";
 import { getCopyTitle, getDateLocale, getHourText } from "./locale";
 import { getTimeZoneAbv } from "./timezone";
 import { type RouterOutputs } from "@agreeto/api";
-import { DateFormat, Language } from "@agreeto/api/types";
+import { DateFormat, Language } from "@agreeto/api/client";
 
 type Event = RouterOutputs["event"]["all"][number];
 
@@ -65,7 +65,7 @@ export const extractTextFromSlots = (
 ) => {
   const copyTitleText = copyTitle ?? getCopyTitle(formatLanguage);
   let text = `<div class="${
-    highlight?.introSentence ? "color-primary" : ""
+    highlight?.introSentence ? "text-primary" : ""
   }">${copyTitleText}</div>`;
   const locale = getDateLocale(formatLanguage);
   const timeZone = tzStore.getState().selectedTimeZone;
@@ -83,7 +83,7 @@ export const extractTextFromSlots = (
 
     // Add day
     text += `<div class="${
-      highlight?.date ? "color-primary" : ""
+      highlight?.date ? "text-primary" : ""
     }" style="font-weight: 600;">${format(
       convertToDate(firstEvent.start),
       dateFormat,
@@ -94,7 +94,7 @@ export const extractTextFromSlots = (
 
     events.map(({ start, end }) => {
       text += `<div class="${
-        highlight?.time ? "color-primary" : ""
+        highlight?.time ? "text-primary" : ""
       }" style="padding-top: 2px;">• ${getHourText(convertToDate(start), {
         locale,
         timeZone,
