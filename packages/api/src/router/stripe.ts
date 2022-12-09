@@ -1,4 +1,4 @@
-import { Language, Membership, type Prisma } from "@agreeto/db";
+import { Membership, type Prisma } from "@agreeto/db";
 import { TRPCError } from "@trpc/server";
 import { Stripe } from "stripe";
 import { z } from "zod";
@@ -185,7 +185,6 @@ export const stripeRouter = router({
         z.object({
           plan: z.enum([Membership.PRO, Membership.PREMIUM]),
           period: z.enum(["monthly", "annually"]),
-          success_url: z.string().optional(),
         }),
       )
       .mutation(async ({ ctx, input }) => {
@@ -194,13 +193,10 @@ export const stripeRouter = router({
           ctx.prisma,
         );
 
-        if (
-          user.membership !== Membership.FREE &&
-          user.membership !== Membership.TRIAL
-        ) {
+        if (user.membership === input.plan) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: "User already has a paid membership",
+            message: `Can't upgrade to the ${input.plan} plan since you're already on it. Use 'Manage subscription' instead.`,
           });
         }
 
@@ -208,6 +204,8 @@ export const stripeRouter = router({
           customer: customerId,
           client_reference_id: ctx.user.id,
           payment_method_types: ["card"],
+          success_url: `${process.env.NEXTAUTH_URL}/payment/success`,
+          cancel_url: `${process.env.NEXTAUTH_URL}/payment/cancel`,
           mode: "subscription",
           line_items: [
             {
@@ -215,18 +213,11 @@ export const stripeRouter = router({
               quantity: 1,
             },
           ],
-
-          success_url:
-            input.success_url ?? `${process.env.NEXTAUTH_URL}/payment/success`,
-          cancel_url: `${process.env.NEXTAUTH_URL}/payment/cancel`,
           subscription_data: {
-            trial_period_days: !user.hasTrialed ? 7 : undefined,
             metadata: {
               userId: ctx.user.id,
             },
           },
-          // allow starting trials without payment
-          payment_method_collection: "if_required",
         });
 
         if (!session || !session.url)
@@ -254,9 +245,8 @@ export const stripeRouter = router({
   webhooks: router({
     customer: router({
       deleted: stripeWHProcedure.mutation(async ({ ctx, input }) => {
-        const { event } = input;
-        const { object } = event.data;
-        const { id } = object as Stripe.Customer;
+        const customer = input.event.data.object as Stripe.Customer;
+        const id = customer.id;
 
         // TODO: Prob make stripeCustomerId unique
         await ctx.prisma.user.updateMany({
@@ -278,54 +268,46 @@ export const stripeRouter = router({
         const priceId = lineItem?.plan?.id;
         if (!priceId) throw new TRPCError({ code: "BAD_REQUEST" });
 
-        const isTrial = subscription.status === "trialing";
-        const membership = isTrial
-          ? Membership.TRIAL
-          : getMembershipFromPriceId(priceId);
+        const membership = getMembershipFromPriceId(priceId);
+
+        const subData = {
+          cancel_at_period_end: subscription.cancel_at_period_end,
+          collection_method: subscription.collection_method,
+          livemode: subscription.livemode,
+          metadata: subscription.metadata,
+          start_date: new Date(subscription.start_date * 1000), // convert to milliseconds
+          status: subscription.status,
+          stripeCustomer: {
+            connect: { id: subscription.customer as string },
+          },
+          priceId: getPriceIdFromSubscription(subscription.items),
+          current_period_start: new Date(
+            subscription.current_period_start * 1000,
+          ),
+          current_period_end: new Date(subscription.current_period_end * 1000),
+          created: new Date(subscription.created * 1000),
+          canceled_at: subscription.canceled_at
+            ? new Date(subscription.canceled_at * 1000)
+            : null,
+          ended_at: subscription.ended_at
+            ? new Date(subscription.ended_at * 1000)
+            : null,
+        };
 
         // These queries are executed in order
         await ctx.prisma.$transaction([
           // First create the subscription in the db
-
-          ctx.prisma.stripeSubscription.create({
-            data: {
+          ctx.prisma.stripeSubscription.upsert({
+            where: { id: subscription.id },
+            create: {
               id: subscription.id,
-              cancel_at_period_end: subscription.cancel_at_period_end,
-              collection_method: subscription.collection_method,
-              livemode: subscription.livemode,
-              metadata: subscription.metadata,
-              start_date: new Date(subscription.start_date * 1000),
-              status: subscription.status,
-              stripeCustomer: {
-                connect: { id: subscription.customer as string },
-              },
-              priceId: getPriceIdFromSubscription(subscription.items),
-              current_period_start: new Date(
-                subscription.current_period_start * 1000,
-              ),
-              current_period_end: new Date(
-                subscription.current_period_end * 1000,
-              ),
-              created: new Date(subscription.created * 1000), // convert to milliseconds
-              canceled_at: subscription.canceled_at
-                ? new Date(subscription.canceled_at * 1000)
-                : null,
-              ended_at: subscription.ended_at
-                ? new Date(subscription.ended_at * 1000)
-                : null,
-              trial_start: subscription.trial_start
-                ? new Date(subscription.trial_start * 1000)
-                : null,
-              trial_end: subscription.trial_end
-                ? new Date(subscription.trial_end * 1000)
-                : null,
+              ...subData,
             },
+            update: subData,
           }),
           ctx.prisma.user.update({
             where: { id: userId },
             data: {
-              // consume trial
-              hasTrialed: isTrial || undefined,
               membership,
             },
           }),
@@ -356,25 +338,18 @@ export const stripeRouter = router({
       updated: stripeWHProcedure.mutation(async ({ ctx, input }) => {
         const subscription = input.event.data.object as Stripe.Subscription;
         const { userId } = subscription.metadata;
-        const isTrial = subscription.status === "trialing";
 
         // NOTE: Just cause we get cancelled doesn't mean we should end the
         // membership, as the subscription is still active until the end of the
         // billing period. We get a separete `delete` event for that ⬇️⬇️⬇️
 
-        const canceledAt = subscription.canceled_at
-          ? new Date(subscription.canceled_at * 1000)
-          : null;
-
         await Promise.all([
           ctx.prisma.user.update({
             where: { id: userId },
             data: {
-              membership: isTrial
-                ? Membership.TRIAL
-                : getMembershipFromPriceId(
-                    subscription.items.data[0]?.price.id,
-                  ),
+              membership: getMembershipFromPriceId(
+                subscription.items.data[0]?.price.id,
+              ),
             },
           }),
           ctx.prisma.stripeSubscription.update({
@@ -394,50 +369,6 @@ export const stripeRouter = router({
               current_period_end: new Date(
                 subscription.current_period_end * 1000,
               ),
-              canceled_at: canceledAt,
-              ended_at: subscription.ended_at
-                ? new Date(subscription.ended_at * 1000)
-                : undefined,
-              trial_start: subscription.trial_start
-                ? new Date(subscription.trial_start * 1000)
-                : undefined,
-              trial_end: subscription.trial_end
-                ? new Date(subscription.trial_end * 1000)
-                : undefined,
-            },
-          }),
-        ]);
-      }),
-
-      trialWillEnd: stripeWHProcedure.mutation(async ({ input }) => {
-        const subscription = input.event.data.object as Stripe.Subscription;
-        const { userId } = subscription.metadata;
-        console.log("Trial ending for user", userId);
-
-        // Send email using Nodemailer?
-      }),
-
-      // Occurs whenever a customer's subscription ends
-      // We use this to update the user's membership and reset their premium features
-      deleted: stripeWHProcedure.mutation(async ({ ctx, input }) => {
-        const subscription = input.event.data.object as Stripe.Subscription;
-        const { userId } = subscription.metadata;
-
-        await Promise.all([
-          ctx.prisma.user.update({
-            where: { id: userId },
-            data: {
-              membership: Membership.FREE,
-              preference: {
-                update: {
-                  formatLanguage: Language.EN,
-                },
-              },
-            },
-          }),
-          ctx.prisma.stripeSubscription.update({
-            where: { id: subscription.id },
-            data: {
               canceled_at: subscription.canceled_at
                 ? new Date(subscription.canceled_at * 1000)
                 : undefined,
@@ -447,6 +378,23 @@ export const stripeRouter = router({
             },
           }),
         ]);
+      }),
+
+      deleted: stripeWHProcedure.mutation(async ({ ctx, input }) => {
+        const subscription = input.event.data.object as Stripe.Subscription;
+
+        await ctx.prisma.stripeSubscription.update({
+          where: { id: subscription.id },
+          data: {
+            status: subscription.status,
+            canceled_at: subscription.canceled_at
+              ? new Date(subscription.canceled_at * 1000)
+              : undefined,
+            ended_at: subscription.ended_at
+              ? new Date(subscription.ended_at * 1000)
+              : undefined,
+          },
+        });
       }),
     }),
   }),

@@ -6,7 +6,6 @@ import { Membership } from "@agreeto/api/types";
 import { useRouter } from "next/router";
 import { FaStripe } from "react-icons/fa";
 import { Card } from "../../components/card";
-import { appRouter, createContext } from "@agreeto/api";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const searchParams = new URLSearchParams(ctx.req.url?.split("?")[1]);
@@ -17,32 +16,10 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const fromOAuth =
     origin?.includes("google") ||
     origin?.includes("live") ||
-    origin?.includes("microsoft") ||
-    origin?.includes("stripe");
+    origin?.includes("microsoft");
 
-  // This means we have completed the sign in flow
   if (fromOAuth && callbackUrl) {
-    // @ts-expect-error - Not sure how to type this to accept GetServerSidePropsContext across packages - but they are compatible
-    const trpcCtx = await createContext(ctx);
-    const caller = appRouter.createCaller(trpcCtx);
-
-    // Check if user signed in for the first time,
-    // if so, redirect to starting a trial
-    if (
-      trpcCtx?.user?.membership === "FREE" &&
-      !trpcCtx?.user?.hasTrialed &&
-      !origin?.includes("stripe")
-    ) {
-      const { checkoutUrl } = await caller.stripe.checkout.create({
-        plan: "PRO",
-        period: "monthly",
-        // come back here after checkout is complete to finish the sign in flow
-        success_url: `https://${ctx.req.headers.host}/${ctx.req.url}`,
-      });
-      return { redirect: { destination: checkoutUrl, permanent: false } };
-    }
-
-    // Else, redirect to the callbackUrl
+    // This means we have completed the sign in flow, redirect to app
     return { redirect: { destination: callbackUrl, permanent: false } };
   }
 

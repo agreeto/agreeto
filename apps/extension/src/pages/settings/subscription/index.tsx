@@ -7,8 +7,10 @@ import { PricingCard } from "./pricing-card";
 import { SubscriptionCard } from "./subscription-card";
 
 export const Subscription = () => {
-  const { data: subscription, isLoading } =
-    trpcApi.user.subscription.useQuery();
+  const { data: subscription, isLoading } = trpcApi.user.subscription.useQuery(
+    undefined,
+    { retry: false },
+  );
 
   if (isLoading) return null;
 

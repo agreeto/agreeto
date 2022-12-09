@@ -1,8 +1,18 @@
-import { Navbar } from "~app/navbar";
+import { useEffect } from "react";
 
-export const Layout: React.FC<{ children?: React.ReactNode }> = ({
-  children,
-}) => {
+import { Navbar } from "~app/navbar";
+import { trpcApi } from "~features/trpc/api/hooks";
+
+export const Layout: React.FC<{
+  children?: React.ReactNode;
+}> = ({ children }) => {
+  const utils = trpcApi.useContext();
+  useEffect(() => {
+    // prefetch subscription
+    utils.user.subscription.prefetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="flex w-full h-full">
       <aside className="w-1/12">

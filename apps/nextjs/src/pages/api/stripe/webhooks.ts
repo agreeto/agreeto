@@ -40,9 +40,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       case "customer.subscription.updated":
         await caller.stripe.webhooks.subscription.updated({ event });
         break;
-      case "customer.subscription.trial_will_end":
-        await caller.stripe.webhooks.subscription.trialWillEnd({ event });
-        break;
       case "customer.subscription.deleted":
         await caller.stripe.webhooks.subscription.deleted({ event });
         break;

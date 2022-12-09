@@ -62,8 +62,6 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         /** @see next-auth.d.ts */
         session.user.id = user.id;
-        session.user.membership = user.membership;
-        session.user.hasTrialed = user.hasTrialed;
       }
       return session;
     },
