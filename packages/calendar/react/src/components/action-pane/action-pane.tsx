@@ -4,10 +4,8 @@ import { ToastContainer, toast } from "react-toastify";
 import { convertToDate, copyToClipboard } from "@agreeto/calendar-core";
 import Availability from "./availability";
 import { Attendees } from "./attendees";
-import { IoClose, IoCheckmarkCircle } from "react-icons/io5";
-import { TiArrowSortedDown } from "react-icons/ti";
-import { Float } from "@headlessui-float/react";
-import OutsideClickHandler from "react-outside-click-handler";
+import { IoClose } from "react-icons/io5";
+
 import { Spinner } from "@agreeto/ui";
 import { trpc } from "../../utils/trpc";
 import { useEventStore } from "../../utils/store";
@@ -45,11 +43,10 @@ const ActionPane: FC<Props> = ({
   const selectedSlots = useEventStore((s) => s.selectedSlots);
   const clearSlots = useEventStore((s) => s.clearSlots);
 
-  const [showActionTypesPopup, setShowActionTypesPopup] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [showCreatingSpinner, setShowCreatingSpinner] = useState(false);
 
-  const [buttonType, setButtonType] = useState<ActionType>("Copy and Close");
+  const [buttonType] = useState<ActionType>("Copy and Close");
 
   const { data: preference } = trpc.preference.byCurrentUser.useQuery();
   const { mutate: createEventGroup, isLoading: isCreatingEventGroup } =
@@ -140,86 +137,8 @@ const ActionPane: FC<Props> = ({
     },
   });
 
-  const actionTypesPopup = (
-    <OutsideClickHandler
-      onOutsideClick={(e: any) => {
-        // This check is put here to prevent unexpexted closes in the extension
-        if (
-          e.path?.find(
-            (p: any) =>
-              p.id === "primaryActionPopupContainerButton" ||
-              p.id === "primaryActionPopupContainerContent",
-          )
-        ) {
-          return;
-        }
-        setShowActionTypesPopup(false);
-      }}
-    >
-      <Float
-        className="flex h-full items-stretch"
-        show={showActionTypesPopup}
-        placement="top-end"
-      >
-        <button
-          id="primaryActionPopupContainerButton"
-          className={clsx(
-            "flex w-10 items-stretch justify-center rounded-r bg-primary hover:bg-primary/80",
-            {
-              "bg-[#C0C0C0] hover:bg-[#C0C0C0]": isDisabled,
-              "cursor-pointer": !isDisabled,
-            },
-          )}
-          disabled={isDisabled}
-          onClick={() => {
-            setShowActionTypesPopup(!showActionTypesPopup);
-          }}
-        >
-          <div
-            className="flex w-full items-center justify-center border-l border-white"
-            style={{ marginTop: "2px", marginBottom: "2px" }}
-          >
-            <TiArrowSortedDown
-              className={clsx("h-6 w-6 text-white", {
-                "text-gray-700": isDisabled,
-              })}
-            />
-          </div>
-        </button>
-        <div
-          id="primaryActionPopupContainerContent"
-          className="mb-2 rounded border border-[#E3E5E8] bg-white text-left"
-          style={{ width: "340px" }}
-        >
-          {Object.entries(actionTypes).map(([action, description]) => (
-            <div
-              className="flex cursor-pointer border-b border-[#C2C7CD] py-2 px-4 hover:bg-[#D9D9D9]"
-              onClick={() => {
-                setButtonType(action as ActionType);
-                setShowActionTypesPopup(false);
-              }}
-            >
-              <div className="w-8 shrink-0">
-                {buttonType === action && (
-                  <IoCheckmarkCircle className="h-6 w-6 text-primary" />
-                )}
-              </div>
-              <div>
-                <div
-                  className={clsx("text-sm font-semibold text-primary", {
-                    "text-gray-700": buttonType !== action,
-                  })}
-                >
-                  {action}
-                </div>
-                <div className="pt-1 text-xs text-[#767676]">{description}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </Float>
-    </OutsideClickHandler>
-  );
+  // TODO (richard): Replace this with radix' popup
+  const actionTypesPopup = <div>popup replacement</div>;
 
   return (
     <div className="h-full bg-gray-100 px-10 py-8">
